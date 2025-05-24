@@ -78,6 +78,9 @@ const App: React.FC = () => {
             />
             <Route path="*" element={<PageNotFound />} />
           </Routes>
+              <div className="text-3xl font-bold text-red-500">
+      Tailwind is working!
+    </div>
         </main>
       </AppProvider>
     </BrowserRouter>

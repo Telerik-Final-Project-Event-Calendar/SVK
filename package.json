@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "firebase": "^11.8.1",
+    "react-hook-form": "^7.56.4",
+    "react-router-dom": "^7.6.0",
+    "react-spinners": "^0.17.0"
+  }
+}

@@ -1,4 +1,6 @@
 /* ===== Header Styling ===== */
+@import "tailwindcss";
+
 header {
   background-image: url("/images/luis-villasmil-ITFwHdPEED0-unsplash.jpg");
   background-size: cover;
