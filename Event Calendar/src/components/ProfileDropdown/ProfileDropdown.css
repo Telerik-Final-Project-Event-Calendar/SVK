@@ -1,0 +1,93 @@
+.user-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-controls button {
+  background-color: #ff3366;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.user-controls button:hover {
+  background-color: #cc2a55;
+}
+
+.profile-dropdown {
+  position: relative;
+}
+
+.profile-trigger {
+  cursor: pointer;
+}
+
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #444;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.9rem;
+  font-weight: bold;
+  border: 2px solid #61dafb;
+  transition: transform 0.2s;
+  overflow: hidden;
+}
+
+.profile-avatar:hover {
+  transform: scale(1.1);
+}
+
+/* ===== Dropdown Menu ===== */
+.profile-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background-color: #1a1a2a;
+  border: 1px solid #2a2a3c;
+  border-radius: 8px;
+  padding: 0.75rem;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 180px;
+  text-align: center;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
+}
+
+.profile-menu p.username {
+  font-weight: bold;
+  color: #61dafb;
+  margin-bottom: 0.5rem;
+  font-family: "Orbitron", sans-serif;
+}
+
+.profile-menu a,
+.profile-menu button {
+  display: block;
+  padding: 0.5rem;
+  color: #ddd;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 0.95rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.profile-menu a:hover,
+.profile-menu button:hover {
+  background-color: #2e2e45;
+  color: #fff;
+}
