@@ -25,11 +25,12 @@ export default function Header() {
       <NavLink
         to="/"
         className="flex items-center space-x-2">
-        <img
+        {/* <img
           src="/images/logo.png"
           alt="Logo"
           className="h-8 w-8"
-        />
+        /> */}
+        <h1 className="text-3xl">🗓️</h1>
         <span className="font-bold text-lg text-gray-800">Event Calendar</span>
       </NavLink>
 
