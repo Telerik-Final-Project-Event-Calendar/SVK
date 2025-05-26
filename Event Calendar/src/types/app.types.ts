@@ -4,20 +4,20 @@ export interface IUserData {
   email: string;
   firstName: string;
   lastName: string;
-  handle: string; 
-  createdOn: string; 
-  posts?: Record<string, any>; 
-  comments?: Record<string, any>; 
-  // more?
+  handle: string;
+  phone: string;
+  uid: string;
+  createdOn: string;
+  address?: string;
   photoURL?: string;
+  isAdmin?: boolean;
+  isBlocked?: boolean;
 }
 
 // 
 export interface IAppState {
-  user: FirebaseUser | null;
-  userData: IUserData | null; 
-  isLoading: boolean;
-  error: Error | null;
+  user: any;
+  userData: IUserData | null;
 }
 
 // AppContext
@@ -54,11 +54,14 @@ export interface ILoginFormInputs {
 
 //Register
 export interface IRegisterFormInputs {
+  handle: string;
   email: string;
   password: string;
+  confirmPassword?: string;
   firstName: string;
   lastName: string;
-  confirmPassword?: string;
+  phone: string;
+  address?: string;
 }
 
 //ProfilePage

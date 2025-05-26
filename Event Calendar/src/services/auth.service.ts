@@ -6,7 +6,7 @@ import {
   updateProfile as firebaseUpdateProfile,
   sendPasswordResetEmail,
 } from 'firebase/auth';
-import { ref, set, serverTimestamp } from 'firebase/database';
+import { ref, set, serverTimestamp, get, child, query, orderByChild, equalTo } from 'firebase/database';
 import { auth, db } from '../config/firebase-config';
 import { IRegisterFormInputs, IUserData } from '../types/app.types';
 
@@ -18,24 +18,26 @@ import { IRegisterFormInputs, IUserData } from '../types/app.types';
  * @returns {Promise<FirebaseUser>} the FIrebase object
  */
 export const registerUser = async (registrationData: IRegisterFormInputs): Promise<FirebaseUser> => {
-  const { email, password, firstName, lastName } = registrationData;
+  const { email, password, firstName, lastName, handle, phone, address } = registrationData;
 
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
     const userData: IUserData = {
-      email: email,
-      firstName: firstName,
-      lastName: lastName,
-      handle: user.uid, 
-      createdOn: new Date().toISOString(), 
-      // photoURL: '', 
+      email,
+      firstName,
+      lastName,
+      handle,
+      phone,
+      uid: user.uid,
+      createdOn: new Date().toISOString(),
+      address: address || "",
     };
 
-    await set(ref(db, `users/${user.uid}`), userData);
+    await set(ref(db, `users/${handle}`), userData);
 
-    await firebaseUpdateProfile(user, { displayName: `${firstName} ${lastName}` });
+    await firebaseUpdateProfile(user, { displayName: `${firstName} ${lastName}`, photoURL: ''});
 
     return user;
   } catch (error) {
@@ -85,4 +87,23 @@ export const sendPasswordReset = async (email: string): Promise<void> => {
     console.error("Error sending password reset email:", error);
     throw error;
   }
+};
+
+export const isUsernameTaken = async (handle: string): Promise<boolean> => {
+  const snapshot = await get(child(ref(db), `users/${handle}`));
+  return snapshot.exists();
+};
+
+export const isEmailTaken = async (email: string): Promise<boolean> => {
+  const snapshot = await get(
+    query(ref(db, 'users'), orderByChild('email'), equalTo(email))
+  );
+  return snapshot.exists();
+};
+
+export const isPhoneTaken = async (phone: string): Promise<boolean> => {
+  const snapshot = await get(
+    query(ref(db, 'users'), orderByChild('phone'), equalTo(phone))
+  );
+  return snapshot.exists();
 };

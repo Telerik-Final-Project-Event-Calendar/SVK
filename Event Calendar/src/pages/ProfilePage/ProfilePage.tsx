@@ -1,185 +1,209 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../hooks/useAuth'; 
-import { updateProfile } from '../../services/users.service';
-import { updateEmail, updatePassword as firebaseUpdatePassword, sendPasswordResetEmail } from 'firebase/auth';
-import { auth } from '../../config/firebase-config'; 
-import { IProfileUpdateInputs, IUserData } from '../../types/app.types';
-import './ProfilePage.css'; 
+import { useContext, useState } from "react";
+import { AppContext } from "../../state/app.context";
+import { updateProfile } from "../../services/users.service";
+import { IUserData } from "../../types/app.types";
 
-const ProfilePage: React.FC = () => {
-  const { user, userData, setUserData, setUser } = useAuth();
+export default function ProfilePage() {
+  const { userData, setAppState } = useContext(AppContext);
 
-  const [firstName, setFirstName] = useState<string>(userData?.firstName || '');
-  const [lastName, setLastName] = useState<string>(userData?.lastName || '');
-  const [email, setEmail] = useState<string>(user?.email || '');
-  const [newPassword, setNewPassword] = useState<string>('');
-  const [confirmPassword, setConfirmPassword] = useState<string>('');
-  const [message, setMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [firstName, setFirstName] = useState(userData?.firstName || "");
+  const [lastName, setLastName] = useState(userData?.lastName || "");
+  const [phone, setPhone] = useState(userData?.phone || "");
+  const [address, setAddress] = useState(userData?.address || "");
+  const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    if (userData) {
-      if (firstName === '' || firstName !== userData.firstName) setFirstName(userData.firstName || '');
-      if (lastName === '' || lastName !== userData.lastName) setLastName(userData.lastName || '');
-    }
-    if (user) {
-      if (email === '' || email !== user.email) setEmail(user.email || '');
-    }
-  }, [userData, user, firstName, lastName, email]);
+  const handleSave = async () => {
+    if (!userData?.handle) return;
 
-  const handleUpdateProfile = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setMessage(null);
-    setError(null);
+    const updates: Partial<IUserData> = {};
+    if (firstName !== userData.firstName) updates.firstName = firstName;
+    if (lastName !== userData.lastName) updates.lastName = lastName;
+    if (phone !== userData.phone) updates.phone = phone;
+    if (address !== userData.address) updates.address = address;
 
-    if (!user) {
-      setError('User not authenticated.');
+    if (Object.keys(updates).length === 0) {
+      alert("No changes to save.");
       return;
     }
 
-    if (newPassword && newPassword !== confirmPassword) {
-      setError('New password and confirm password do not match.');
-      return;
-    }
-
+    setIsSaving(true);
     try {
-      let profileUpdated = false;
-      const userDataUpdates: Partial<IUserData> = {};
-
-      if (firstName !== (userData?.firstName || '')) {
-        userDataUpdates.firstName = firstName;
-      }
-      if (lastName !== (userData?.lastName || '')) {
-        userDataUpdates.lastName = lastName;
-      }
-
-      if (Object.keys(userDataUpdates).length > 0) {
-        await updateProfile(user.uid, userDataUpdates);
-        setUserData({ ...userData!, ...userDataUpdates });
-        profileUpdated = true;
-      }
-
-      if (email !== user.email) {
-        await updateEmail(user, email);
-        setUser({ ...user, email: email });
-        profileUpdated = true;
-      }
-
-      if (newPassword) {
-        await firebaseUpdatePassword(user, newPassword);
-        setNewPassword('');
-        setConfirmPassword('');
-        profileUpdated = true;
-      }
-
-      if (profileUpdated) {
-        setMessage('Profile updated successfully!');
-      } else {
-        setMessage('No changes to save.');
-      }
-
-    } catch (err: any) {
-      console.error('Error updating profile:', err);
-      if (err.code === 'auth/requires-recent-login') {
-        setError('Please re-authenticate to update your email or password.');
-      } else if (err.code === 'auth/invalid-email') {
-        setError('Invalid email address.');
-      } else if (err.code === 'auth/email-already-in-use') {
-        setError('This email is already in use.');
-      } else if (err.code === 'auth/weak-password') {
-        setError('Password is too weak. It should be at least 6 characters.');
-      } else {
-        setError(`Failed to update profile: ${err.message || 'An unknown error occurred'}`);
-      }
+      await updateProfile(userData.handle, updates);
+      setAppState((prev) => ({
+        ...prev,
+        userData: {
+          ...prev.userData!,
+          ...updates,
+        },
+      }));
+      alert("Profile updated successfully!");
+    } catch (err) {
+      console.error("Profile update failed:", err);
+      alert("Failed to update profile.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
-  const handlePasswordReset = async () => {
-    setError(null);
-    setMessage(null);
-    if (!user?.email) {
-      setError("No email found for password reset.");
-      return;
-    }
-    try {
-      await sendPasswordResetEmail(auth, user.email); 
-      setMessage("Password reset email sent. Check your inbox.");
-    } catch (err: any) {
-      console.error("Error sending password reset email:", err);
-      setError(`Failed to send password reset email: ${err.message || 'An unknown error occurred'}`);
-    }
-  };
+  // return (
+  //   <div className="max-w-xl mx-auto mt-20 p-6 bg-white shadow-md rounded-lg">
+  //     <h2 className="text-2xl font-semibold mb-6">Profile Settings</h2>
 
-  if (!user || !userData) {
-    const { isLoading } = useAuth();
-    if (isLoading) {
-        return (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                Loading Profile...
-            </div>
-        );
-    }
-    return <p className="error-message">You must be logged in to view this page.</p>;
-  }
+  //     {/* Profile picture section */}
+  //     <div className="mb-6">
+  //       <label className="block text-sm font-medium text-gray-700 mb-1">
+  //         Profile Picture
+  //       </label>
+  //       {userData?.photoURL ? (
+  //         <img
+  //           src={userData.photoURL}
+  //           alt="Profile"
+  //           className="w-24 h-24 rounded-full object-cover mb-2"
+  //         />
+  //       ) : (
+  //         <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center text-xl font-bold mb-2">
+  //           {userData?.firstName?.charAt(0)}
+  //           {userData?.lastName?.charAt(0) || "?"}
+  //         </div>
+  //       )}
+  //       <button
+  //         disabled
+  //         className="bg-gray-200 text-gray-500 px-3 py-1 rounded cursor-not-allowed"
+  //         title="Coming soon">
+  //         Change profile picture
+  //       </button>
+  //     </div>
 
-  return (
-    <div className="profile-page-container">
-      <div className="profile-card">
-        <h2>Your Profile</h2>
-        {message && <p className="success-message">{message}</p>}
-        {error && <p className="error-message">{error}</p>}
-        <form onSubmit={handleUpdateProfile}>
-          <div className="form-group">
-            <label>First Name:</label>
-            <input
-              type="text"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              className="form-input"
-            />
+  //     {/* Editable fields */}
+  //     <div className="space-y-4">
+  //       <div>
+  //         <label className="block text-sm font-medium text-gray-700">
+  //           Username (handle)
+  //         </label>
+  //         <input
+  //           disabled
+  //           value={userData?.handle || ""}
+  //           className="mt-1 block w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-md"
+  //         />
+  //       </div>
+
+  //       <div>
+  //         <label className="block text-sm font-medium text-gray-700">
+  //           Email
+  //         </label>
+  //         <input
+  //           disabled
+  //           value={userData?.email || ""}
+  //           className="mt-1 block w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-md"
+  //         />
+  //       </div>
+
+  //       <div>
+  //         <label className="block text-sm font-medium text-gray-700">
+  //           First Name
+  //         </label>
+  //         <input
+  //           value={firstName}
+  //           onChange={(e) => setFirstName(e.target.value)}
+  //           className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md"
+  //         />
+  //       </div>
+
+  //       <div>
+  //         <label className="block text-sm font-medium text-gray-700">
+  //           Last Name
+  //         </label>
+  //         <input
+  //           value={lastName}
+  //           onChange={(e) => setLastName(e.target.value)}
+  //           className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md"
+  //         />
+  //       </div>
+
+  //       <div>
+  //         <label className="block text-sm font-medium text-gray-700">
+  //           Phone
+  //         </label>
+  //         <input
+  //           value={phone}
+  //           onChange={(e) => setPhone(e.target.value)}
+  //           className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md"
+  //         />
+  //       </div>
+
+  //       <div>
+  //         <label className="block text-sm font-medium text-gray-700">
+  //           Address
+  //         </label>
+  //         <input
+  //           value={address}
+  //           onChange={(e) => setAddress(e.target.value)}
+  //           className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md"
+  //         />
+  //       </div>
+
+  //       <button
+  //         onClick={handleSave}
+  //         disabled={isSaving}
+  //         className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition">
+  //         {isSaving ? "Saving..." : "Save Changes"}
+  //       </button>
+  //     </div>
+  //   </div>
+  // );
+    return (
+    <div className="container">
+      <h2 className="title">Profile Settings</h2>
+
+      <div className="profile-picture">
+        {userData?.photoURL ? (
+          <img src={userData.photoURL} alt="Profile" />
+        ) : (
+          <div className="avatar-placeholder">
+            {userData?.firstName?.charAt(0)}
+            {userData?.lastName?.charAt(0) || "?"}
           </div>
-          <div className="form-group">
-            <label>Last Name:</label>
-            <input
-              type="text"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              className="form-input"
-            />
-          </div>
-          <div className="form-group">
-            <label>Email:</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="form-input"
-            />
-          </div>
-          <div className="form-group">
-            <label>New Password (leave blank to keep current):</label>
-            <input
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              className="form-input"
-            />
-          </div>
-          <div className="form-group">
-            <label>Confirm New Password:</label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="form-input"
-            />
-          </div>
-          <button type="submit" className="profile-button">Update Profile</button>
-        </form>
-        <button onClick={handlePasswordReset} className="reset-password-button">Send Password Reset Email</button>
+        )}
+        <button disabled className="button disabled" title="Coming soon">
+          Change profile picture
+        </button>
+      </div>
+
+      <div className="form">
+        <div className="form-group">
+          <label>Username (handle)</label>
+          <input type="text" value={userData?.handle || ""} disabled />
+        </div>
+
+        <div className="form-group">
+          <label>Email</label>
+          <input type="email" value={userData?.email || ""} disabled />
+        </div>
+
+        <div className="form-group">
+          <label>First Name</label>
+          <input value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+        </div>
+
+        <div className="form-group">
+          <label>Last Name</label>
+          <input value={lastName} onChange={(e) => setLastName(e.target.value)} />
+        </div>
+
+        <div className="form-group">
+          <label>Phone</label>
+          <input value={phone} onChange={(e) => setPhone(e.target.value)} />
+        </div>
+
+        <div className="form-group">
+          <label>Address</label>
+          <input value={address} onChange={(e) => setAddress(e.target.value)} />
+        </div>
+
+        <button onClick={handleSave} disabled={isSaving} className="button">
+          {isSaving ? "Saving..." : "Save Changes"}
+        </button>
       </div>
     </div>
   );
-};
-
-export default ProfilePage;
+}

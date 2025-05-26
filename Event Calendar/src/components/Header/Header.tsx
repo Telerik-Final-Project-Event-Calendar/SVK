@@ -1,72 +1,128 @@
-import React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth'; 
-import ProfileDropdown from '../ProfileDropdown/ProfileDropdown';
-import { IHeaderProps } from '../../types/app.types';
-import './Header.css';
+import { NavLink, useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { AppContext } from "../../state/app.context";
+import { logoutUser } from "../../services/auth.service";
+import ProfileDropdown from "../ProfileDropdown/ProfileDropdown";
+import "./Header.css";
 
-const Header: React.FC<IHeaderProps> = () => {
-  const { user, userData, logout } = useAuth(); 
+export default function Header() {
+  const { user, userData, setAppState } = useContext(AppContext);
   const navigate = useNavigate();
 
-  const handleLogout = async () => { 
+  const handleLogout = async () => {
     try {
-      await logout();
-      navigate('/');
+      await logoutUser();
+      setAppState({ user: null, userData: null });
+      navigate("/");
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error("Logout failed:", error);
+      alert("Failed to log out.");
     }
   };
 
+  // return (
+  //   <header className="bg-white shadow-md px-6 py-4 flex justify-between items-center">
+  //     {/* Logo */}
+  //     <NavLink
+  //       to="/"
+  //       className="flex items-center space-x-2">
+  //       <img
+  //         src="/images/logo.png"
+  //         alt="Logo"
+  //         className="h-8 w-8"
+  //       />
+  //       <span className="font-bold text-lg text-gray-800">Event Calendar</span>
+  //     </NavLink>
+
+  //     {/* Navigation */}
+  //     <nav className="flex items-center space-x-4">
+  //       <NavLink
+  //         to="/"
+  //         className="text-gray-700 hover:text-blue-600">
+  //         Home
+  //       </NavLink>
+
+  //       {!user && (
+  //         <>
+  //           <NavLink
+  //             to="/login"
+  //             className="text-gray-700 hover:text-blue-600">
+  //             Login
+  //           </NavLink>
+  //           <NavLink
+  //             to="/register"
+  //             className="text-gray-700 hover:text-blue-600">
+  //             Register
+  //           </NavLink>
+  //         </>
+  //       )}
+
+  //       {user && (
+  //         <>
+  //           <span className="text-sm text-gray-600 hidden sm:inline">
+  //             Welcome, <strong>{userData?.handle}</strong>
+  //           </span>
+  //           <ProfileDropdown />
+  //           <button
+  //             onClick={handleLogout}
+  //             className="text-sm text-red-600 hover:underline">
+  //             Log out
+  //           </button>
+  //         </>
+  //       )}
+  //     </nav>
+  //   </header>
+  // );
   return (
-    <header>
-      <div className="logo">
-        <NavLink to="/">
-          <img src="/logo.svg" alt="Event Calendar Logo" />
-          <h1>Event Calendar</h1>
+    <header className="header">
+      <div className="header-left">
+        <NavLink
+          to="/"
+          className="logo">
+          <img
+            src="/images/logo.png"
+            alt="Logo"
+          />
+          <span>Event Calendar</span>
         </NavLink>
       </div>
-      <nav>
-        <ul>
-          <li>
-            <NavLink to="/">Home</NavLink>
-          </li>
-          {user && userData && (
-            <>
-              <li>
-                <NavLink to="/create-event">Create Event</NavLink>
-              </li>
-              <li>
-                <NavLink to="/my-events">My Events</NavLink>
-              </li>
-              <li>
-                <NavLink to="/all-events">All Events</NavLink>
-              </li>
-            </>
-          )}
-          {user && userData?.handle && (
-            <li>
-              <ProfileDropdown
-                handle={userData.handle}
-                email={userData.email}
-                onLogout={handleLogout}
-              />
-            </li>
-          )}
-          {!user && (
-            <>
-              <li>
-                <NavLink to="/register">Register</NavLink>
-              </li>
-              <li>
-                <NavLink to="/login">Login</NavLink>
-              </li>
-            </>
-          )}
-        </ul>
+
+      <nav className="header-nav">
+        <NavLink
+          to="/"
+          className="nav-link">
+          Home
+        </NavLink>
+
+        {!user && (
+          <>
+            <NavLink
+              to="/login"
+              className="nav-link">
+              Login
+            </NavLink>
+            <NavLink
+              to="/register"
+              className="nav-link">
+              Register
+            </NavLink>
+          </>
+        )}
+
+        {user && (
+          <>
+            <span className="welcome-message">
+              Welcome, <strong>{userData?.handle}</strong>
+            </span>
+            <ProfileDropdown />
+            <button
+              onClick={handleLogout}
+              className="nav-link logout-button">
+              Log out
+            </button>
+          </>
+        )}
       </nav>
     </header>
   );
-};
-
-export default Header;
+}

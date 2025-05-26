@@ -1,4 +1,4 @@
-import { ref, get, child, update, set } from 'firebase/database';
+import { ref, get, child, update, set, query, orderByChild, equalTo } from 'firebase/database';
 import { db } from '../config/firebase-config';
 import { IUserData } from '../types/app.types';
 
@@ -9,7 +9,7 @@ import { IUserData } from '../types/app.types';
  */
 export const getUserByHandle = async (handle: string): Promise<IUserData | null> => {
   try {
-    const snapshot = await get(child(ref(db), `users/${handle}`));
+    const snapshot = await get(ref(db, `users/${handle}`));
     if (snapshot.exists()) {
       return snapshot.val() as IUserData;
     } else {
@@ -27,9 +27,30 @@ export const getUserByHandle = async (handle: string): Promise<IUserData | null>
  * @param {IUserData} userData
  * @returns {Promise<void>}
  */
-export const createUserProfile = async (handle: string, userData: IUserData): Promise<void> => {
+export const createUserProfile = async (
+  handle: string,
+  uid: string,
+  email: string,
+  firstName: string,
+  lastName: string,
+  phone: string,
+  address?: string
+): Promise<void> => {
+  const newUserProfile: IUserData = {
+    email,
+    handle,
+    firstName,
+    lastName,
+    phone,
+    uid,
+    address: address || "",
+    isAdmin: false,
+    isBlocked: false,
+    createdOn: new Date().toISOString(),
+      photoURL: "",
+  };
   try {
-    await set(ref(db, `users/${handle}`), userData);
+    await set(ref(db, `users/${handle}`), newUserProfile);
   } catch (error) {
     console.error("Error creating user profile:", error);
     throw error;
@@ -73,23 +94,23 @@ export const getUsersCount = async (): Promise<number> => {
  * Gets the latest user.
  * @returns {Promise<({ handle: string; fullName: string; createdOn: string; timestamp: number; } | null)>}
  */
-export async function getLatestUser(): Promise<({ handle: string; fullName: string; createdOn: string; timestamp: number; } | null)> {
-  try {
-    const snapshot = await get(child(ref(db), "users"));
-    if (!snapshot.exists()) return null;
+export const getLatestUser = async (): Promise<IUserData | null> => {
+  const snapshot = await get(ref(db, "users"));
+  if (!snapshot.exists()) return null;
 
-    const usersData: Record<string, IUserData> = snapshot.val();
-    const usersArray = Object.entries(usersData).map(([handle, user]) => ({
-      handle,
-      fullName: `${user.firstName} ${user.lastName}`,
-      createdOn: user.createdOn || "",
-      timestamp: Date.parse(user.createdOn) || 0, 
-    }));
+  const users = Object.values(snapshot.val()) as IUserData[];
+  const sorted = users.sort(
+    (a, b) => Date.parse(b.createdOn || "") - Date.parse(a.createdOn || "")
+  );
+  return sorted[0] || null;
+};
 
-    const sorted = usersArray.sort((a, b) => b.timestamp - a.timestamp);
-    return sorted[0] || null;
-  } catch (error) {
-    console.error("Error getting latest user:", error);
-    throw error;
-  }
-}
+export const getUserByUID = async (uid: string): Promise<IUserData | null> => {
+  const snapshot = await get(
+    query(ref(db, "users"), orderByChild("uid"), equalTo(uid))
+  );
+  if (!snapshot.exists()) return null;
+  const users = snapshot.val();
+  const firstKey = Object.keys(users)[0];
+  return users[firstKey] as IUserData;
+};

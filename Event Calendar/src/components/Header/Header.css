@@ -1,92 +1,56 @@
-/* ===== Header Styling ===== */
-@import "tailwindcss";
-
-header {
-  background-image: url("/images/luis-villasmil-ITFwHdPEED0-unsplash.jpg");
-  background-size: cover;
-  background-position: center;
-  box-sizing: border-box;
-
-  position: sticky;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
-
-  padding: 1rem 2rem;
-  color: white;
+.header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(5px);
+  align-items: center;
+  padding: 12px 24px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
 }
 
-header::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 0;
+.header-left {
+  display: flex;
+  align-items: center;
 }
 
-header > * {
-  position: relative;
-  z-index: 2;
+.logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 20px;
+  color: #333;
 }
 
-/* ===== Logo ===== */
 .logo img {
-  height: 60px;
-  width: auto;
-  object-fit: contain;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+  height: 32px;
+  margin-right: 8px;
 }
 
-.logo a {
+.header-nav {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 16px;
+}
+
+.nav-link {
   text-decoration: none;
+  color: #333;
+  font-size: 14px;
+  padding: 6px 10px;
 }
 
-.logo-text {
-  color: #39ff14;
-  font-weight: bold;
-  font-size: 1em;
-  white-space: nowrap;
+.nav-link:hover {
+  text-decoration: underline;
 }
 
-/* ===== Navigation Styling ===== */
-nav {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
+.logout-button {
+  background: none;
+  border: none;
+  color: #c0392b;
+  cursor: pointer;
 }
 
-nav a {
-  color: #c6c9ff;
-  font-weight: bold;
-  text-decoration: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  transition: background 0.3s, color 0.3s;
-  background: transparent;
-}
-
-nav a:hover {
-  background-color: #2a2a3c;
-  color: #61dafb;
-}
-
-nav a.active {
-  background-color: #3c3c5e;
-  border: 1px solid #61dafb;
+.welcome-message {
+  font-size: 14px;
+  margin-right: 12px;
 }
