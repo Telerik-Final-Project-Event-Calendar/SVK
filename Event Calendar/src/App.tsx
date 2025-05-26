@@ -8,8 +8,9 @@ import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
 import ProfilePage from './pages/ProfilePage/ProfilePage';
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword'; 
+import HomePage from './pages/HomePage/HomePage';
 
-const HomePage: React.FC = () => <div><h1>Welcome to Event Calendar!</h1><p>Home Page Content</p></div>;
+// const HomePage: React.FC = () => <div><h1>Welcome to Event Calendar!</h1><p>Home Page Content</p></div>;
 const CreateEvent: React.FC = () => <div><h2>Create New Event</h2><p>Event Creation Form Here</p></div>;
 const MyEvents: React.FC = () => <div><h2>My Events</h2><p>List of user's events</p></div>;
 const AllEvents: React.FC = () => <div><h2>All Events</h2><p>List of all public events</p></div>;

@@ -18,6 +18,9 @@ export interface IUserData {
 export interface IAppState {
   user: any;
   userData: IUserData | null;
+  selectedDate: Date;  
+  searchTerm: string; 
+  view: string,
 }
 
 // AppContext

@@ -6,6 +6,9 @@ const initialAppState: IAppState = {
   userData: null,
   isLoading: true, 
   error: null,
+  selectedDate: new Date(),
+  searchTerm: '',
+  view: "monthly",
 };
 
 const initialAppContextType: IAppContextType = {
