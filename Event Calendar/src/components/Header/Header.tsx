@@ -35,39 +35,36 @@ export default function Header() {
     setAppState((prev) => ({ ...prev, selectedDate: new Date() }));
   };
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAppState((prev) => ({ ...prev, searchTerm: e.target.value }));
+  const goPrevious = () => {
+    setAppState((prev) => {
+      const currentDate = prev.selectedDate ?? new Date();
+      return {
+        ...prev,
+        selectedDate: new Date(currentDate.getTime() - 24 * 60 * 60 * 1000),
+      };
+    });
   };
 
-const goPrevious = () => {
-  setAppState((prev) => {
-    const currentDate = prev.selectedDate ?? new Date(); 
-    return {
-      ...prev,
-      selectedDate: new Date(currentDate.getTime() - 24 * 60 * 60 * 1000),
-    };
-  });
-};
+  const handleViewChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setAppState((prev) => ({ ...prev, view: e.target.value }));
+  };
 
-const handleViewChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-  setAppState(prev => ({...prev, view: e.target.value}))
-}
-
-
-const goNext = () => {
-  setAppState((prev) => {
-    const currentDate = prev.selectedDate ?? new Date(); 
-    return {
-      ...prev,
-      selectedDate: new Date(currentDate.getTime() + 24 * 60 * 60 * 1000),
-    };
-  });
-};
+  const goNext = () => {
+    setAppState((prev) => {
+      const currentDate = prev.selectedDate ?? new Date();
+      return {
+        ...prev,
+        selectedDate: new Date(currentDate.getTime() + 24 * 60 * 60 * 1000),
+      };
+    });
+  };
 
   return (
     <header className="bg-white shadow-md px-6 py-4 flex justify-between items-center">
       {/* Logo */}
-      <NavLink to="/" className="flex items-center space-x-2">
+      <NavLink
+        to="/"
+        className="flex items-center space-x-2">
         {/* <img
           src="/images/logo.png"
           alt="Logo"
@@ -77,12 +74,14 @@ const goNext = () => {
         <span className="font-bold text-lg text-gray-800">Event Calendar</span>
       </NavLink>
 
-      <button onClick={goToday} className="border rounded py-2 px-4 mr-5">
+      <button
+        onClick={goToday}
+        className="border rounded py-2 px-4 mr-5">
         Today
       </button>
 
       <div className="ml-4 font-mono text-gray-700">
-      {selectedDate ? selectedDate.toDateString() : today.toDateString()}
+        {selectedDate ? selectedDate.toDateString() : today.toDateString()}
       </div>
 
       <button onClick={goPrevious}>
@@ -93,13 +92,12 @@ const goNext = () => {
         <ChevronRight className="w-5 h-5 cursor-pointer text-gray-600 mx-2" />
       </button>
 
-      <SearchBar /> 
+      <SearchBar />
 
       <select
         value={view ?? "monthly"}
         onChange={handleViewChange}
-        className="border rounded px-3 py-2 ml-4"
-      >
+        className="border rounded px-3 py-2 ml-4">
         <option value="monthly">Monthly</option>
         <option value="weekly">Weekly</option>
         <option value="daily">Daily</option>
@@ -107,19 +105,22 @@ const goNext = () => {
 
       {/* Navigation */}
       <nav className="flex items-center space-x-4">
-        <NavLink to="/" className="text-gray-700 hover:text-blue-600">
+        <NavLink
+          to="/"
+          className="text-gray-700 hover:text-blue-600">
           Home
         </NavLink>
 
         {!user && (
           <>
-            <NavLink to="/login" className="text-gray-700 hover:text-blue-600">
+            <NavLink
+              to="/login"
+              className="text-gray-700 hover:text-blue-600">
               Login
             </NavLink>
             <NavLink
               to="/register"
-              className="text-gray-700 hover:text-blue-600"
-            >
+              className="text-gray-700 hover:text-blue-600">
               Register
             </NavLink>
           </>
@@ -128,13 +129,12 @@ const goNext = () => {
         {user && (
           <>
             <span className="text-sm text-gray-600 hidden sm:inline">
-                Welcome, <strong>{userData?.handle ?? "User"}</strong>
+              Welcome, <strong>{userData?.handle ?? "User"}</strong>
             </span>
             <ProfileDropdown />
             <button
               onClick={handleLogout}
-              className="text-sm text-red-600 hover:underline"
-            >
+              className="text-sm text-red-600 hover:underline">
               Log out
             </button>
           </>
