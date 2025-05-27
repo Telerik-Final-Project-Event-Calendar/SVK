@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { registerUser } from "../../services/auth.service";
 import { AppContext } from "../../state/app.context";
 import { IRegisterFormInputs } from "../../types/app.types";
+import { useRegistrationValidation } from "../../hooks/useRegistrationValidation";
 
 const Register: React.FC = () => {
   const { setAppState } = useContext(AppContext);
@@ -13,9 +14,22 @@ const Register: React.FC = () => {
   );
 
   const {
+    handleError,
+    emailError,
+    phoneError,
+    firstNameError,
+    lastNameError,
+    passwordError,
+    confirmPasswordError,
+    validateAll,
+    validateField,
+  } = useRegistrationValidation();
+
+  const {
     register,
     handleSubmit,
     watch,
+    getValues,
     formState: { errors },
   } = useForm<IRegisterFormInputs>();
 
@@ -23,10 +37,9 @@ const Register: React.FC = () => {
 
   const onSubmit = async (data: IRegisterFormInputs) => {
     setRegistrationError(null);
-    if (data.password !== data.confirmPassword) {
-      setRegistrationError("Passwords do not match.");
-      return;
-    }
+
+    const isValid = await validateAll(data);
+    if (!isValid) return;
 
     try {
       const { user, userData } = await registerUser(data);
@@ -57,95 +70,62 @@ const Register: React.FC = () => {
           </p>
         )}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-4">
           <div className="form-group">
             <label className="label-base">Username</label>
             <input
-              {...register("handle", {
-                required: "Username is required",
-                minLength: { value: 3, message: "Minimum 3 characters" },
-                maxLength: { value: 30, message: "Maximum 30 characters" },
-              })}
+              {...register("handle")}
+              onBlur={() => validateField("handle", getValues("handle"))}
               placeholder="Unique username"
               className="input-base"
             />
-            {errors.handle && (
-              <p className="error-text">{errors.handle.message}</p>
-            )}
+            {handleError && <p className="error-text">{handleError}</p>}
           </div>
 
           <div className="form-group">
             <label className="label-base">First Name</label>
             <input
-              {...register("firstName", {
-                required: "First name is required",
-                pattern: {
-                  value: /^[A-Za-z]+$/,
-                  message: "Only letters allowed",
-                },
-                maxLength: { value: 30, message: "Max 30 characters" },
-              })}
+              {...register("firstName")}
+              onBlur={() => validateField("firstName", getValues("firstName"))}
               placeholder="John"
               className="input-base"
             />
-            {errors.firstName && (
-              <p className="error-text">{errors.firstName.message}</p>
-            )}
+            {firstNameError && <p className="error-text">{firstNameError}</p>}
           </div>
 
           <div className="form-group">
             <label className="label-base">Last Name</label>
             <input
-              {...register("lastName", {
-                required: "Last name is required",
-                pattern: {
-                  value: /^[A-Za-z]+$/,
-                  message: "Only letters allowed",
-                },
-                maxLength: { value: 30, message: "Max 30 characters" },
-              })}
+              {...register("lastName")}
+              onBlur={() => validateField("lastName", getValues("lastName"))}
               placeholder="Doe"
               className="input-base"
             />
-            {errors.lastName && (
-              <p className="error-text">{errors.lastName.message}</p>
-            )}
+            {lastNameError && <p className="error-text">{lastNameError}</p>}
           </div>
 
           <div className="form-group">
             <label className="label-base">Email</label>
             <input
-              {...register("email", {
-                required: "Email is required",
-                pattern: {
-                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message: "Invalid email format",
-                },
-              })}
+              {...register("email")}
+              onBlur={() => validateField("email", getValues("email"))}
               placeholder="your@email.com"
               className="input-base"
             />
-            {errors.email && (
-              <p className="error-text">{errors.email.message}</p>
-            )}
+            {emailError && <p className="error-text">{emailError}</p>}
           </div>
 
           <div className="form-group">
             <label className="label-base">Phone</label>
             <input
-              {...register("phone", {
-                required: "Phone is required",
-                pattern: {
-                  value: /^\d{10}$/,
-                  message: "Phone must be exactly 10 digits",
-                },
-              })}
+              {...register("phone")}
+              onBlur={() => validateField("phone", getValues("phone"))}
               placeholder="1234567890"
               className="input-base"
             />
-            {errors.phone && (
-              <p className="error-text">{errors.phone.message}</p>
-            )}
+            {phoneError && <p className="error-text">{phoneError}</p>}
           </div>
 
           <div className="form-group">
@@ -161,44 +141,40 @@ const Register: React.FC = () => {
             <label className="label-base">Password</label>
             <input
               type="password"
-              {...register("password", {
-                required: "Password is required",
-                minLength: { value: 8, message: "At least 8 characters" },
-                pattern: {
-                  value: /^(?=.*[0-9])(?=.*[!-@#$%^&*])/,
-                  message: "Must include number and special character",
-                },
-              })}
+              {...register("password")}
+              onBlur={() => validateField("password", getValues("password"))}
               className="input-base"
             />
-            {errors.password && (
-              <p className="error-text">{errors.password.message}</p>
-            )}
+            {passwordError && <p className="error-text">{passwordError}</p>}
           </div>
 
           <div className="form-group">
             <label className="label-base">Confirm Password</label>
             <input
               type="password"
-              {...register("confirmPassword", {
-                validate: (value) =>
-                  value === password || "Passwords do not match",
-              })}
+              {...register("confirmPassword")}
+              onBlur={() =>
+                validateField("confirmPassword", getValues("confirmPassword"))
+              }
               className="input-base"
             />
-            {errors.confirmPassword && (
-              <p className="error-text">{errors.confirmPassword.message}</p>
+            {confirmPasswordError && (
+              <p className="error-text">{confirmPasswordError}</p>
             )}
           </div>
 
-          <button type="submit" className="btn-primary">
+          <button
+            type="submit"
+            className="btn-primary">
             Register
           </button>
         </form>
 
         <p className="mt-4 text-center text-sm text-gray-600">
           Already have an account?{" "}
-          <Link to="/login" className="text-blue-600 hover:underline">
+          <Link
+            to="/login"
+            className="text-blue-600 hover:underline">
             Login here
           </Link>
         </p>
