@@ -4,6 +4,7 @@ import { AppContext } from "../../state/app.context";
 import { logoutUser } from "../../services/auth.service";
 import ProfileDropdown from "../ProfileDropdown/ProfileDropdown";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import SearchBar from "../SearchBar/SearchBar";
 
 export default function Header() {
   const { user, userData, setAppState, selectedDate, searchTerm, view } =
@@ -84,17 +85,6 @@ const goNext = () => {
       {selectedDate ? selectedDate.toDateString() : today.toDateString()}
       </div>
 
-      <div className="flex items-center border border-gray-300 rounded-lg px-4 py-2 w-full max-w-md">
-        <input
-          type="text"
-          placeholder="Search..."
-          value={searchTerm ?? ""}
-          onChange={handleSearchChange}
-          className="flex-grow outline-none bg-transparent text-gray-700 placeholder-gray-400"
-        />
-        <button className="text-gray-500 hover:text-black">🔍</button>
-      </div>
-
       <button onClick={goPrevious}>
         <ChevronLeft className="w-5 h-5 cursor-pointer text-gray-600 mx-2" />
       </button>
@@ -103,7 +93,9 @@ const goNext = () => {
         <ChevronRight className="w-5 h-5 cursor-pointer text-gray-600 mx-2" />
       </button>
 
-        <select
+      <SearchBar /> 
+
+      <select
         value={view ?? "monthly"}
         onChange={handleViewChange}
         className="border rounded px-3 py-2 ml-4"
