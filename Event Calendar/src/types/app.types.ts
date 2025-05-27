@@ -74,3 +74,8 @@ export interface IProfileUpdateInputs {
   email: string;
   newPassword?: string;
 }
+
+export interface RegistrationResult {
+  user: FirebaseUser;
+  userData: IUserData;
+}

@@ -21,13 +21,12 @@ const Login: React.FC = () => {
   const onSubmit = async (data: ILoginFormInputs) => {
     setLoginError(null);
     try {
-      const user = await loginUser(data.email, data.password);
-
+      const { user, userData } = await loginUser(data.email, data.password);
       setAppState((prev) => ({
         ...prev,
-        user: user,
+        user,
+        userData,
       }));
-
       navigate(location.state?.from?.pathname || "/");
     } catch (error: any) {
       console.error("Login failed:", error);

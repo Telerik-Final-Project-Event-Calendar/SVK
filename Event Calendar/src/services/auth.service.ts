@@ -8,16 +8,17 @@ import {
 } from 'firebase/auth';
 import { ref, set, serverTimestamp, get, child, query, orderByChild, equalTo } from 'firebase/database';
 import { auth, db } from '../config/firebase-config';
-import { IRegisterFormInputs, IUserData } from '../types/app.types';
+import { IRegisterFormInputs, IUserData, RegistrationResult } from '../types/app.types';
+import { getUserByUID } from './users.service';
 
 
 /**
  * Register new user.
  * Create in Realtime Database to.
  * @param {IRegisterFormInputs} registrationData data for registration
- * @returns {Promise<FirebaseUser>} the FIrebase object
+ * @returns {Promise<RegistrationResult>} the FIrebase object
  */
-export const registerUser = async (registrationData: IRegisterFormInputs): Promise<FirebaseUser> => {
+export const registerUser = async (registrationData: IRegisterFormInputs): Promise<RegistrationResult> => {
   const { email, password, firstName, lastName, handle, phone, address } = registrationData;
 
   try {
@@ -33,13 +34,14 @@ export const registerUser = async (registrationData: IRegisterFormInputs): Promi
       uid: user.uid,
       createdOn: new Date().toISOString(),
       address: address || "",
+      photoURL: "",
     };
 
     await set(ref(db, `users/${handle}`), userData);
 
     await firebaseUpdateProfile(user, { displayName: `${firstName} ${lastName}`, photoURL: ''});
 
-    return user;
+    return { user, userData };
   } catch (error) {
     console.error("Error during user registration:", error);
     throw error;
@@ -50,12 +52,22 @@ export const registerUser = async (registrationData: IRegisterFormInputs): Promi
  * Log in.
  * @param {string} email 
  * @param {string} password 
- * @returns {Promise<FirebaseUser>} 
+ * @returns {Promise<{ user: FirebaseUser; userData: IUserData }>} 
  */
-export const loginUser = async (email: string, password: string): Promise<FirebaseUser> => {
+export const loginUser = async (
+  email: string,
+  password: string
+): Promise<{ user: FirebaseUser; userData: IUserData }> => {
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    return userCredential.user;
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    const user = userCredential.user;
+    const userData = await getUserByUID(user.uid);
+    if (!userData) throw new Error("User data not found.");
+    return { user, userData };
   } catch (error) {
     console.error("Error during user login:", error);
     throw error;

@@ -10,18 +10,19 @@ export default function Header() {
     useContext(AppContext);
   const navigate = useNavigate();
 
-  const today: any = new Date()
+  const today: Date = new Date();
 
   const handleLogout = async () => {
     try {
       await logoutUser();
-      setAppState({
+      setAppState((prev) => ({
+        ...prev,
         user: null,
         userData: null,
         selectedDate: new Date(),
         searchTerm: "",
-        view: 'monthly'
-      });
+        view: "monthly",
+      }));
       navigate("/");
     } catch (error) {
       console.error("Logout failed:", error);
@@ -87,7 +88,7 @@ const goNext = () => {
         <input
           type="text"
           placeholder="Search..."
-          value={searchTerm}
+          value={searchTerm ?? ""}
           onChange={handleSearchChange}
           className="flex-grow outline-none bg-transparent text-gray-700 placeholder-gray-400"
         />
@@ -103,7 +104,7 @@ const goNext = () => {
       </button>
 
         <select
-        value={view}
+        value={view ?? "monthly"}
         onChange={handleViewChange}
         className="border rounded px-3 py-2 ml-4"
       >
@@ -135,7 +136,7 @@ const goNext = () => {
         {user && (
           <>
             <span className="text-sm text-gray-600 hidden sm:inline">
-              Welcome, <strong>{userData?.handle}</strong>
+                Welcome, <strong>{userData?.handle ?? "User"}</strong>
             </span>
             <ProfileDropdown />
             <button
