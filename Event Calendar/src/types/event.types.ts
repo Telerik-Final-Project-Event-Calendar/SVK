@@ -6,4 +6,6 @@ export interface EventData {
   location: string;
   isPublic: boolean;
   participants: string[];
+  creatorId: string;
+  selectedDate: string;
 }
