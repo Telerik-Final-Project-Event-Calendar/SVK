@@ -1,8 +1,9 @@
 import { useForm } from "react-hook-form";
 import { createEvent } from "../../services/events.service";
 import { AppContext } from "../../state/app.context";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { EventData } from "../../types/event.types";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   selectedDate: Date | null;
@@ -17,6 +18,13 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
   } = useForm();
 
   const { user } = useContext(AppContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    }
+  }, [user, navigate]);
 
   const onSubmit = async (data: any) => {
     if (!selectedDate) {
