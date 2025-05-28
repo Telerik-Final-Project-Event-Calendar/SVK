@@ -31,7 +31,12 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
   }, [user, navigate]);
 
   const onSubmit = async (data: any) => {
-    if (!selectedDate || !position) {
+    if (!selectedDate) {
+      alert("Please select a date to the event");
+      return;
+    }
+
+    if (!position) {
       alert("Please select a location on the map.");
       return;
     }
