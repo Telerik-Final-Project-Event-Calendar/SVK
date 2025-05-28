@@ -5,8 +5,6 @@ import { useContext, useEffect, useState } from "react";
 import { EventData } from "../../types/event.types";
 import { useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, useMapEvent } from "react-leaflet";
-
-import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 interface Props {
@@ -69,7 +67,7 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
   };
 
   function LocationMarker() {
-    const map = useMapEvent("click", async (e) => {
+    useMapEvent("click", async (e) => {
       const { lat, lng } = e.latlng;
       setPosition([lat, lng]);
 
