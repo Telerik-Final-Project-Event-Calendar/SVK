@@ -31,6 +31,8 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
       `${selectedDate.toDateString()} ${data.endHour}`
     ).toISOString();
 
+    const dateOnly = selectedDate.toISOString().split("T")[0];
+
     const eventData: EventData = {
       title: data.title,
       start,
@@ -39,6 +41,8 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
       location: data.location,
       isPublic: data.isPublic,
       participants: [user.uid],
+      creatorId: user.uid,
+      selectedDate: dateOnly,
     };
 
     try {
@@ -56,6 +60,19 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
         <h2 className="text-xl font-semibold text-gray-800 mb-4">
           Create Event
         </h2>
+        {selectedDate && (
+          <p className="mb-4 text-sm text-gray-600">
+            Selected Date:{" "}
+            <strong>
+              {selectedDate.toLocaleDateString(undefined, {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </strong>
+          </p>
+        )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
