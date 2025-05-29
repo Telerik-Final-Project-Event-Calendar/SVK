@@ -134,8 +134,8 @@ export default function Header() {
             <ProfileDropdown />
             <button
               onClick={handleLogout}
-              className="text-sm text-red-600 hover:underline">
-              Log out
+              className="btn-danger">
+              Logout
             </button>
           </>
         )}

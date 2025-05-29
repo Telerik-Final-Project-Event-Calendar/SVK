@@ -5,6 +5,7 @@ import { uploadPicture } from "../../services/storage.service";
 import { IUserData } from "../../types/app.types";
 import { useRegistrationValidation } from "../../hooks/useRegistrationValidation";
 import { useNavigate, useLocation } from "react-router-dom";
+import ImageUploader from "../../components/ImageUploader/ImageUploader";
 
 export default function ProfilePage() {
   const { userData, setAppState } = useContext(AppContext);
@@ -64,8 +65,12 @@ export default function ProfilePage() {
         setPreviewURL(photoURL);
       }
 
+      if (previewURL === null && userData.photoURL) {
+        updates.photoURL = "";
+      }
+
       if (Object.keys(updates).length === 0) {
-        setErrorMessage("⚠️ Няма направени промени.");
+        setErrorMessage("⚠️ No changes made.");
         return;
       }
 
@@ -79,11 +84,11 @@ export default function ProfilePage() {
         },
       }));
 
-      setSuccessMessage("✅ Промените са запазени успешно!");
+      setSuccessMessage("✅ Changes saved successfully!");
       setTimeout(() => navigate(from), 1500);
     } catch (err) {
       console.error("Profile update failed:", err);
-      setErrorMessage("❌ Неуспешно запазване на промените.");
+      setErrorMessage("❌ Profile update failed.");
     } finally {
       setIsSaving(false);
     }
@@ -94,57 +99,22 @@ export default function ProfilePage() {
     setPreviewURL(URL.createObjectURL(file));
   };
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFileChange(e.dataTransfer.files[0]);
-    }
-  };
-
   return (
     <div className="max-w-xl mx-auto mt-20 p-6 bg-white shadow-md rounded-lg">
       <h2 className="text-2xl font-semibold mb-6">Profile Settings</h2>
 
-      {/* Profile Picture */}
       <div className="mb-6">
         <label className="label-base mb-2">Profile Picture</label>
-        <div
-          onClick={() =>
-            document.getElementById("profile-image-input")?.click()
-          }
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={(e) => {
-            e.preventDefault();
-            if (e.dataTransfer.files?.[0])
-              handleFileChange(e.dataTransfer.files[0]);
-          }}
-          className="w-24 h-24 rounded-full overflow-hidden cursor-pointer mb-2 border-2 border-gray-300 hover:border-blue-500 transition"
-          title="Click or drop an image">
-          {previewURL ? (
-            <img
-              src={previewURL}
-              alt="Preview"
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full bg-gray-300 flex items-center justify-center text-xl font-bold text-white">
-              {userData?.firstName?.charAt(0)}
-              {userData?.lastName?.charAt(0) || "?"}
-            </div>
-          )}
-        </div>
-
-        <input
-          id="profile-image-input"
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={(e) => {
-            if (e.target.files?.[0]) handleFileChange(e.target.files[0]);
+        <ImageUploader
+          previewURL={previewURL}
+          onFileSelect={handleFileChange}
+          onRemove={() => {
+            setPreviewURL(null);
+            setNewImageFile(null);
           }}
         />
       </div>
-      {/* Fields */}
+
       <div className="space-y-4">
         <div>
           <label className="label-base">Username</label>
