@@ -40,7 +40,7 @@ if (serviceAccount) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL:
-      "https://svk-event-calendar-default-rtdb.europe-west1.firebasedatabase.app",
+      "https://svk-event-calendar-default-rtdb.europe-west1.firebasedatabase.app/",
   });
 } else {
   console.error(
@@ -57,7 +57,7 @@ const upload = multer();
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://svk-event-calendar.web.app/"],
+    origin: ["http://localhost:5173", "https://svk-event-calendar.web.app"],
     methods: "POST, GET",
   })
 );
