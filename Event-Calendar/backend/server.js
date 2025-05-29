@@ -40,7 +40,7 @@ if (serviceAccount) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL:
-      "https://svk-event-calendar-default-rtdb.europe-west1.firebasedatabase.app/",
+      "https://svk-event-calendar-default-rtdb.europe-west1.firebasedatabase.app",
   });
 } else {
   console.error(
