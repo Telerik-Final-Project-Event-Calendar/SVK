@@ -31,23 +31,21 @@ export default function Header() {
 useEffect(() => {
   async function fetchDate() {
     if (!user) {
-      console.log("No user yet.");
+      // console.error("No user yet.");
       return;
     }
-    console.log("User found:", user.uid);
 
     const uniqueUser = await getUserByUID(user.uid);
     if (!uniqueUser) {
-      console.log("No uniqueUser found for uid:", user.uid);
+      // console.error("No uniqueUser found for uid:", user.uid);
       return;
     }
-    console.log("Unique user handle:", uniqueUser.handle);
 
     const dateRef = ref(db, `users/${uniqueUser.handle}/selectedDate`);
     try {
       const data = await get(dateRef);
       if (!data.exists()) {
-        console.log("No date exists in DB, saving today's date...");
+        // console.error("No date exists in DB, saving today's date...");
         const today = new Date();
         await createDate(uniqueUser.handle, today);
         setSelectedDate(today);
@@ -55,10 +53,8 @@ useEffect(() => {
       }
 
       const val = data.val();
-      console.log("Date data from DB:", val);
 
       const fetchedDate = new Date(val.year, val.month - 1, val.day);
-      console.log("Fetched date object:", fetchedDate);
 
       setSelectedDate(fetchedDate);
     } catch (error) {
@@ -189,9 +185,9 @@ useEffect(() => {
             <ProfileDropdown />
             <button
               onClick={handleLogout}
-              className="text-sm text-red-600 hover:underline"
+              className="btn-danger"
             >
-              Log out
+              Logout
             </button>
           </>
         )}
