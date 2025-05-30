@@ -19,7 +19,7 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
     formState: { errors },
   } = useForm();
 
-  const { user } = useContext(AppContext);
+  const { user, userData } = useContext(AppContext);
   const navigate = useNavigate();
   const [position, setPosition] = useState<[number, number] | null>(null);
   const [address, setAddress] = useState<string>("");
@@ -60,6 +60,7 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
       participants: [user.uid],
       creatorId: user.uid,
       selectedDate: dateOnly,
+      handle: userData.handle,
     };
 
     try {

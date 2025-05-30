@@ -8,4 +8,5 @@ export interface EventData {
   participants: string[];
   creatorId: string;
   selectedDate: string;
+  handle: string;
 }
