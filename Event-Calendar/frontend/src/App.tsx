@@ -9,6 +9,7 @@ import Register from './pages/Register/Register';
 import ProfilePage from './pages/ProfilePage/ProfilePage';
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword'; 
 import HomePage from './pages/HomePage/HomePage';
+import { CalendarProvider } from './providers/CalendarProvider';
 
 // const HomePage: React.FC = () => <div><h1>Welcome to Event Calendar!</h1><p>Home Page Content</p></div>;
 const CreateEvent: React.FC = () => <div><h2>Create New Event</h2><p>Event Creation Form Here</p></div>;
@@ -22,6 +23,7 @@ const App: React.FC = () => {
   return (
     <BrowserRouter>
       <AppProvider>
+        <CalendarProvider>
         <Header /> 
         <main>
           <Routes>
@@ -80,6 +82,7 @@ const App: React.FC = () => {
             <Route path="*" element={<PageNotFound />} />
           </Routes>
         </main>
+        </CalendarProvider>
       </AppProvider>
     </BrowserRouter>
   );

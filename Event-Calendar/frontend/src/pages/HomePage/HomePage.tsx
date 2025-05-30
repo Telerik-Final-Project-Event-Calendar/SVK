@@ -1,6 +1,7 @@
 import React from 'react';
 import Header from '../../components/Header/Header';
 import Calendar from '../../components/Calendar/Calendar';
+import WeeklyCalendar from '../CalendarViews/WeeklyCalendarView';
 
 export default function HomePage() {
   return (
@@ -10,7 +11,7 @@ export default function HomePage() {
           <Calendar />
         </div>
         <div className="flex-1 p-4">
-
+          <WeeklyCalendar/>
         </div>
       </div>
     </div>
