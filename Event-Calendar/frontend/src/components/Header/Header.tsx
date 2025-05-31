@@ -153,8 +153,8 @@ useEffect(() => {
         onChange={handleViewChange}
         className="border rounded px-3 py-2 ml-4"
       >
-        <option value="monthly">Monthly</option>
         <option value="weekly">Weekly</option>
+        <option value="monthly">Monthly</option>
         <option value="daily">Daily</option>
       </select>
 
