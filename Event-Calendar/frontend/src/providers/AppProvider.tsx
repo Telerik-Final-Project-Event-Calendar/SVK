@@ -13,40 +13,63 @@ export default function AppProvider({ children }: AppProviderProps) {
   const [appState, setAppState] = useState<IAppState>({
     user: null,
     userData: null,
+    selectedDate: new Date(),
+    searchTerm: "",
+    view: "monthly",
+    isLoading: true,
+    error: null,
   });
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      setAppState((prev) => ({ ...prev, user: firebaseUser }));
-      setIsLoading(true);
-      if (firebaseUser) {
-        try {
-          const data = await getUserByUID(firebaseUser.uid);
-          setAppState((prev) => ({
-            ...prev,
-            userData: data || null,
-          }));
-        } catch (err) {
-          console.error("Error fetching user data:", err);
-          setError("Failed to load user data.");
-          setAppState((prev) => ({
-            ...prev,
-            userData: null,
-          }));
-        }
-      } else {
-        setAppState({ user: null, userData: null });
-      }
-      setIsLoading(false);
-    });
+    const unsubscribe = onAuthStateChanged(auth, handleAuthChange);
     return () => unsubscribe();
   }, []);
 
+  const handleAuthChange = async (firebaseUser: any) => {
+    setAppState((prev) => ({ ...prev, user: firebaseUser, isLoading: true }));
+
+    if (!firebaseUser) {
+      setAppState((prev) => ({
+        ...prev,
+        user: null,
+        userData: null,
+        isLoading: false,
+        error: null,
+      }));
+      return;
+    }
+
+    try {
+      const data: IUserData | null = await getUserByUID(firebaseUser.uid);
+
+      const enrichedData: IUserData | null = data
+        ? {
+            ...data,
+            photoURL: firebaseUser.photoURL ?? data.photoURL ?? null,
+            createdOn: data.createdOn ?? null,
+          }
+        : null;
+
+      setAppState((prev) => ({
+        ...prev,
+        userData: enrichedData,
+        isLoading: false,
+        error: null,
+      }));
+    } catch (err) {
+      console.error("Error fetching user data:", err);
+      setAppState((prev) => ({
+        ...prev,
+        userData: null,
+        isLoading: false,
+        error: "Failed to load user data.",
+      }));
+    }
+  };
+
   return (
     <AppContext.Provider value={{ ...appState, setAppState }}>
-      {!isLoading ? (
+      {!appState.isLoading ? (
         children
       ) : (
         <div className="text-center mt-20">Loading...</div>

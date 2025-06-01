@@ -7,14 +7,18 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import SearchBar from "../SearchBar/SearchBar";
 import { CalendarContext } from "../../state/calendar.context";
 import { getUserByUID } from "../../services/users.service";
-import { createDate } from "../../services/calendar.service";
-import { db } from "../../config/firebase-config";
-import { ref, get } from "firebase/database";
+import {
+  createDate,
+  getUserSelectedDate,
+  getUserView,
+  setUserView,
+} from "../../services/calendar.service";
 
 export default function Header() {
   const { user, userData, setAppState } = useContext(AppContext);
   const { selectedDate, setSelectedDate, view, setView } =
     useContext(CalendarContext);
+
   const navigate = useNavigate();
 
   async function createDateDB(date: Date) {
@@ -28,42 +32,30 @@ export default function Header() {
     }
   }
 
-useEffect(() => {
-  async function fetchDate() {
-    if (!user) {
-      // console.error("No user yet.");
-      return;
-    }
+  useEffect(() => {
+    async function fetchDate() {
+      if (!user) return;
+      const uniqueUser = await getUserByUID(user.uid);
+      if (!uniqueUser) return;
 
-    const uniqueUser = await getUserByUID(user.uid);
-    if (!uniqueUser) {
-      // console.error("No uniqueUser found for uid:", user.uid);
-      return;
-    }
-
-    const dateRef = ref(db, `users/${uniqueUser.handle}/selectedDate`);
-    try {
-      const data = await get(dateRef);
-      if (!data.exists()) {
-        // console.error("No date exists in DB, saving today's date...");
-        const today = new Date();
-        await createDate(uniqueUser.handle, today);
-        setSelectedDate(today);
-        return;
+      try {
+        const fetchedDate = await getUserSelectedDate(uniqueUser.handle);
+        if (!fetchedDate) {
+          const today = new Date();
+          await createDate(uniqueUser.handle, today);
+          setSelectedDate(today);
+        } else {
+          const validDate =
+            fetchedDate instanceof Date ? fetchedDate : new Date(fetchedDate);
+          setSelectedDate(validDate);
+        }
+      } catch (error) {
+        console.error("Error fetching date:", error);
       }
-
-      const val = data.val();
-
-      const fetchedDate = new Date(val.year, val.month - 1, val.day);
-
-      setSelectedDate(fetchedDate);
-    } catch (error) {
-      console.error("Error fetching date:", error);
     }
-  }
 
-  fetchDate();
-}, [user]); 
+    fetchDate();
+  }, [user]);
 
   useEffect(() => {
     async function fetchView() {
@@ -71,13 +63,9 @@ useEffect(() => {
       const uniqueUser = await getUserByUID(user.uid);
       if (!uniqueUser) return;
 
-      const dateView = ref(db, `${uniqueUser.handle}/view`);
-      try {
-        const data = await get(dateView);
-        if (!data.exists()) return;
-        setView(data.val());
-      } catch (error) {
-        console.error("Failed to load view from Firebase:", error);
+      const userView = await getUserView(uniqueUser.handle);
+      if (userView) {
+        setView(userView);
       }
     }
     fetchView();
@@ -119,18 +107,31 @@ useEffect(() => {
     await createDateDB(newDate);
   };
 
-  const handleViewChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setView(e.target.value);
+  const handleViewChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newView = e.target.value;
+    setView(newView);
+    if (!user) return;
+    try {
+      const uniqueUser = await getUserByUID(user.uid);
+      if (!uniqueUser?.handle) return;
+      await setUserView(uniqueUser.handle, newView);
+    } catch (error) {
+      console.error("Failed to update view in DB:", error);
+    }
   };
 
   return (
     <header className="bg-white shadow-md px-6 py-4 flex justify-between items-center">
-      <NavLink to="/" className="flex items-center space-x-2">
+      <NavLink
+        to="/"
+        className="flex items-center space-x-2">
         <h1 className="text-3xl">🗓️</h1>
         <span className="font-bold text-lg text-gray-800">Event Calendar</span>
       </NavLink>
 
-      <button onClick={goToday} className="border rounded py-2 px-4 mr-5">
+      <button
+        onClick={goToday}
+        className="border rounded py-2 px-4 mr-5">
         Today
       </button>
 
@@ -151,27 +152,29 @@ useEffect(() => {
       <select
         value={view ?? "monthly"}
         onChange={handleViewChange}
-        className="border rounded px-3 py-2 ml-4"
-      >
+        className="border rounded px-3 py-2 ml-4">
         <option value="weekly">Weekly</option>
         <option value="monthly">Monthly</option>
         <option value="daily">Daily</option>
       </select>
 
       <nav className="flex items-center space-x-4">
-        <NavLink to="/" className="text-gray-700 hover:text-blue-600">
+        <NavLink
+          to="/"
+          className="text-gray-700 hover:text-blue-600">
           Home
         </NavLink>
 
         {!user && (
           <>
-            <NavLink to="/login" className="text-gray-700 hover:text-blue-600">
+            <NavLink
+              to="/login"
+              className="text-gray-700 hover:text-blue-600">
               Login
             </NavLink>
             <NavLink
               to="/register"
-              className="text-gray-700 hover:text-blue-600"
-            >
+              className="text-gray-700 hover:text-blue-600">
               Register
             </NavLink>
           </>
@@ -185,8 +188,7 @@ useEffect(() => {
             <ProfileDropdown />
             <button
               onClick={handleLogout}
-              className="btn-danger"
-            >
+              className="btn-danger">
               Logout
             </button>
           </>

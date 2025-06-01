@@ -6,6 +6,7 @@ import { IUserData } from "../../types/app.types";
 import { useRegistrationValidation } from "../../hooks/useRegistrationValidation";
 import { useNavigate, useLocation } from "react-router-dom";
 import ImageUploader from "../../components/ImageUploader/ImageUploader";
+import LocationPickerMap from "../../components/Map/LocationPickerMap";
 
 export default function ProfilePage() {
   const { userData, setAppState } = useContext(AppContext);
@@ -20,6 +21,7 @@ export default function ProfilePage() {
   const [previewURL, setPreviewURL] = useState<string | null>(
     userData?.photoURL || null
   );
+const [position, setPosition] = useState<[number, number] | null>(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -32,6 +34,14 @@ export default function ProfilePage() {
     validateField,
     validateAll,
   } = useRegistrationValidation(userData?.phone);
+
+  useEffect(() => {
+    return () => {
+      if (previewURL?.startsWith("blob:")) {
+        URL.revokeObjectURL(previewURL);
+      }
+    };
+  }, [previewURL]);
 
   const handleSave = async () => {
     if (!userData?.handle) return;
@@ -167,13 +177,14 @@ export default function ProfilePage() {
           {phoneError && <p className="error-text">{phoneError}</p>}
         </div>
 
-        <div>
+        <div className="h-auto rounded-md overflow-hidden border">
           <label className="label-base">Address</label>
-          <input
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            className="input-base"
-          />
+  <LocationPickerMap
+    position={position}
+    setPosition={setPosition}
+    address={address}
+    setAddress={setAddress}
+  />
         </div>
 
         <button

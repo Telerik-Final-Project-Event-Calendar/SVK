@@ -21,14 +21,13 @@ export interface IAppState {
   selectedDate: Date;  
   searchTerm: string; 
   view: string,
+  isLoading: boolean;
+  error: string | null;
 }
 
 // AppContext
 export interface IAppContextType extends IAppState {
   setAppState: React.Dispatch<React.SetStateAction<IAppState>>;
-  //more?
-  // setUser: (user: FirebaseUser | null) => void;
-  // setUserData: (userData: IUserData | null) => void;
 }
 
 // Authenticated

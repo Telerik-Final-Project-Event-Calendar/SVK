@@ -1,13 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
 import { CalendarContext } from "../state/calendar.context";
+import { AppContext } from "../state/app.context";
 
-export const CalendarProvider = ({ children }: { children: React.ReactNode }) => {
-    const [selectedDate, setSelectedDate] = useState<any>(null); 
-  const [view, setView] = useState("monthly");
+interface CalendarProviderProps {
+  children: React.ReactNode;
+}
+
+export const CalendarProvider = ({ children }: CalendarProviderProps) => {
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+const [view, setView] = useState<string>("monthly");
 
   return (
-    <CalendarContext.Provider value={{ selectedDate, setSelectedDate, view, setView }}>
+    <CalendarContext.Provider
+      value={{ selectedDate, setSelectedDate, view, setView }}>
       {children}
     </CalendarContext.Provider>
   );
-}
+};

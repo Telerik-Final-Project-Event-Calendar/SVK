@@ -3,7 +3,7 @@ import { db } from '../config/firebase-config';
 import { IUserData } from '../types/app.types';
 
 /**
- * Gets ures's data from Realtime Database by handle (UID).
+ * Gets user's data from Realtime Database by handle (UID).
  * @param {string} handle 
  * @returns {Promise<IUserData | null>} 
  */
@@ -47,7 +47,7 @@ export const createUserProfile = async (
     isAdmin: false,
     isBlocked: false,
     createdOn: new Date().toISOString(),
-      photoURL: "",
+    photoURL: "",
   };
   try {
     await set(ref(db, `users/${handle}`), newUserProfile);

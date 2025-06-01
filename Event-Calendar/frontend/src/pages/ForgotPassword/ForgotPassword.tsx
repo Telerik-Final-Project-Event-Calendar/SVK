@@ -2,12 +2,24 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { sendPasswordReset } from "../../services/auth.service";
 import { Link } from "react-router-dom";
-// import './ForgotPassword.css';
 
 interface IForgotPasswordInputs {
   email: string;
 }
 
+/**
+ * ForgotPassword component
+ *
+ * This component allows users to request a password reset link by entering their email.
+ * Uses Firebase authentication and react-hook-form for validation.
+ *
+ * @component
+ *
+ * @example
+ * <ForgotPassword />
+ *
+ * @returns Rendered forgot password form
+ */
 const ForgotPassword: React.FC = () => {
   const {
     register,

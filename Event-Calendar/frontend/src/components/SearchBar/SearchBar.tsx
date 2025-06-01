@@ -2,6 +2,23 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { AppContext } from "../../state/app.context";
 import { Search } from "lucide-react";
 
+/**
+ * SearchBar component
+ * 
+ * A responsive search input field integrated with the global AppContext.
+ * Expands when the user clicks on the search icon and collapses when the user clicks outside.
+ * 
+ * Context:
+ * - Uses `searchTerm` and `setAppState` from AppContext.
+ * 
+ * Behavior:
+ * - Expands the input on icon click
+ * - Collapses input on click outside
+ * - Updates the global `searchTerm` state on input change
+ * 
+ * Accessibility:
+ * - Includes focus management and screen reader title
+ */
 export default function SearchBar() {
   const { searchTerm, setAppState } = useContext(AppContext);
   const [expanded, setExpanded] = useState(false);

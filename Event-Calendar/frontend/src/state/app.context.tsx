@@ -4,11 +4,11 @@ import { IAppState, IAppContextType } from '../types/app.types';
 const initialAppState: IAppState = {
   user: null,
   userData: null,
-  isLoading: true, 
-  error: null,
   selectedDate: new Date(),
   searchTerm: '',
-  view: "monthly",
+  view: 'monthly',
+  isLoading: false,
+  error: null,
 };
 
 const initialAppContextType: IAppContextType = {

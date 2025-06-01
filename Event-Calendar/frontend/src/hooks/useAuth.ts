@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { AppContext } from '../state/app.context';
-import { IAppContextType, IUserData } from '../types/app.types';
+import { IUserData } from '../types/app.types';
 import { User as FirebaseUser } from 'firebase/auth';
 import { logoutUser as serviceLogoutUser } from '../services/auth.service'; 
 
@@ -30,12 +30,13 @@ export const useAuth = () => {
   const logout = async (): Promise<void> => {
     try {
       await serviceLogoutUser(); 
-      setAppState({ 
+      setAppState(prev => ({
+        ...prev,
         user: null,
         userData: null,
         isLoading: false,
         error: null,
-      });
+      }));
     } catch (err) {
       console.error("Error during logout:", err);
       throw err; 

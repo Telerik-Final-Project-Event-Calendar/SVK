@@ -4,6 +4,7 @@ import { AppContext } from "../../state/app.context";
 import { useContext, useEffect, useState } from "react";
 import { EventData } from "../../types/event.types";
 import { useNavigate } from "react-router-dom";
+import LocationPickerMap from "../../components/Map/LocationPickerMap";
 import { MapContainer, TileLayer, Marker, useMapEvent } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -50,6 +51,11 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
 
     const dateOnly = selectedDate.toISOString().split("T")[0];
 
+    if (!userData) {
+      alert("User data is missing.");
+      return;
+    }
+
     const eventData: EventData = {
       title: data.title,
       start,
@@ -72,30 +78,30 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
     }
   };
 
-  function LocationMarker() {
-    useMapEvent("click", async (e) => {
-      const { lat, lng } = e.latlng;
-      setPosition([lat, lng]);
+  // function LocationMarker() {
+  //   useMapEvent("click", async (e) => {
+  //     const { lat, lng } = e.latlng;
+  //     setPosition([lat, lng]);
 
-      try {
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`
-        );
-        const data = await res.json();
+  //     try {
+  //       const res = await fetch(
+  //         `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`
+  //       );
+  //       const data = await res.json();
 
-        if (data && data.display_name) {
-          setAddress(data.display_name);
-        } else {
-          setAddress("Unknown location");
-        }
-      } catch (error) {
-        console.error("Reverse geocoding failed:", error);
-        setAddress("Failed to get address");
-      }
-    });
+  //       if (data && data.display_name) {
+  //         setAddress(data.display_name);
+  //       } else {
+  //         setAddress("Unknown location");
+  //       }
+  //     } catch (error) {
+  //       console.error("Reverse geocoding failed:", error);
+  //       setAddress("Failed to get address");
+  //     }
+  //   });
 
-    return position === null ? null : <Marker position={position} />;
-  }
+  //   return position === null ? null : <Marker position={position} />;
+  // }
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
@@ -122,7 +128,9 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
         <div className="flex flex-col md:flex-row gap-6">
           {/* Left: Form */}
           <div className="flex-1">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="space-y-4">
               <div>
                 <input
                   type="text"
@@ -174,14 +182,12 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 text-sm font-medium bg-gray-100 hover:bg-gray-200 rounded-md"
-                >
+                  className="px-4 py-2 text-sm font-medium bg-gray-100 hover:bg-gray-200 rounded-md">
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
-                >
+                  className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
                   Create
                 </button>
               </div>
@@ -193,25 +199,20 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
             <p className="text-sm text-gray-700 mb-2">
               Click on the map to select a location:
             </p>
-            <div className="h-96 rounded-md overflow-hidden border">
-              <MapContainer
-                center={[42.6977, 23.3219]}
-                zoom={13}
-                style={{ height: "100%", width: "100%" }}
-                scrollWheelZoom={true}
-              >
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                <LocationMarker />
-              </MapContainer>
-            </div>
-            {address && (
+                        {address && (
               <p className="text-sm text-green-700 mt-2">
                 📍 Address: {address}
               </p>
             )}
+            <div className="h-96 rounded-md overflow-hidden border">
+              <LocationPickerMap
+                position={position}
+                  address={address}
+                setPosition={setPosition}
+                setAddress={setAddress}
+              />
+            </div>
+
           </div>
         </div>
       </div>

@@ -16,6 +16,39 @@ interface ValidationState {
   confirmPasswordError: string;
 }
 
+/**
+ * Custom React Hook for validating registration and profile forms.
+ *
+ * Performs both client-side validation (format, length, etc.)
+ * and asynchronous checks against Firebase Realtime Database
+ * to ensure uniqueness of username, email, and phone number.
+ *
+ * @param {string} [currentPhone] - The current phone number of the user (used when editing a profile to avoid false collision).
+ * @returns {{
+ *   handleError: string;
+ *   emailError: string;
+ *   phoneError: string;
+ *   firstNameError: string;
+ *   lastNameError: string;
+ *   passwordError: string;
+ *   confirmPasswordError: string;
+ *   validateField: (field: keyof IRegisterFormInputs, value: string, passwordValue?: string) => Promise<void>;
+ *   validateAll: (data: IRegisterFormInputs) => Promise<boolean>;
+ *   setPhoneError: (value: string) => void;
+ * }}
+ *
+ * @example
+ * const {
+ *   handleError,
+ *   emailError,
+ *   validateField,
+ *   validateAll
+ * } = useRegistrationValidation();
+ *
+ * await validateField("email", "test@example.com");
+ *
+ * const isValid = await validateAll(formData);
+ */
 export const useRegistrationValidation = (currentPhone?: string) => {
   const [state, setState] = useState<ValidationState>({
     handleError: "",
@@ -139,6 +172,7 @@ export const useRegistrationValidation = (currentPhone?: string) => {
         return setState((s) => ({ ...s, confirmPasswordError: "" }));
 
       default:
+        console.warn(`Unknown field: ${field}`);
         break;
     }
   };

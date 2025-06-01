@@ -6,6 +6,39 @@ interface ImageUploaderProps {
   onRemove: () => void;
 }
 
+/**
+ * ImageUploader component
+ * 
+ * A reusable image upload UI component that supports both file selection via click
+ * and drag-and-drop functionality. It displays a preview of the selected image
+ * and provides an option to remove it.
+ * 
+ * Props:
+ * - previewURL: string | null  
+ *   The URL of the image to be displayed as a preview. If null, a placeholder is shown.
+ * 
+ * - onFileSelect: (file: File) => void  
+ *   Callback function that is called when a file is selected or dropped. 
+ *   Receives the selected File object as an argument.
+ * 
+ * - onRemove: () => void  
+ *   Callback function that is called when the user clicks the remove button.
+ * 
+ * Features:
+ * - Click to upload: Opens a hidden file input when the image area is clicked.
+ * - Drag-and-drop: Users can drop an image file onto the image area.
+ * - Image preview: Displays the selected image in a circular frame.
+ * - Remove option: Allows removing the selected image by clicking a ✕ button.
+ * 
+ * Usage Example:
+ * ```tsx
+ * <ImageUploader
+ *   previewURL={imageURL}
+ *   onFileSelect={(file) => setSelectedFile(file)}
+ *   onRemove={() => setSelectedFile(null)}
+ * />
+ * ```
+ */
 const ImageUploader: React.FC<ImageUploaderProps> = ({
   previewURL,
   onFileSelect,

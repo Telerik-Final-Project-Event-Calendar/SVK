@@ -2,6 +2,27 @@ import { useEffect, useRef, useState, useContext } from "react";
 import { AppContext } from "../../state/app.context";
 import { Link } from "react-router-dom";
 
+/**
+ * ProfileDropdown component
+ *
+ * A dropdown menu that appears when the user clicks their profile avatar or initials.
+ * It displays navigation options such as profile settings, created events, and admin panel.
+ * 
+ * Context:
+ * - Uses `AppContext` to access `userData`.
+ *
+ * Behavior:
+ * - Shows profile image (if available), or user initials.
+ * - Dropdown opens/closes on click.
+ * - Closes automatically when clicking outside the menu.
+ *
+ * Displayed Links:
+ * - Profile Settings → `/profile`
+ * - My Events → `/events?creator={handle}`
+ * - Admin Panel → `/admin` (only if userData.isAdmin is true)
+ *
+ * Returns null if no user is logged in.
+ */
 export default function ProfileDropdown() {
   const { userData } = useContext(AppContext);
   const [isOpen, setIsOpen] = useState(false);

@@ -4,8 +4,16 @@ import { useForm } from "react-hook-form";
 import { loginUser } from "../../services/auth.service";
 import { AppContext } from "../../state/app.context";
 import { ILoginFormInputs } from "../../types/app.types";
-// import "./Login.css";
 
+/**
+ * Login page component
+ *
+ * Allows users to sign in using email and password credentials.
+ * Uses Firebase Authentication and sets the authenticated user in AppContext.
+ * Displays relevant validation and error messages.
+ *
+ * @returns Rendered login form
+ */
 const Login: React.FC = () => {
   const { setAppState } = useContext(AppContext);
   const navigate = useNavigate();

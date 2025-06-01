@@ -6,6 +6,14 @@ import { AppContext } from "../../state/app.context";
 import { IRegisterFormInputs } from "../../types/app.types";
 import { useRegistrationValidation } from "../../hooks/useRegistrationValidation";
 
+/**
+ * Register page component
+ *
+ * Allows users to create a new account by providing personal and login information.
+ * Performs client-side validation via useRegistrationValidation hook.
+ *
+ * @returns Rendered registration form
+ */
 const Register: React.FC = () => {
   const { setAppState } = useContext(AppContext);
   const navigate = useNavigate();
