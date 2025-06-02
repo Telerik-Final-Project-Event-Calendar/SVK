@@ -1,5 +1,5 @@
 import { db } from "../config/firebase-config";
-import { ref, push, set } from "firebase/database";
+import { ref, push, set, get } from "firebase/database";
 import { EventData } from "../types/event.types";
 
 export const createEvent = async (eventData: EventData): Promise<void> => {
@@ -40,4 +40,14 @@ export const createEvent = async (eventData: EventData): Promise<void> => {
 
   const userEventRef = ref(db, `users/${handle}/events/${newEventKey}`);
   await set(userEventRef, fullEventData);
+};
+
+export const getAllEventsForDate = async (date: string) => {
+  const eventsRef = ref(db, "events");
+  const snapshot = await get(eventsRef);
+  if (!snapshot.exists()) return [];
+
+  const allEvents = Object.values(snapshot.val());
+
+  return allEvents.filter((event: any) => event.selectedDate === date);
 };
