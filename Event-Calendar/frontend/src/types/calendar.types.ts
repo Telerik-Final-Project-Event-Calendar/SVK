@@ -3,4 +3,6 @@ export interface CalendarContextType {
   setSelectedDate: React.Dispatch<React.SetStateAction<Date>>;
   view: string;
   setView: React.Dispatch<React.SetStateAction<string>>;
+  eventRefreshTrigger: number;
+  triggerEventRefresh: () => void;
 }

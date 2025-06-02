@@ -9,6 +9,7 @@ import { MapContainer, TileLayer, Marker, useMapEvent } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { TZDate } from "@date-fns/tz";
 import { format } from "date-fns";
+import { CalendarContext } from "../../state/calendar.context";
 
 interface Props {
   selectedDate: Date | null;
@@ -26,6 +27,7 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
   const navigate = useNavigate();
   const [position, setPosition] = useState<[number, number] | null>(null);
   const [address, setAddress] = useState<string>("");
+  const { triggerEventRefresh } = useContext(CalendarContext);
 
   useEffect(() => {
     if (!user) {
@@ -83,6 +85,7 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
     // Proceed with creating the event
     try {
       await createEvent(eventData);
+      triggerEventRefresh();
       onClose();
     } catch (error) {
       console.error("Failed to create event:", error);

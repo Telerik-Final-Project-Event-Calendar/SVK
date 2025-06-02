@@ -12,6 +12,8 @@ export default function DailyCalendar() {
   const [events, setEvents] = useState<any[]>([]);
   const dateKey = format("yyyy-MM-dd", validSelectedDate);
 
+  const { eventRefreshTrigger } = useContext(CalendarContext);
+
   const dayLabel = validSelectedDate.toLocaleDateString("default", {
     weekday: "long",
     month: "long",
@@ -26,7 +28,7 @@ export default function DailyCalendar() {
     };
 
     loadEvents();
-  }, [dateKey]);
+  }, [dateKey, eventRefreshTrigger]);
 
   function getEventTop(start: Date) {
     return start.getHours() * 37.5 + (start.getMinutes() / 60) * 37.5;

@@ -6,4 +6,6 @@ export const CalendarContext = createContext<CalendarContextType>({
   setSelectedDate: () => {},
   view: "weekly",
   setView: () => {},
+  eventRefreshTrigger: 0,
+  triggerEventRefresh: () => {},
 });
