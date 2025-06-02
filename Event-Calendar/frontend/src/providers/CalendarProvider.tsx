@@ -8,7 +8,7 @@ interface CalendarProviderProps {
 
 export const CalendarProvider = ({ children }: CalendarProviderProps) => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-const [view, setView] = useState<string>("monthly");
+const [view, setView] = useState<string>("weekly");
 
   return (
     <CalendarContext.Provider
