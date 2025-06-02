@@ -51,3 +51,10 @@ export const getAllEventsForDate = async (date: string) => {
 
   return allEvents.filter((event: any) => event.selectedDate === date);
 };
+
+export const getAllEvents = async () => {
+  const eventsRef = ref(db, "events");
+  const snapshot = await get(eventsRef);
+  if (!snapshot.exists()) return [];
+  return Object.values(snapshot.val());
+};

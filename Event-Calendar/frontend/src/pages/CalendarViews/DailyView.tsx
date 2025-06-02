@@ -39,11 +39,10 @@ export default function DailyCalendar() {
     return durationHours * 37.5;
   }
 
-  function addDays(
-    validSelectedDate: Date,
-    arg1: number
-  ): React.SetStateAction<Date> {
-    throw new Error("Function not implemented.");
+  function addDays(date: Date, days: number): Date {
+    const newDate = new Date(date);
+    newDate.setDate(date.getDate() + days);
+    return newDate;
   }
 
   return (
