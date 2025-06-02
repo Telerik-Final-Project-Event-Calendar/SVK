@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 import LocationPickerMap from "../../components/Map/LocationPickerMap";
 import { MapContainer, TileLayer, Marker, useMapEvent } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import { TZDate } from "@date-fns/tz";
+import { format } from "date-fns";
 
 interface Props {
   selectedDate: Date | null;
@@ -42,21 +44,30 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
       return;
     }
 
-    const start = new Date(
-      `${selectedDate.toDateString()} ${data.startHour}`
-    ).toISOString();
-    const end = new Date(
-      `${selectedDate.toDateString()} ${data.endHour}`
-    ).toISOString();
-
-    const dateOnly = selectedDate.toISOString().split("T")[0];
-
     if (!userData) {
       alert("User data is missing.");
       return;
     }
 
-    const eventData: EventData = {
+    const TIMEZONE = "Europe/Sofia";
+
+    const startDate = new TZDate(selectedDate, TIMEZONE);
+    startDate.setHours(
+      data.startHour.split(":")[0],
+      data.startHour.split(":")[1]
+    );
+
+    const endDate = new TZDate(selectedDate, TIMEZONE);
+    endDate.setHours(data.endHour.split(":")[0], data.endHour.split(":")[1]);
+
+    const start = format(startDate, "yyyy-MM-dd'T'HH:mm:ssXXX");
+    const end = format(endDate, "yyyy-MM-dd'T'HH:mm:ssXXX");
+
+    const dateOnly = selectedDate.toLocaleDateString("en-CA");
+    console.log(dateOnly);
+
+    // Prepare event data
+    const eventData = {
       title: data.title,
       start,
       end,
@@ -69,6 +80,7 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
       handle: userData.handle,
     };
 
+    // Proceed with creating the event
     try {
       await createEvent(eventData);
       onClose();
@@ -128,9 +140,7 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
         <div className="flex flex-col md:flex-row gap-6">
           {/* Left: Form */}
           <div className="flex-1">
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
                 <input
                   type="text"
@@ -182,12 +192,14 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 text-sm font-medium bg-gray-100 hover:bg-gray-200 rounded-md">
+                  className="px-4 py-2 text-sm font-medium bg-gray-100 hover:bg-gray-200 rounded-md"
+                >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+                  className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                >
                   Create
                 </button>
               </div>
@@ -199,7 +211,7 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
             <p className="text-sm text-gray-700 mb-2">
               Click on the map to select a location:
             </p>
-                        {address && (
+            {address && (
               <p className="text-sm text-green-700 mt-2">
                 📍 Address: {address}
               </p>
@@ -207,12 +219,11 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
             <div className="h-96 rounded-md overflow-hidden border">
               <LocationPickerMap
                 position={position}
-                  address={address}
+                address={address}
                 setPosition={setPosition}
                 setAddress={setAddress}
               />
             </div>
-
           </div>
         </div>
       </div>

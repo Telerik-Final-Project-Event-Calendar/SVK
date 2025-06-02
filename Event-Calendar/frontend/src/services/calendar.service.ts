@@ -11,7 +11,9 @@ export const createDate = async (handle: string, date: Date) => {
   await set(ref(db, `users/${handle}/selectedDate`), dateOnly);
 };
 
-export const getUserSelectedDate = async (handle: string): Promise<Date | null> => {
+export const getUserSelectedDate = async (
+  handle: string
+): Promise<Date | null> => {
   try {
     const dateRef = ref(db, `users/${handle}/selectedDate`);
     const snapshot = await get(dateRef);
@@ -36,7 +38,10 @@ export const getUserView = async (handle: string): Promise<string | null> => {
   }
 };
 
-export const setUserView = async (handle: string, view: string): Promise<void> => {
+export const setUserView = async (
+  handle: string,
+  view: string
+): Promise<void> => {
   const viewRef = ref(db, `users/${handle}/view`);
   await set(viewRef, view);
 };
