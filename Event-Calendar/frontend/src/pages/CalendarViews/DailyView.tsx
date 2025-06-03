@@ -95,9 +95,9 @@ export default function DailyCalendar() {
                 className="absolute left-2 right-2 bg-white border-l-4 border-blue-500 text-gray-800 rounded-md shadow-md px-3 py-2 text-xs cursor-pointer hover:shadow-lg hover:scale-[1.01] transition-all"
                 style={{
                   top: `${top}px`,
-                  height: `${height}px`,
+                  minHeight: `${height}px`,
                 }}
-                title={event.location} // shows full location on hover
+                title={event.location}
               >
                 <div className="font-semibold text-sm truncate">
                   {event.title}
@@ -133,10 +133,6 @@ export default function DailyCalendar() {
                     hour: "2-digit",
                     minute: "2-digit",
                   })}
-                </div>
-
-                <div className="text-[11px] text-gray-700 mt-1 line-clamp-2">
-                  {event.location}
                 </div>
               </div>
             );

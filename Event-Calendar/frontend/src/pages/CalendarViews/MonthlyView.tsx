@@ -146,43 +146,7 @@ export default function MonthlyCalendar(): JSX.Element {
             >
               <div className="font-semibold">{date.getDate()}</div>
 
-              {/* <div className="mt-2 flex flex-col gap-1 overflow-hidden">
-                {dayEvents.slice(0, 3).map((event) => {
-                  const startTime = new Date(event.start).toLocaleTimeString(
-                    [],
-                    {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    }
-                  );
-                  const endTime = new Date(event.end).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  });
-
-                  return (
-                    <div
-                      key={event.id}
-                      className="bg-blue-100 text-blue-700 px-2 py-1 rounded-md text-xs font-medium leading-tight hover:bg-blue-600/20 transition-colors truncate"
-                      title={`${event.title} (${startTime} - ${endTime})`}
-                    >
-                      <div className="truncate">
-                        {startTime} – {endTime}
-                      </div>
-                      <div className="truncate font-semibold">
-                        {event.title}
-                      </div>
-                    </div>
-                  );
-                })}
-
-                {dayEvents.length > 3 && (
-                  <div className="text-xs text-gray-500 font-medium">
-                    + {dayEvents.length - 3} more
-                  </div>
-                )}
-              </div> */}
-              <div className="relative mt-2 flex flex-col gap-1 overflow-hidden">
+              <div className="relative mt-2 flex flex-col gap-1 overflow-y-auto max-h-[90px] pr-1">
                 {dayEvents.slice(0, 3).map((event, idx) => {
                   const startTime = new Date(event.start).toLocaleTimeString(
                     [],
@@ -195,11 +159,6 @@ export default function MonthlyCalendar(): JSX.Element {
                     hour: "2-digit",
                     minute: "2-digit",
                   });
-
-                  // You can calculate top and height here if needed, or just omit absolute positioning
-                  // For example:
-                  // const top = idx * 60; // example vertical spacing
-                  // const height = 56;    // fixed height for cards
 
                   return (
                     <div
