@@ -1,3 +1,12 @@
+import { JSX } from "react";
+import {
+  FiClock,
+  FiAlertTriangle,
+  FiBriefcase,
+  FiActivity,
+  FiUser,
+} from "react-icons/fi";
+
 export const categoryStyles: Record<
   string,
   { bg: string; border: string; text: string }
@@ -32,4 +41,20 @@ export const categoryStyles: Record<
     border: "border-gray-300",
     text: "text-gray-800",
   },
+};
+
+export const categoryLabels: Record<string, string> = {
+  deadline: "Deadline",
+  important: "Important",
+  work: "Work",
+  sports: "Sports",
+  personal: "Personal",
+};
+
+export const categoryIcons: Record<string, JSX.Element> = {
+  deadline: <FiClock className="text-gray-700" />,
+  important: <FiAlertTriangle className="text-yellow-600" />,
+  work: <FiBriefcase className="text-blue-600" />,
+  sports: <FiActivity className="text-green-600" />,
+  personal: <FiUser className="text-pink-600" />,
 };

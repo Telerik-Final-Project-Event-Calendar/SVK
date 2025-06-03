@@ -8,6 +8,7 @@ import { db } from "../../config/firebase-config";
 import { getUserByUID } from "../../services/users.service";
 import { AppContext } from "../../state/app.context";
 import CreateEventModal from "../../pages/CreateEventModal/CreateEventModal";
+import EventLegend from "../EventLegend/EventLegend";
 
 export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -63,6 +64,7 @@ export default function Calendar() {
           />
         )}
       </div>
+      <EventLegend />
     </>
   );
 }
