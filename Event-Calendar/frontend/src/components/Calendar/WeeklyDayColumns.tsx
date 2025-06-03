@@ -44,16 +44,42 @@ export default function WeeklyDayColumns({
               return (
                 <div
                   key={i}
-                  className="absolute bg-blue-500 text-white text-xs rounded px-2 py-1 shadow"
+                  className="absolute bg-white border-l-[4px] border-blue-500 text-gray-800 text-xs rounded-md shadow-md px-3 py-2 transition-all hover:shadow-lg hover:scale-[1.01]"
                   style={{
                     top: `${top}px`,
                     height: `${height}px`,
-                    left: "4px",
-                    right: "4px",
+                    left: "6px",
+                    right: "6px",
                   }}
+                  title={event.location} // Tooltip with address
                 >
-                  <strong>{event.handle}</strong>
-                  <div className="text-[10px]">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-sm truncate">
+                      {event.handle}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1 text-[11px] text-gray-600 mt-1">
+                    <svg
+                      className="w-3 h-3 text-blue-400"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 6v6l4 2"
+                      />
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      />
+                    </svg>
                     {startDate.toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",
@@ -63,9 +89,6 @@ export default function WeeklyDayColumns({
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
-                  </div>
-                  <div className="truncate text-[10px]">
-                    {event.description}
                   </div>
                 </div>
               );

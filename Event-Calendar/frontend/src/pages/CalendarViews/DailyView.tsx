@@ -92,14 +92,52 @@ export default function DailyCalendar() {
               <div
                 key={idx}
                 onClick={() => alert(`Event: ${event.title}`)}
-                className="absolute left-2 right-2 bg-blue-500 text-white rounded px-2 py-1 text-xs truncate cursor-pointer hover:bg-blue-600 transition"
+                className="absolute left-2 right-2 bg-white border-l-4 border-blue-500 text-gray-800 rounded-md shadow-md px-3 py-2 text-xs cursor-pointer hover:shadow-lg hover:scale-[1.01] transition-all"
                 style={{
                   top: `${top}px`,
                   height: `${height}px`,
                 }}
+                title={event.location} // shows full location on hover
               >
-                <strong>{event.title}</strong>
-                <div className="text-[10px] truncate">{event.location}</div>
+                <div className="font-semibold text-sm truncate">
+                  {event.title}
+                </div>
+
+                <div className="flex items-center gap-1 text-[11px] text-gray-600 mt-1">
+                  <svg
+                    className="w-3 h-3 text-blue-400"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 6v6l4 2"
+                    />
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    />
+                  </svg>
+                  {new Date(event.start).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}{" "}
+                  -{" "}
+                  {new Date(event.end).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </div>
+
+                <div className="text-[11px] text-gray-700 mt-1 line-clamp-2">
+                  {event.location}
+                </div>
               </div>
             );
           })}

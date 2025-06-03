@@ -146,24 +146,7 @@ export default function MonthlyCalendar(): JSX.Element {
             >
               <div className="font-semibold">{date.getDate()}</div>
 
-              {/* <div className="mt-2 flex flex-col gap-1 overflow-hidden ">
-                {dayEvents.slice(0, 3).map((event) => (
-                  <div
-                    key={event.id}
-                    className="p-1 text-xs bg-blue-100 text-blue-700 px-1 rounded-md font-medium leading-tight truncate hover:bg-blue-600/20 transition-colors"
-                    title={event.title}
-                  >
-                    {event.title}
-                  </div>
-                ))}
-
-                {dayEvents.length > 3 && (
-                  <div className="text-xs text-gray-500 font-medium">
-                    + {dayEvents.length - 3} more
-                  </div>
-                )}
-              </div> */}
-              <div className="mt-2 flex flex-col gap-1 overflow-hidden">
+              {/* <div className="mt-2 flex flex-col gap-1 overflow-hidden">
                 {dayEvents.slice(0, 3).map((event) => {
                   const startTime = new Date(event.start).toLocaleTimeString(
                     [],
@@ -188,6 +171,69 @@ export default function MonthlyCalendar(): JSX.Element {
                       </div>
                       <div className="truncate font-semibold">
                         {event.title}
+                      </div>
+                    </div>
+                  );
+                })}
+
+                {dayEvents.length > 3 && (
+                  <div className="text-xs text-gray-500 font-medium">
+                    + {dayEvents.length - 3} more
+                  </div>
+                )}
+              </div> */}
+              <div className="relative mt-2 flex flex-col gap-1 overflow-hidden">
+                {dayEvents.slice(0, 3).map((event, idx) => {
+                  const startTime = new Date(event.start).toLocaleTimeString(
+                    [],
+                    {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    }
+                  );
+                  const endTime = new Date(event.end).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  });
+
+                  // You can calculate top and height here if needed, or just omit absolute positioning
+                  // For example:
+                  // const top = idx * 60; // example vertical spacing
+                  // const height = 56;    // fixed height for cards
+
+                  return (
+                    <div
+                      key={event.id}
+                      onClick={() => alert(`Event: ${event.title}`)}
+                      className="bg-white border-l-4 border-blue-500 text-gray-800 rounded-md shadow-md px-3 py-2 text-xs cursor-pointer hover:shadow-lg hover:scale-[1.01] transition-all"
+                      title={event.location}
+                    >
+                      <div className="font-semibold text-sm truncate">
+                        {event.title}
+                      </div>
+
+                      <div className="flex items-center gap-1 text-[11px] text-gray-600 mt-1">
+                        <svg
+                          className="w-3 h-3 text-blue-400"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M12 6v6l4 2"
+                          />
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          />
+                        </svg>
+                        {startTime} - {endTime}
                       </div>
                     </div>
                   );
