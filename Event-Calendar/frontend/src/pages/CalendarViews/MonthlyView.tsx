@@ -181,7 +181,13 @@ export default function MonthlyCalendar(): JSX.Element {
                         {event.title}
                       </div>
 
-                      <div className="flex items-center gap-1 text-[11px] text-gray-600 mt-1">
+                      <div
+                        className={`flex items-center gap-1 text-[11px] ${
+                          event.category === "deadline"
+                            ? "text-white"
+                            : "text-gray-600"
+                        } mt-1`}
+                      >
                         <svg
                           className="w-3 h-3 text-blue-400"
                           fill="none"

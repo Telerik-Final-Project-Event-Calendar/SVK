@@ -1,11 +1,6 @@
 import { JSX } from "react";
-import {
-  FiClock,
-  FiAlertTriangle,
-  FiBriefcase,
-  FiActivity,
-  FiUser,
-} from "react-icons/fi";
+import { FiClock, FiAlertTriangle, FiBriefcase, FiUser } from "react-icons/fi";
+import { MdSportsTennis } from "react-icons/md";
 
 export const categoryStyles: Record<
   string,
@@ -52,9 +47,9 @@ export const categoryLabels: Record<string, string> = {
 };
 
 export const categoryIcons: Record<string, JSX.Element> = {
-  deadline: <FiClock className="text-gray-700" />,
+  deadline: <FiClock className="text-gray-600" />,
   important: <FiAlertTriangle className="text-yellow-600" />,
   work: <FiBriefcase className="text-blue-600" />,
-  sports: <FiActivity className="text-green-600" />,
+  sports: <MdSportsTennis className="text-green-600" />,
   personal: <FiUser className="text-pink-600" />,
 };
