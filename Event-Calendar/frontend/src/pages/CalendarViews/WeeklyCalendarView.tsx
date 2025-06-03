@@ -23,6 +23,7 @@ export default function WeeklyCalendar() {
   const validSelectedDate =
     selectedDate instanceof Date ? selectedDate : new Date();
   const weekStart = startOfWeek(validSelectedDate);
+  const { eventRefreshTrigger } = useContext(CalendarContext);
 
   useEffect(() => {
     async function fetchEvents() {
@@ -38,7 +39,7 @@ export default function WeeklyCalendar() {
     }
 
     fetchEvents();
-  }, [validSelectedDate]);
+  }, [validSelectedDate, eventRefreshTrigger]);
 
   return (
     <div className="p-2">
