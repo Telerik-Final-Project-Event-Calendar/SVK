@@ -14,6 +14,7 @@ export const createEvent = async (eventData: EventData): Promise<void> => {
     participants,
     handle,
     selectedDate,
+    category,
   } = eventData;
 
   // Push event to global "events" path
@@ -34,6 +35,7 @@ export const createEvent = async (eventData: EventData): Promise<void> => {
     creatorId,
     handle,
     selectedDate,
+    category,
   };
 
   await set(newEventRef, fullEventData);

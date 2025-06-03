@@ -9,4 +9,5 @@ export interface EventData {
   creatorId: string;
   selectedDate: string;
   handle: string;
+  category: string;
 }

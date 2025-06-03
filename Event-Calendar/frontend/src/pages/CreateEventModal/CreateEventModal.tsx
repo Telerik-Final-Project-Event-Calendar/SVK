@@ -80,6 +80,7 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
       creatorId: user.uid,
       selectedDate: dateOnly,
       handle: userData.handle,
+      category: data.category,
     };
 
     // Proceed with creating the event
@@ -190,6 +191,21 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
                 />
                 Public event
               </label>
+
+              <select
+                {...register("category", { required: true })}
+                className="input-base"
+                defaultValue=""
+              >
+                <option value="" disabled>
+                  Select Category
+                </option>
+                <option value="deadline">Deadline</option>
+                <option value="important">Important</option>
+                <option value="work">Work</option>
+                <option value="sports">Sports</option>
+                <option value="personal">Personal</option>
+              </select>
 
               <div className="flex justify-end gap-2 pt-4">
                 <button
