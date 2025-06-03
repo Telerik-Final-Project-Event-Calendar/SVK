@@ -3,6 +3,7 @@ import { CalendarContext } from "../../state/calendar.context";
 import { AppContext } from "../../state/app.context";
 import HourLabels from "../../components/Calendar/HoursLabels";
 import WeeklyDayColumns from "../../components/Calendar/WeeklyDayColumns";
+import { getAllEvents } from "../../services/events.service";
 
 function startOfWeek(date: Date) {
   const day = date.getDay();
@@ -17,13 +18,27 @@ function addDays(date: Date, days: number) {
 export default function WeeklyCalendar() {
   const { selectedDate, view, setSelectedDate } = useContext(CalendarContext);
   const { user, userData } = useContext(AppContext);
-
+  const [weeklyEvents, setWeeklyEvents] = useState([]);
 
   const validSelectedDate =
     selectedDate instanceof Date ? selectedDate : new Date();
   const weekStart = startOfWeek(validSelectedDate);
 
-  
+  useEffect(() => {
+    async function fetchEvents() {
+      const events = await getAllEvents();
+      const start = startOfWeek(validSelectedDate);
+      const weekDates = [...Array(7)].map((_, i) =>
+        addDays(start, i).toLocaleDateString("sv-SE")
+      );
+      const filtered = events.filter((event: any) =>
+        weekDates.includes(event.selectedDate)
+      );
+      setWeeklyEvents(filtered);
+    }
+
+    fetchEvents();
+  }, [validSelectedDate]);
 
   return (
     <div className="p-2">
@@ -53,7 +68,7 @@ export default function WeeklyCalendar() {
           <HourLabels />
         </div>
         <div className="flex flex-1">
-          <WeeklyDayColumns weekStart={weekStart} />
+          <WeeklyDayColumns weekStart={weekStart} events={weeklyEvents} />
         </div>
       </div>
     </div>
