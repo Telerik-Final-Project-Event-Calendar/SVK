@@ -1,3 +1,10 @@
+import { categoryStyles } from "../../utils/eventCategoryStyles";
+
+const styles = (event: any) => {
+  const category = event.category || "default";
+  return categoryStyles[category] || categoryStyles["default"];
+};
+
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const PIXELS_PER_MINUTE = 0.8;
 
@@ -44,7 +51,10 @@ export default function WeeklyDayColumns({
               return (
                 <div
                   key={i}
-                  className="absolute bg-white border-l-[4px] border-blue-500 text-gray-800 text-xs rounded-md shadow-md px-3 py-2 transition-all hover:shadow-lg hover:scale-[1.01]"
+                  className={`absolute text-xs rounded-md shadow-md px-3 py-2 transition-all hover:shadow-lg hover:scale-[1.01]
+                    ${styles(event).bg} ${styles(event).border} ${
+                    styles(event).text
+                  } border-l-4`}
                   style={{
                     top: `${top}px`,
                     height: `${height}px`,

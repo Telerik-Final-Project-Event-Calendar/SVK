@@ -4,6 +4,7 @@ import { AppContext } from "../../state/app.context";
 import DailyHourLabels from "../../components/Calendar/DailyHoursLabels";
 import { getAllEventsForDate } from "../../services/events.service";
 import { format } from "date-fns/fp";
+import { categoryStyles } from "../../utils/eventCategoryStyles";
 
 export default function DailyCalendar() {
   const { selectedDate, setSelectedDate } = useContext(CalendarContext);
@@ -44,6 +45,11 @@ export default function DailyCalendar() {
     newDate.setDate(date.getDate() + days);
     return newDate;
   }
+
+  const styles = (event: any) => {
+    const category = event.category || "default";
+    return categoryStyles[category] || categoryStyles["default"];
+  };
 
   return (
     <div className="p-4">
@@ -92,7 +98,10 @@ export default function DailyCalendar() {
               <div
                 key={idx}
                 onClick={() => alert(`Event: ${event.title}`)}
-                className="absolute left-2 right-2 bg-white border-l-4 border-blue-500 text-gray-800 rounded-md shadow-md px-3 py-2 text-xs cursor-pointer hover:shadow-lg hover:scale-[1.01] transition-all"
+                className={`absolute left-2 right-2 rounded-md shadow-md px-3 py-2 text-xs cursor-pointer hover:shadow-lg hover:scale-[1.01] transition-all
+                  ${styles(event).bg} ${styles(event).border} ${
+                  styles(event).text
+                } border-l-4`}
                 style={{
                   top: `${top}px`,
                   minHeight: `${height}px`,
