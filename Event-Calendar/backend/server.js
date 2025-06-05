@@ -58,8 +58,8 @@ const upload = multer();
 app.use(
   cors({
     origin: ["http://localhost:5173", "https://svk-event-calendar.web.app"],
-    methods: "POST, GET",
-  })
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],  })
 );
 app.use(express.json());
 
@@ -109,136 +109,6 @@ app.post("/api/upload-image", upload.single("image"), async (req, res) => {
     res.status(500).json({ error: "Failed to upload image via Imgbb." });
   }
 });
-
-// const normalizeDate = (timestampOrDateString) => {
-//   let date;
-//   if (typeof timestampOrDateString === "number") {
-//     date = new Date(timestampOrDateString);
-//   } else {
-//     date = new Date(timestampOrDateString);
-//   }
-//   if (isNaN(date.getTime())) {
-//     return null;
-//   }
-//   return date.toISOString().split("T")[0];
-// };
-
-// app.get("/api/stats/users-over-time", async (req, res) => {
-//   if (!db) {
-//     return res
-//       .status(500)
-//       .json({ error: "Firebase Admin SDK not initialized." });
-//   }
-//   try {
-//     const usersRef = db.ref("users");
-//     const snapshot = await usersRef.once("value");
-//     const usersData = snapshot.val();
-
-//     if (!usersData) {
-//       return res.json([]);
-//     }
-
-//     const countsByDate = {};
-//     Object.values(usersData).forEach((user) => {
-//       if (user.createdOn) {
-//         const date = normalizeDate(user.createdOn);
-//         if (date) {
-//           countsByDate[date] = (countsByDate[date] || 0) + 1;
-//         }
-//       }
-//     });
-
-//     const chartData = Object.keys(countsByDate)
-//       .map((date) => ({
-//         date: date,
-//         value: countsByDate[date],
-//       }))
-//       .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-//     res.json(chartData);
-//   } catch (error) {
-//     console.error("Error fetching users over time:", error);
-//     res.status(500).json({ error: "Failed to fetch user trend data." });
-//   }
-// });
-
-// app.get("/api/stats/posts-over-time", async (req, res) => {
-//   if (!db) {
-//     return res
-//       .status(500)
-//       .json({ error: "Firebase Admin SDK not initialized." });
-//   }
-//   try {
-//     const postsRef = db.ref("posts");
-//     const snapshot = await postsRef.once("value");
-//     const postsData = snapshot.val();
-
-//     if (!postsData) {
-//       return res.json([]);
-//     }
-
-//     const countsByDate = {};
-//     Object.values(postsData).forEach((post) => {
-//       if (post.createdOn) {
-//         const date = normalizeDate(post.createdOn);
-//         if (date) {
-//           countsByDate[date] = (countsByDate[date] || 0) + 1;
-//         }
-//       }
-//     });
-
-//     const chartData = Object.keys(countsByDate)
-//       .map((date) => ({
-//         date: date,
-//         value: countsByDate[date],
-//       }))
-//       .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-//     res.json(chartData);
-//   } catch (error) {
-//     console.error("Error fetching posts over time:", error);
-//     res.status(500).json({ error: "Failed to fetch post trend data." });
-//   }
-// });
-
-// app.get("/api/stats/comments-over-time", async (req, res) => {
-//   if (!db) {
-//     return res
-//       .status(500)
-//       .json({ error: "Firebase Admin SDK not initialized." });
-//   }
-//   try {
-//     const commentsRef = db.ref("comments");
-//     const snapshot = await commentsRef.once("value");
-//     const commentsData = snapshot.val();
-
-//     if (!commentsData) {
-//       return res.json([]);
-//     }
-
-//     const countsByDate = {};
-//     Object.values(commentsData).forEach((comment) => {
-//       if (comment.createdOn) {
-//         const date = normalizeDate(comment.createdOn);
-//         if (date) {
-//           countsByDate[date] = (countsByDate[date] || 0) + 1;
-//         }
-//       }
-//     });
-
-//     const chartData = Object.keys(countsByDate)
-//       .map((date) => ({
-//         date: date,
-//         value: countsByDate[date],
-//       }))
-//       .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-//     res.json(chartData);
-//   } catch (error) {
-//     console.error("Error fetching comments over time:", error);
-//     res.status(500).json({ error: "Failed to fetch comment trend data." });
-//   }
-// });
 
 app.listen(port, () => {
   console.log(`Backend server listening on port ${port}`);
