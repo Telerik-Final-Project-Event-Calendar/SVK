@@ -3,13 +3,13 @@ import { getDatabase, Database } from 'firebase/database';
 import { getAuth, Auth } from 'firebase/auth'; 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBRfXrFjLWAbNUh5pdf26YIAv5TivS_zzM",
-  authDomain: "svk-event-calendar.firebaseapp.com",
-  databaseURL: "https://svk-event-calendar-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "svk-event-calendar",
-  storageBucket: "svk-event-calendar.firebasestorage.app",
-  messagingSenderId: "97075652114",
-  appId: "1:97075652114:web:417e1860a1cf1abe815acb"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 export const app = initializeApp(firebaseConfig);
