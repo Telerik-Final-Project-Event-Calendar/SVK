@@ -77,6 +77,11 @@ export const useRegistrationValidation = (currentPhone?: string) => {
             ...s,
             handleError: "Username must be 3-30 characters.",
           }));
+        if (/[.#$\[\]]/.test(value))
+          return setState((s) => ({
+            ...s,
+            handleError: "Username cannot contain ., #, $, [, or ].",
+          }));
         if (await isUsernameTaken(value))
           return setState((s) => ({
             ...s,

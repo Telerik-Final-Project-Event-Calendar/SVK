@@ -10,6 +10,8 @@ import ProfilePage from './pages/ProfilePage/ProfilePage';
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword'; 
 import HomePage from './pages/HomePage/HomePage';
 import { CalendarProvider } from './providers/CalendarProvider';
+import AdminPanel from './pages/Admin/AdminPanel';
+import AdminOnly from './hoc/AdminOnly';
 
 // const HomePage: React.FC = () => <div><h1>Welcome to Event Calendar!</h1><p>Home Page Content</p></div>;
 const CreateEvent: React.FC = () => <div><h2>Create New Event</h2><p>Event Creation Form Here</p></div>;
@@ -24,64 +26,87 @@ const App: React.FC = () => {
     <BrowserRouter>
       <AppProvider>
         <CalendarProvider>
-        <Header /> 
-        <main>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route
-              path="/create-event"
-              element={
-                <Authenticated>
-                  <CreateEvent />
-                </Authenticated>
-              }
-            />
-            <Route
-              path="/my-events"
-              element={
-                <Authenticated>
-                  <MyEvents />
-                </Authenticated>
-              }
-            />
-            <Route
-              path="/all-events"
-              element={
-                <Authenticated>
-                  <AllEvents />
-                </Authenticated>
-              }
-            />
-            <Route
-              path="/events/:id"
-              element={
-                <Authenticated>
-                  <EventDetails />
-                </Authenticated>
-              }
-            />
-            <Route
-              path="/events/edit/:id"
-              element={
-                <Authenticated>
-                  <EditEvent />
-                </Authenticated>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <Authenticated>
-                  <ProfilePage />
-                </Authenticated>
-              }
-            />
-            <Route path="*" element={<PageNotFound />} />
-          </Routes>
-        </main>
+          <Header />
+          <main>
+            <Routes>
+              <Route
+                path="/"
+                element={<HomePage />}
+              />
+              <Route
+                path="/login"
+                element={<Login />}
+              />
+              <Route
+                path="/register"
+                element={<Register />}
+              />
+              <Route
+                path="/forgot-password"
+                element={<ForgotPassword />}
+              />
+              <Route
+                path="/create-event"
+                element={
+                  <Authenticated>
+                    <CreateEvent />
+                  </Authenticated>
+                }
+              />
+              <Route
+                path="/my-events"
+                element={
+                  <Authenticated>
+                    <MyEvents />
+                  </Authenticated>
+                }
+              />
+              <Route
+                path="/all-events"
+                element={
+                  <Authenticated>
+                    <AllEvents />
+                  </Authenticated>
+                }
+              />
+              <Route
+                path="/events/:id"
+                element={
+                  <Authenticated>
+                    <EventDetails />
+                  </Authenticated>
+                }
+              />
+              <Route
+                path="/events/edit/:id"
+                element={
+                  <Authenticated>
+                    <EditEvent />
+                  </Authenticated>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <Authenticated>
+                    <ProfilePage />
+                  </Authenticated>
+                }
+              />
+              <Route
+                path="/admin"
+                element={
+                  <AdminOnly>
+                    <AdminPanel />
+                  </AdminOnly>
+                }
+              />
+              <Route
+                path="*"
+                element={<PageNotFound />}
+              />
+            </Routes>
+          </main>
         </CalendarProvider>
       </AppProvider>
     </BrowserRouter>
