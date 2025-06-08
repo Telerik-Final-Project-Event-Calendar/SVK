@@ -4,6 +4,7 @@ import Calendar from '../../components/Calendar/Calendar';
 import WeeklyCalendar from '../CalendarViews/WeeklyCalendarView';
 import MonthlyCalendar from '../CalendarViews/MonthlyView';
 import DailyCalendar from '../CalendarViews/DailyView';
+import CalendarYear from '../CalendarViews/CalendarYear/CalendarYear';
 import { CalendarContext } from '../../state/calendar.context';
 
 export default function HomePage() {
@@ -11,6 +12,8 @@ export default function HomePage() {
 
   const renderCalendar = () => {
     switch (view) {
+      case 'yearly':
+        return <CalendarYear/>
       case 'daily':
         return <DailyCalendar />;
       case 'monthly':
@@ -28,8 +31,6 @@ export default function HomePage() {
         <div className="w-72 bg-white shadow-md border-r">
           <Calendar />
         </div>
-
-        {/* Main Calendar View */}
         <div className="flex-1 p-4">
           {renderCalendar()}
         </div>

@@ -156,6 +156,7 @@ export default function Header() {
         <option value="weekly">Weekly</option>
         <option value="monthly">Monthly</option>
         <option value="daily">Daily</option>
+        <option value="yearly">Yearly</option>
       </select>
 
       <nav className="flex items-center space-x-4">
