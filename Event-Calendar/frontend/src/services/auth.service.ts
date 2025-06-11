@@ -35,6 +35,8 @@ export const registerUser = async (registrationData: IRegisterFormInputs): Promi
       createdOn: new Date().toISOString(),
       address: address || "",
       photoURL: "",
+      isAdmin: false,
+      isBlocked: false,
     };
 
     await set(ref(db, `users/${handle}`), userData);
@@ -52,12 +54,14 @@ export const registerUser = async (registrationData: IRegisterFormInputs): Promi
  * Log in.
  * @param {string} email 
  * @param {string} password 
- * @returns {Promise<{ user: FirebaseUser; userData: IUserData }>} 
+ * @returns {Promise<{ user: FirebaseUser; userData: IUserData } | null | undefined>} 
+ * Returns null if user is blocked. Returns undefined if user data not found.
+ * Throws Firebase Authentication errors for invalid credentials etc.
  */
 export const loginUser = async (
   email: string,
   password: string
-): Promise<{ user: FirebaseUser; userData: IUserData }> => {
+): Promise<{ user: FirebaseUser; userData: IUserData } | null | undefined> => {
   try {
     const userCredential = await signInWithEmailAndPassword(
       auth,
@@ -66,10 +70,21 @@ export const loginUser = async (
     );
     const user = userCredential.user;
     const userData = await getUserByUID(user.uid);
-    if (!userData) throw new Error("User data not found.");
+
+    if (!userData) {
+      console.error("User data not found for UID:", user.uid);
+      await signOut(auth);
+      return undefined;
+    }
+
+    if (userData.isBlocked) {
+      await signOut(auth);
+      return null;
+    }
+
     return { user, userData };
   } catch (error) {
-    console.error("Error during user login:", error);
+    console.error("Error during user login in auth.service:", error);
     throw error;
   }
 };

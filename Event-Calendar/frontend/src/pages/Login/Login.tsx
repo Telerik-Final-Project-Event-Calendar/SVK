@@ -29,7 +29,19 @@ const Login: React.FC = () => {
   const onSubmit = async (data: ILoginFormInputs) => {
     setLoginError(null);
     try {
-      const { user, userData } = await loginUser(data.email, data.password);
+      const result = await loginUser(data.email, data.password);
+
+      if (result === null) {
+        setLoginError("Your account has been blocked. Please contact support.");
+        return;
+      }
+
+      if (result === undefined) {
+        setLoginError("User data not found after login. Please try again.");
+        return;
+      }
+
+      const { user, userData } = result;
       setAppState((prev) => ({
         ...prev,
         user,
@@ -37,19 +49,21 @@ const Login: React.FC = () => {
       }));
       navigate(location.state?.from?.pathname || "/");
     } catch (error: any) {
-      console.error("Login failed:", error);
+      console.warn("Login failed:", error);
+
+      let errorMessage = "An unexpected error occurred during login.";
 
       if (
         error.code === "auth/invalid-credential" ||
         error.code === "auth/wrong-password" ||
         error.code === "auth/user-not-found"
       ) {
-        setLoginError("Invalid email or password.");
+        errorMessage = "Invalid email or password.";
       } else if (error.code === "auth/too-many-requests") {
-        setLoginError("Too many failed attempts. Try again later.");
-      } else {
-        setLoginError("An unexpected error occurred during login.");
+        errorMessage = "Too many failed attempts. Try again later.";
       }
+
+      setLoginError(errorMessage);
     }
   };
 
@@ -64,9 +78,13 @@ const Login: React.FC = () => {
           <p className="text-red-500 text-sm text-center mb-4">{loginError}</p>
         )}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-4">
           <div className="form-group">
-            <label htmlFor="email" className="label-base">
+            <label
+              htmlFor="email"
+              className="label-base">
               Email
             </label>
             <input
@@ -88,7 +106,9 @@ const Login: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password" className="label-base">
+            <label
+              htmlFor="password"
+              className="label-base">
               Password
             </label>
             <input
@@ -109,13 +129,17 @@ const Login: React.FC = () => {
             )}
           </div>
 
-          <button type="submit" className="btn-primary">
+          <button
+            type="submit"
+            className="btn-primary">
             Login
           </button>
         </form>
 
         <p className="mt-4 text-center text-sm text-gray-600">
-          <Link to="/forgot-password" className="text-blue-600 hover:underline">
+          <Link
+            to="/forgot-password"
+            className="text-blue-600 hover:underline">
             Forgot your password?
           </Link>
         </p>

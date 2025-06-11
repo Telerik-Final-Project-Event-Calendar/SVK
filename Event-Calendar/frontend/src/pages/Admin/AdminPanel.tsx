@@ -108,9 +108,9 @@ export default function AdminPanel() {
           className="inline-flex items-center gap-2 text-sm bg-red-100 text-red-800 px-3 py-1 rounded-md hover:bg-red-200"
         >
           <FaFlag />
-          See Reported Posts
+          See Reported Events
           <span>
-            ({reportStats.total} reports / {reportStats.distinctPosts} posts)
+            ({reportStats.total} reports / {reportStats.distinctPosts} events)
           </span>
         </Link>
       </div>
@@ -175,7 +175,7 @@ export default function AdminPanel() {
                       to={`/posts?author=${user.handle}&admin=true`}
                       className="text-sm text-blue-600 hover:underline"
                     >
-                      See Posts
+                      See Events
                     </Link>
                   </td>
                 </tr>

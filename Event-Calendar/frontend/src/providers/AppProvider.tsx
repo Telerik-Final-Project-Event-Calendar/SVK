@@ -4,6 +4,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../config/firebase-config";
 import { getUserByUID } from "../services/users.service";
 import { IAppState, IUserData } from "../types/app.types";
+import { SyncLoader } from "react-spinners";
 
 interface AppProviderProps {
   children: React.ReactNode;
@@ -20,22 +21,24 @@ export default function AppProvider({ children }: AppProviderProps) {
     error: null,
   });
 
+  const [isInitialAuthLoading, setIsInitialAuthLoading] = useState(true);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, handleAuthChange);
     return () => unsubscribe();
   }, []);
 
   const handleAuthChange = async (firebaseUser: any) => {
-    setAppState((prev) => ({ ...prev, user: firebaseUser, isLoading: true }));
+    setAppState((prev) => ({ ...prev, user: firebaseUser }));
 
     if (!firebaseUser) {
       setAppState((prev) => ({
         ...prev,
         user: null,
         userData: null,
-        isLoading: false,
         error: null,
       }));
+      setIsInitialAuthLoading(false);
       return;
     }
 
@@ -53,7 +56,6 @@ export default function AppProvider({ children }: AppProviderProps) {
       setAppState((prev) => ({
         ...prev,
         userData: enrichedData,
-        isLoading: false,
         error: null,
       }));
     } catch (err) {
@@ -61,19 +63,31 @@ export default function AppProvider({ children }: AppProviderProps) {
       setAppState((prev) => ({
         ...prev,
         userData: null,
-        isLoading: false,
         error: "Failed to load user data.",
       }));
+    } finally {
+      setAppState((prev) => ({ ...prev, isLoading: false }));
+      setIsInitialAuthLoading(false);
     }
   };
 
+  if (isInitialAuthLoading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}>
+        <SyncLoader color="#36d7b7" />
+      </div>
+    );
+  }
+
   return (
     <AppContext.Provider value={{ ...appState, setAppState }}>
-      {!appState.isLoading ? (
-        children
-      ) : (
-        <div className="text-center mt-20">Loading...</div>
-      )}
+        {children} 
     </AppContext.Provider>
   );
 }
