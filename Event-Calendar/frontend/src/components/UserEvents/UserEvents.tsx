@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { fetchUserEvents } from "../../services/events.service";
 import { FiCalendar, FiMapPin, FiTag, FiEye, FiEdit2 } from "react-icons/fi";
 
 const EVENTS_PER_PAGE = 6;
 
-export const UserEvents: React.FC = () => {
+export default function UserEvents() {
   const [searchParams] = useSearchParams();
   const creator = searchParams.get("creator");
 
@@ -88,20 +88,20 @@ export const UserEvents: React.FC = () => {
               </div>
 
               <div className="mt-8 flex gap-6 justify-center">
-                <button
-                  onClick={() => console.log("View", event.id)}
+                <Link
+                  to={`/event/${event.id}`}
                   className="flex items-center gap-2 px-7 py-3 border-2 border-indigo-600 text-indigo-600 font-semibold rounded-full hover:bg-indigo-600 hover:text-white transition-colors duration-300 shadow-md"
                 >
                   <FiEye className="w-5 h-5" />
                   View
-                </button>
-                <button
-                  onClick={() => console.log("Edit", event.id)}
+                </Link>
+                <Link
+                  to={`/event/${event.id}/edit`}
                   className="flex items-center gap-2 px-7 py-3 border-2 border-pink-600 text-pink-600 font-semibold rounded-full hover:bg-pink-600 hover:text-white transition-colors duration-300 shadow-md"
                 >
                   <FiEdit2 className="w-5 h-5" />
                   Edit
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -145,4 +145,4 @@ export const UserEvents: React.FC = () => {
       )}
     </div>
   );
-};
+}
