@@ -25,6 +25,7 @@ export const createEvent = async (eventData: EventData): Promise<void> => {
   if (!newEventKey) throw new Error("Failed to generate event ID");
 
   const fullEventData = {
+    id: newEventKey,
     title,
     start,
     end,
@@ -44,15 +45,31 @@ export const createEvent = async (eventData: EventData): Promise<void> => {
   await set(userEventRef, fullEventData);
 };
 
-export const getAllEventsForDate = async (date: string) => {
+// export const getAllEventsForDate = async (date: string) => {
+//   const eventsRef = ref(db, "events");
+//   const snapshot = await get(eventsRef);
+//   if (!snapshot.exists()) return [];
+
+//   const allEvents = Object.values(snapshot.val());
+
+//   return allEvents.filter((event: any) => event.selectedDate === date);
+// };
+
+export async function getAllEventsForDate(dateKey: string) {
   const eventsRef = ref(db, "events");
+
   const snapshot = await get(eventsRef);
+
   if (!snapshot.exists()) return [];
 
-  const allEvents = Object.values(snapshot.val());
+  const data = snapshot.val();
 
-  return allEvents.filter((event: any) => event.selectedDate === date);
-};
+  const filtered = Object.entries(data)
+    .filter(([_, event]: [string, any]) => event.selectedDate === dateKey)
+    .map(([id, event]) => ({ id, ...event }));
+
+  return filtered;
+}
 
 export const getAllEvents = async () => {
   const eventsRef = ref(db, "events");
@@ -60,3 +77,21 @@ export const getAllEvents = async () => {
   if (!snapshot.exists()) return [];
   return Object.values(snapshot.val());
 };
+
+export async function getEventById(eventId: string) {
+  const eventRef = ref(db, `events/${eventId}`);
+
+  console.log("Fetching event from Firebase with ID:", eventId);
+
+  try {
+    const snapshot = await get(eventRef);
+    if (snapshot.exists()) {
+      return { id: eventId, ...snapshot.val() };
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching event:", error);
+    return null;
+  }
+}

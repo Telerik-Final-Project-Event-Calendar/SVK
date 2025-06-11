@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from "react";
 import { EventData } from "../../types/event.types";
 import { useNavigate } from "react-router-dom";
 import LocationPickerMap from "../../components/Map/LocationPickerMap";
-import { MapContainer, TileLayer, Marker, useMapEvent } from "react-leaflet";
+// import { MapContainer, TileLayer, Marker, useMapEvent } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { TZDate } from "@date-fns/tz";
 import { format } from "date-fns";
@@ -66,7 +66,6 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
     const end = format(endDate, "yyyy-MM-dd'T'HH:mm:ssXXX");
 
     const dateOnly = selectedDate.toLocaleDateString("en-CA");
-    console.log(dateOnly);
 
     // Prepare event data
     const eventData = {
@@ -81,6 +80,7 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
       selectedDate: dateOnly,
       handle: userData.handle,
       category: data.category,
+      id: data.id,
     };
 
     // Proceed with creating the event

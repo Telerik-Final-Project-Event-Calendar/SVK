@@ -5,6 +5,7 @@ import DailyHourLabels from "../../components/Calendar/DailyHoursLabels";
 import { getAllEventsForDate } from "../../services/events.service";
 import { format } from "date-fns/fp";
 import { categoryStyles } from "../../utils/eventCategoryStyles";
+import { Link } from "react-router-dom";
 
 export default function DailyCalendar() {
   const { selectedDate, setSelectedDate } = useContext(CalendarContext);
@@ -14,6 +15,8 @@ export default function DailyCalendar() {
   const dateKey = format("yyyy-MM-dd", validSelectedDate);
 
   const { eventRefreshTrigger } = useContext(CalendarContext);
+
+  const { user } = useContext(AppContext);
 
   const dayLabel = validSelectedDate.toLocaleDateString("default", {
     weekday: "long",
@@ -25,7 +28,11 @@ export default function DailyCalendar() {
   useEffect(() => {
     const loadEvents = async () => {
       const dayEvents = await getAllEventsForDate(dateKey);
-      setEvents(dayEvents);
+
+      const filteredEvents = user
+        ? dayEvents
+        : dayEvents.filter((event) => event.isPublic);
+      setEvents(filteredEvents);
     };
 
     loadEvents();
@@ -95,9 +102,9 @@ export default function DailyCalendar() {
             const height = getEventHeight(start, end);
 
             return (
-              <div
+              <Link
+                to={`/event/${event.id}`}
                 key={idx}
-                onClick={() => alert(`Event: ${event.title}`)}
                 className={`absolute left-2 right-2 rounded-md shadow-md px-3 py-2 text-xs cursor-pointer hover:shadow-lg hover:scale-[1.01] transition-all
                   ${styles(event).bg} ${styles(event).border} ${
                   styles(event).text
@@ -149,7 +156,7 @@ export default function DailyCalendar() {
                     minute: "2-digit",
                   })}
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>

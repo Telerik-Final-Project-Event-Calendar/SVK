@@ -4,10 +4,22 @@ type Props = {
   onSelectDate: (date: Date) => void;
 };
 
-export default function CalendarGrid({ currentDate, selectedDate, onSelectDate }: Props) {
-  const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-  const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-  const startDay = startOfMonth.getDay(); 
+export default function CalendarGrid({
+  currentDate,
+  selectedDate,
+  onSelectDate,
+}: Props) {
+  const startOfMonth = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth(),
+    1
+  );
+  const endOfMonth = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth() + 1,
+    0
+  );
+  const startDay = startOfMonth.getDay();
 
   const daysInMonth = endOfMonth.getDate();
   const today = new Date();
@@ -34,7 +46,8 @@ export default function CalendarGrid({ currentDate, selectedDate, onSelectDate }
         }
 
         const isToday = date.toDateString() === today.toDateString();
-        const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
+        const isSelected =
+          selectedDate && date.toDateString() === selectedDate.toDateString();
 
         return (
           <button
