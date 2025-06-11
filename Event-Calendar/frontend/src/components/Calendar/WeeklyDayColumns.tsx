@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { categoryStyles } from "../../utils/eventCategoryStyles";
 
 const styles = (event: any) => {
@@ -49,7 +50,8 @@ export default function WeeklyDayColumns({
               const height = (endMin - startMin) * PIXELS_PER_MINUTE;
 
               return (
-                <div
+                <Link
+                  to={`/event/${event.id}`}
                   key={i}
                   className={`absolute text-xs rounded-md shadow-md px-3 py-2 transition-all hover:shadow-lg hover:scale-[1.01]
                     ${styles(event).bg} ${styles(event).border} ${
@@ -106,7 +108,7 @@ export default function WeeklyDayColumns({
                       minute: "2-digit",
                     })}
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>

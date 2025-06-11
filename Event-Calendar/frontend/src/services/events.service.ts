@@ -66,7 +66,7 @@ export async function getAllEventsForDate(dateKey: string) {
 
   const filtered = Object.entries(data)
     .filter(([_, event]: [string, any]) => event.selectedDate === dateKey)
-    .map(([id, event]) => ({ id, ...event })); // 👈 добавяме .id
+    .map(([id, event]) => ({ id, ...event }));
 
   return filtered;
 }

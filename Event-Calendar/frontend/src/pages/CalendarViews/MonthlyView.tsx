@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState, useMemo, JSX } from "react";
 import { CalendarContext } from "../../state/calendar.context";
 import { getAllEvents } from "../../services/events.service";
 import { categoryStyles } from "../../utils/eventCategoryStyles";
+import { Link } from "react-router-dom";
 
 interface Event {
   id: string;
@@ -167,9 +168,9 @@ export default function MonthlyCalendar(): JSX.Element {
                   });
 
                   return (
-                    <div
+                    <Link
+                      to={`/event/${event.id}`}
                       key={event.id}
-                      onClick={() => alert(`Event: ${event.title}`)}
                       className={`rounded-md shadow-md px-3 py-2 text-xs cursor-pointer hover:shadow-lg hover:scale-[1.01] transition-all  ${
                         styles(event).bg
                       } ${styles(event).border} ${
@@ -210,7 +211,7 @@ export default function MonthlyCalendar(): JSX.Element {
                         </svg>
                         {startTime} - {endTime}
                       </div>
-                    </div>
+                    </Link>
                   );
                 })}
 
