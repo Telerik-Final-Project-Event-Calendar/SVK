@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { categoryStyles } from "../../utils/eventCategoryStyles";
+import { useContext } from "react";
+import { AppContext } from "../../state/app.context";
 
 const styles = (event: any) => {
   const category = event.category || "default";
@@ -22,12 +24,16 @@ export default function WeeklyDayColumns({
   weekStart,
   events,
 }: WeeklyDayColumnsProps) {
+  const { user } = useContext(AppContext);
+
   return (
     <>
       {Array.from({ length: 7 }, (_, d) => {
         const dayDate = addDays(weekStart, d);
         const dayStr = dayDate.toLocaleDateString("sv-SE");
-        const dayEvents = events.filter((e) => e.selectedDate === dayStr);
+        const dayEvents = events
+          .filter((e) => e.selectedDate === dayStr)
+          .filter((e) => user || e.isPublic);
 
         return (
           <div

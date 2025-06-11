@@ -3,6 +3,7 @@ import { CalendarContext } from "../../state/calendar.context";
 import { getAllEvents } from "../../services/events.service";
 import { categoryStyles } from "../../utils/eventCategoryStyles";
 import { Link } from "react-router-dom";
+import { AppContext } from "../../state/app.context";
 
 interface Event {
   id: string;
@@ -41,13 +42,17 @@ export default function MonthlyCalendar(): JSX.Element {
     selectedDate instanceof Date ? selectedDate : new Date();
 
   const [events, setEvents] = useState<Event[]>([]);
-
+  const { user } = useContext(AppContext);
   // Fetch all events once on mount
   useEffect(() => {
     async function fetchEvents() {
       try {
         const allEvents = await getAllEvents();
-        setEvents(allEvents as Event[]);
+
+        const filteredEvents = user
+          ? allEvents
+          : allEvents.filter((event) => event.isPublic);
+        setEvents(filteredEvents as Event[]);
       } catch (error) {
         console.error("Failed to fetch events:", error);
       }
@@ -154,7 +159,7 @@ export default function MonthlyCalendar(): JSX.Element {
               <div className="font-semibold">{date.getDate()}</div>
 
               <div className="relative mt-2 flex flex-col gap-1 overflow-y-auto max-h-[90px] pr-1">
-                {dayEvents.map((event, idx) => {
+                {dayEvents.map((event) => {
                   const startTime = new Date(event.start).toLocaleTimeString(
                     [],
                     {
@@ -214,12 +219,6 @@ export default function MonthlyCalendar(): JSX.Element {
                     </Link>
                   );
                 })}
-
-                {/* {dayEvents.length > 3 && (
-                  <div className="text-xs text-gray-500 font-medium">
-                    + {dayEvents.length - 3} more
-                  </div>
-                )} */}
               </div>
             </div>
           );

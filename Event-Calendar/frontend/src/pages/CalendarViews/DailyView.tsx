@@ -16,6 +16,8 @@ export default function DailyCalendar() {
 
   const { eventRefreshTrigger } = useContext(CalendarContext);
 
+  const { user } = useContext(AppContext);
+
   const dayLabel = validSelectedDate.toLocaleDateString("default", {
     weekday: "long",
     month: "long",
@@ -26,7 +28,11 @@ export default function DailyCalendar() {
   useEffect(() => {
     const loadEvents = async () => {
       const dayEvents = await getAllEventsForDate(dateKey);
-      setEvents(dayEvents);
+
+      const filteredEvents = user
+        ? dayEvents
+        : dayEvents.filter((event) => event.isPublic);
+      setEvents(filteredEvents);
     };
 
     loadEvents();
