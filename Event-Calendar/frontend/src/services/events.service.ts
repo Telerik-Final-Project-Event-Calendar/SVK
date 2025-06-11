@@ -45,16 +45,6 @@ export const createEvent = async (eventData: EventData): Promise<void> => {
   await set(userEventRef, fullEventData);
 };
 
-// export const getAllEventsForDate = async (date: string) => {
-//   const eventsRef = ref(db, "events");
-//   const snapshot = await get(eventsRef);
-//   if (!snapshot.exists()) return [];
-
-//   const allEvents = Object.values(snapshot.val());
-
-//   return allEvents.filter((event: any) => event.selectedDate === date);
-// };
-
 export async function getAllEventsForDate(dateKey: string) {
   const eventsRef = ref(db, "events");
 
@@ -95,3 +85,15 @@ export async function getEventById(eventId: string) {
     return null;
   }
 }
+
+export const fetchUserEvents = async (username: string): Promise<any[]> => {
+  const userRef = ref(db, `users/${username}/events`);
+  const snapshot = await get(userRef);
+
+  if (snapshot.exists()) {
+    const data = snapshot.val();
+    return Object.values(data);
+  }
+
+  return [];
+};

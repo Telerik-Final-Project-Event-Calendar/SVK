@@ -13,6 +13,7 @@ import { CalendarProvider } from "./providers/CalendarProvider";
 import AdminPanel from "./pages/Admin/AdminPanel";
 import AdminOnly from "./hoc/AdminOnly";
 import EventDetails from "./pages/EventDetails/EventDetails";
+import UserEvents from "./components/UserEvents/UserEvents";
 
 // const HomePage: React.FC = () => <div><h1>Welcome to Event Calendar!</h1><p>Home Page Content</p></div>;
 const CreateEvent: React.FC = () => (
@@ -68,10 +69,10 @@ const App: React.FC = () => {
                 }
               />
               <Route
-                path="/my-events"
+                path="/events"
                 element={
                   <Authenticated>
-                    <MyEvents />
+                    <UserEvents />
                   </Authenticated>
                 }
               />
