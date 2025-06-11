@@ -154,7 +154,7 @@ export default function MonthlyCalendar(): JSX.Element {
               <div className="font-semibold">{date.getDate()}</div>
 
               <div className="relative mt-2 flex flex-col gap-1 overflow-y-auto max-h-[90px] pr-1">
-                {dayEvents.slice(0, 3).map((event, idx) => {
+                {dayEvents.map((event, idx) => {
                   const startTime = new Date(event.start).toLocaleTimeString(
                     [],
                     {
@@ -215,11 +215,11 @@ export default function MonthlyCalendar(): JSX.Element {
                   );
                 })}
 
-                {dayEvents.length > 3 && (
+                {/* {dayEvents.length > 3 && (
                   <div className="text-xs text-gray-500 font-medium">
                     + {dayEvents.length - 3} more
                   </div>
-                )}
+                )} */}
               </div>
             </div>
           );
