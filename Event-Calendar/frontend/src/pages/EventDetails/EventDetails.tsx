@@ -11,13 +11,14 @@ import {
   HiGlobe,
   HiLockClosed,
 } from "react-icons/hi";
+import { EventData } from "../../types/event.types";
 
 export default function EventDetails() {
   const { eventId } = useParams();
 
   console.log("USEpARAM", eventId);
 
-  const [event, setEvent] = useState<any>(null);
+  const [event, setEvent] = useState<EventData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -43,9 +44,20 @@ export default function EventDetails() {
   if (!event)
     return <div className="p-6 text-red-500">The Event is not found</div>;
 
+  const hasImage = event.imageUrl && event.imageUrl.trim() !== '';
+
   return (
     <div className="max-w-3xl mx-auto p-6">
       <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
+        {hasImage && (
+          <div className="mb-6 rounded-lg overflow-hidden border border-gray-200">
+            <img
+              src={event.imageUrl}
+              alt={`Event image: ${event.title}`}
+              className="w-full h-auto object-cover max-h-96"
+            />
+          </div>
+        )}
         <div className="border-b pb-4">
           <h1 className="text-3xl font-bold text-gray-800">{event.title}</h1>
           <p className="text-gray-500 mt-1">{event.description}</p>

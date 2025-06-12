@@ -15,6 +15,7 @@ export const createEvent = async (eventData: EventData): Promise<void> => {
     handle,
     selectedDate,
     category,
+    imageUrl,
   } = eventData;
 
   // Push event to global "events" path
@@ -37,6 +38,7 @@ export const createEvent = async (eventData: EventData): Promise<void> => {
     handle,
     selectedDate,
     category,
+    imageUrl,
   };
 
   await set(newEventRef, fullEventData);

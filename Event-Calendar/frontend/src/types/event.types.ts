@@ -10,4 +10,5 @@ export interface EventData {
   selectedDate: string;
   handle: string;
   category: string;
+  imageUrl?: string;
 }

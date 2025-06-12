@@ -82,10 +82,9 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
             className="w-full h-full object-cover"
           />
         ) : (
-          // <div className="w-full h-full bg-gray-300 flex items-center justify-center text-xl font-bold text-white">
-          //   ?
-          // </div>
-          null
+          <div className="w-full h-full bg-gray-300 flex items-center justify-center text-xl font-bold text-white">
+            ?
+          </div>
         )}
       </div>
 

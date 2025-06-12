@@ -10,6 +10,8 @@ import "leaflet/dist/leaflet.css";
 import { TZDate } from "@date-fns/tz";
 import { format } from "date-fns";
 import { CalendarContext } from "../../state/calendar.context";
+import ImageUploader from "../../components/ImageUploader/ImageUploader";
+import { uploadPicture } from  "../../services/storage.service";
 
 interface Props {
   selectedDate: Date | null;
@@ -29,11 +31,29 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
   const [address, setAddress] = useState<string>("");
   const { triggerEventRefresh } = useContext(CalendarContext);
 
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+
   useEffect(() => {
     if (!user) {
       navigate("/login");
     }
   }, [user, navigate]);
+
+    const handleFileSelect = (file: File) => {
+    setSelectedImageFile(file);
+    setImagePreviewUrl(URL.createObjectURL(file));
+  };
+
+
+  const handleRemoveImage = () => {
+    setSelectedImageFile(null);
+    if (imagePreviewUrl) {
+      URL.revokeObjectURL(imagePreviewUrl);
+    }
+    setImagePreviewUrl(null);
+  };
 
   const onSubmit = async (data: any) => {
     if (!selectedDate) {
@@ -67,6 +87,22 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
 
     const dateOnly = selectedDate.toLocaleDateString("en-CA");
 
+        let imageUrl: string | undefined;
+
+     if (selectedImageFile && userData.handle) {
+      setIsUploadingImage(true);
+      try {
+        imageUrl = await uploadPicture(userData.handle, selectedImageFile);
+      } catch (error) {
+        console.error("Error uploading event image:", error);
+        alert("Failed to upload image. Please try again.");
+        setIsUploadingImage(false);
+        return;
+      } finally {
+        setIsUploadingImage(false);
+      }
+    }
+
     // Prepare event data
     const eventData = {
       title: data.title,
@@ -81,6 +117,7 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
       handle: userData.handle,
       category: data.category,
       id: data.id,
+      imageUrl: imageUrl, 
     };
 
     // Proceed with creating the event
@@ -183,6 +220,18 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
                 rows={3}
               />
 
+              <div className="py-2">
+                <label className="label-base mb-2 block">Event Image (Optional)</label>
+                <ImageUploader
+                  previewURL={imagePreviewUrl}
+                  onFileSelect={handleFileSelect}
+                  onRemove={handleRemoveImage}
+                />
+                {isUploadingImage && (
+                  <p className="text-blue-600 text-sm mt-2">Uploading image...</p>
+                )}
+              </div>
+
               <label className="flex items-center gap-2 text-sm text-gray-700">
                 <input
                   type="checkbox"
@@ -218,6 +267,7 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
                 <button
                   type="submit"
                   className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                  disabled={isUploadingImage}
                 >
                   Create
                 </button>
