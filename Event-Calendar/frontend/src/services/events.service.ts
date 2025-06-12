@@ -1,5 +1,5 @@
 import { db } from "../config/firebase-config";
-import { ref, push, set, get } from "firebase/database";
+import { ref, push, set, get, update } from "firebase/database";
 import { EventData } from "../types/event.types";
 
 export const createEvent = async (eventData: EventData): Promise<void> => {
@@ -98,4 +98,20 @@ export const fetchUserEvents = async (username: string): Promise<any[]> => {
   }
 
   return [];
+};
+
+export const joinEvent = async (eventId: string, userId: string) => {
+  const eventRef = ref(db, `events/${eventId}`);
+
+  const snapshot = await get(eventRef);
+  if (!snapshot.exists()) throw new Error("Event not found");
+
+  const event = snapshot.val();
+  const participants = event.participants || [];
+
+  if (participants.includes(userId)) return;
+
+  await update(eventRef, {
+    participants: [...participants, userId],
+  });
 };
