@@ -52,7 +52,7 @@ export async function getAllEventsForDate(dateKey: string) {
 
   if (!snapshot.exists()) return [];
 
-  const data = snapshot.val();
+  const data = snapshot.val() as Record<string, any>;
 
   const filtered = Object.entries(data)
     .filter(([_, event]: [string, any]) => event.selectedDate === dateKey)

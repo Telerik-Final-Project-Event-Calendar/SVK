@@ -4,7 +4,27 @@ import plugin from "tailwindcss/plugin";
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      animation: {
+        "slide-down": "slideDown 0.3s ease-out forwards",
+      },
+      keyframes: {
+        slideDown: {
+          from: {
+            opacity: "0",
+            transform: "translateY(-10px)",
+            maxHeight: "0",
+            overflow: "hidden",
+          },
+          to: {
+            opacity: "1",
+            transform: "translateY(0)",
+            maxHeight: "500px",
+            overflow: "visible",
+          },
+        },
+      },
+    },
   },
   plugins: [
     plugin(function ({ addComponents }) {
@@ -12,7 +32,7 @@ export default {
         ".btn-primary": {
           "@apply w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors":
             {},
-        },        
+        },
         ".btn-danger": {
           "@apply mt-1 text-sm text-gray-600 px-2 py-1 bg-gray-200 hover:bg-red-500 hover:text-white rounded transition h-8 font-bold":
             {},

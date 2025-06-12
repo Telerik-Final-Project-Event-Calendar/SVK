@@ -8,35 +8,52 @@ interface ImageUploaderProps {
 
 /**
  * ImageUploader component
- * 
+ *
  * A reusable image upload UI component that supports both file selection via click
  * and drag-and-drop functionality. It displays a preview of the selected image
  * and provides an option to remove it.
- * 
+ *
  * Props:
- * - previewURL: string | null  
- *   The URL of the image to be displayed as a preview. If null, a placeholder is shown.
- * 
- * - onFileSelect: (file: File) => void  
- *   Callback function that is called when a file is selected or dropped. 
- *   Receives the selected File object as an argument.
- * 
- * - onRemove: () => void  
- *   Callback function that is called when the user clicks the remove button.
- * 
+ * @param {string | null} previewURL - The URL of the image to be displayed as a preview. If null, nothing is shown (empty space).
+ * @param {(file: File) => void} onFileSelect - Callback function that is called when a file is selected or dropped. Receives the selected `File` object as an argument.
+ * @param {() => void} onRemove - Callback function that is called when the user clicks the remove button.
+ *
  * Features:
- * - Click to upload: Opens a hidden file input when the image area is clicked.
- * - Drag-and-drop: Users can drop an image file onto the image area.
- * - Image preview: Displays the selected image in a circular frame.
- * - Remove option: Allows removing the selected image by clicking a ✕ button.
- * 
+ * - **Click to Upload:** Opens a hidden file input when the image area is clicked, allowing standard file selection.
+ * - **Drag-and-Drop:** Users can drag and drop an image file directly onto the image area.
+ * - **Image Preview:** Displays a circular preview of the selected image.
+ * - **Remove Option:** Provides a '✕' button to remove the currently displayed image.
+ *
  * Usage Example:
  * ```tsx
+ * import React, { useState } from 'react';
+ * import ImageUploader from './ImageUploader'; // Adjust path as necessary
+ *
+ * function MyComponent() {
+ * const [selectedFile, setSelectedFile] = useState<File | null>(null);
+ * const [imagePreview, setImagePreview] = useState<string | null>(null);
+ *
+ * const handleFileSelect = (file: File) => {
+ * setSelectedFile(file);
+ * setImagePreview(URL.createObjectURL(file));
+ * };
+ *
+ * const handleRemoveImage = () => {
+ * setSelectedFile(null);
+ * if (imagePreview) {
+ * URL.revokeObjectURL(imagePreview);
+ * }
+ * setImagePreview(null);
+ * };
+ *
+ * return (
  * <ImageUploader
- *   previewURL={imageURL}
- *   onFileSelect={(file) => setSelectedFile(file)}
- *   onRemove={() => setSelectedFile(null)}
+ * previewURL={imagePreview}
+ * onFileSelect={handleFileSelect}
+ * onRemove={handleRemoveImage}
  * />
+ * );
+ * }
  * ```
  */
 const ImageUploader: React.FC<ImageUploaderProps> = ({
@@ -65,9 +82,10 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full bg-gray-300 flex items-center justify-center text-xl font-bold text-white">
-            ?
-          </div>
+          // <div className="w-full h-full bg-gray-300 flex items-center justify-center text-xl font-bold text-white">
+          //   ?
+          // </div>
+          null
         )}
       </div>
 

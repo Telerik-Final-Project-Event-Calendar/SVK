@@ -15,7 +15,7 @@ import {
 } from "../../services/calendar.service";
 
 export default function Header() {
-  const { user, userData, setAppState } = useContext(AppContext);
+  const { user, userData, setAppState, searchTerm } = useContext(AppContext);
   const { selectedDate, setSelectedDate, view, setView } =
     useContext(CalendarContext);
 
@@ -120,6 +120,11 @@ export default function Header() {
     }
   };
 
+    const handleSearch = (term: string) => {
+    setAppState((prev) => ({ ...prev, searchTerm: term }));
+    //navigate(`/events?q=${term}`);
+  };
+
   return (
     <header className="bg-white shadow-md px-6 py-4 flex justify-between items-center">
       <NavLink
@@ -147,7 +152,11 @@ export default function Header() {
         <ChevronRight className="w-5 h-5 cursor-pointer text-gray-600 mx-2" />
       </button>
 
-      <SearchBar />
+      <SearchBar
+        value={searchTerm ?? ""}
+        onSearch={handleSearch}
+        placeholder="Search events..."
+      />
 
       <select
         value={view ?? "monthly"}
