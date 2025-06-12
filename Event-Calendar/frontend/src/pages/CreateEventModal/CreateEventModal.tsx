@@ -11,7 +11,7 @@ import { TZDate } from "@date-fns/tz";
 import { format } from "date-fns";
 import { CalendarContext } from "../../state/calendar.context";
 import ImageUploader from "../../components/ImageUploader/ImageUploader";
-import { uploadPicture } from  "../../services/storage.service";
+import { uploadPicture } from "../../services/storage.service";
 
 interface Props {
   selectedDate: Date | null;
@@ -41,11 +41,10 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
     }
   }, [user, navigate]);
 
-    const handleFileSelect = (file: File) => {
+  const handleFileSelect = (file: File) => {
     setSelectedImageFile(file);
     setImagePreviewUrl(URL.createObjectURL(file));
   };
-
 
   const handleRemoveImage = () => {
     setSelectedImageFile(null);
@@ -87,9 +86,9 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
 
     const dateOnly = selectedDate.toLocaleDateString("en-CA");
 
-        let imageUrl: string | undefined;
+    let imageUrl: string | undefined;
 
-     if (selectedImageFile && userData.handle) {
+    if (selectedImageFile && userData.handle) {
       setIsUploadingImage(true);
       try {
         imageUrl = await uploadPicture(userData.handle, selectedImageFile);
@@ -117,7 +116,7 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
       handle: userData.handle,
       category: data.category,
       id: data.id,
-      imageUrl: imageUrl, 
+      imageUrl: imageUrl,
     };
 
     // Proceed with creating the event
@@ -221,14 +220,18 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
               />
 
               <div className="py-2">
-                <label className="label-base mb-2 block">Event Image (Optional)</label>
+                <label className="label-base mb-2 block">
+                  Event Image (Optional)
+                </label>
                 <ImageUploader
                   previewURL={imagePreviewUrl}
                   onFileSelect={handleFileSelect}
                   onRemove={handleRemoveImage}
                 />
                 {isUploadingImage && (
-                  <p className="text-blue-600 text-sm mt-2">Uploading image...</p>
+                  <p className="text-blue-600 text-sm mt-2">
+                    Uploading image...
+                  </p>
                 )}
               </div>
 

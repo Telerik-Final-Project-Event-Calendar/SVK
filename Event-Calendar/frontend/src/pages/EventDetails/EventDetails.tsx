@@ -12,6 +12,7 @@ import {
   HiLockClosed,
 } from "react-icons/hi";
 import { EventData } from "../../types/event.types";
+import { InfoCard } from "../../components/InfoCard/InfoCard";
 
 export default function EventDetails() {
   const { eventId } = useParams();
@@ -44,65 +45,56 @@ export default function EventDetails() {
   if (!event)
     return <div className="p-6 text-red-500">The Event is not found</div>;
 
-  const hasImage = event.imageUrl && event.imageUrl.trim() !== '';
+  const hasImage = event.imageUrl && event.imageUrl.trim() !== "";
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
-        {hasImage && (
-          <div className="mb-6 rounded-lg overflow-hidden border border-gray-200">
-            <img
-              src={event.imageUrl}
-              alt={`Event image: ${event.title}`}
-              className="w-full h-auto object-cover max-h-96"
-            />
-          </div>
-        )}
-        <div className="border-b pb-4">
-          <h1 className="text-3xl font-bold text-gray-800">{event.title}</h1>
-          <p className="text-gray-500 mt-1">{event.description}</p>
+    <div className="max-w-6xl mx-auto px-6 py-12 space-y-10">
+      {hasImage && (
+        <div className="rounded-3xl overflow-hidden shadow-xl border border-gray-100">
+          <img
+            src={event.imageUrl}
+            alt={event.title}
+            className="w-full h-[26rem] object-cover hover:scale-105 transition-transform duration-300"
+          />
         </div>
+      )}
 
-        <div className="grid gird-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
-          <div className="flex items-start gap-2">
-            <HiLocationMarker className="text-blue-500 mt-0.5" />
-            <span>{event.location}</span>
-          </div>
-        </div>
+      <div className="space-y-4">
+        <h1 className="text-5xl font-black text-gray-900 tracking-tight leading-tight">
+          {event.title}
+        </h1>
+        <p className="text-lg text-gray-600">{event.description}</p>
+      </div>
 
-        <div className="flex items-start gap-2">
-          <HiCalendar className="text-green-500 mt-0.5" />
-          <span>{new Date(event.start).toLocaleString()}</span>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8">
+        <InfoCard icon={<HiCalendar />} label="Date">
+          {new Date(event.start).toLocaleDateString()}
+        </InfoCard>
 
-        <div className="flex items-start gap-2">
-          <HiClock className="text-yellow-500 mt-0.5" />
-          <span>{new Date(event.end).toLocaleString()}</span>
-        </div>
+        <InfoCard icon={<HiClock />} label="Time">
+          {new Date(event.start).toLocaleTimeString()} –{" "}
+          {new Date(event.end).toLocaleTimeString()}
+        </InfoCard>
 
-        <div className="flex items-start gap-2">
-          <HiTag className="text-purple-500 mt-0.5" />
+        <InfoCard icon={<HiLocationMarker />} label="Location">
+          {event.location}
+        </InfoCard>
+
+        <InfoCard icon={<HiTag />} label="Category">
           <span className="capitalize">{event.category}</span>
-        </div>
+        </InfoCard>
 
-        <div className="flex items-start gap-2">
-          <HiUser className="text-gray-500 mt-0.5" />
-          <span>{event.handle}</span>
-        </div>
+        <InfoCard icon={<HiUser />} label="Host">
+          {event.handle}
+        </InfoCard>
 
-        <div className="flex items-start gap-2">
-          {event.isPublic ? (
-            <>
-              <HiGlobe className="text-green-500 mt-0.5" />
-              <span className="text-green-600 font-medium">Public</span>
-            </>
-          ) : (
-            <>
-              <HiLockClosed className="text-red-500 mt-0.5" />
-              <span className="text-red-500 font-medium">Private</span>
-            </>
-          )}
-        </div>
+        <InfoCard
+          icon={event.isPublic ? <HiGlobe /> : <HiLockClosed />}
+          label="Visibility"
+          color={event.isPublic ? "green" : "red"}
+        >
+          {event.isPublic ? "Public" : "Private"}
+        </InfoCard>
       </div>
     </div>
   );
