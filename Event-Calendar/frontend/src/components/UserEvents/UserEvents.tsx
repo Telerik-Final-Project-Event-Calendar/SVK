@@ -34,7 +34,7 @@ export default function UserEvents() {
   return (
     <div className="max-w-6xl mx-auto px-8 py-10 bg-gradient-to-tr from-gray-50 via-white to-gray-50 min-h-screen">
       <h2 className="text-4xl font-extrabold mb-10 text-center text-gray-900 tracking-wide">
-        {creator.toUpperCase()}'S EVENTS
+        {creator?.toUpperCase() ?? ""}'S EVENTS
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
