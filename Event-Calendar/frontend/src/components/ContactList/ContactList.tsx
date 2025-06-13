@@ -20,10 +20,10 @@ export default function ContactList() {
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [contacts, setContacts] = useState<{ [uid: string]: boolean }>({});
   const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
   const [handle, setHandle] = useState<string | null>(null);
 
   const db = getDatabase();
-
 
   useEffect(() => {
     const resolveHandle = async () => {
@@ -31,7 +31,6 @@ export default function ContactList() {
       const usersRef = ref(db, "users");
       const snapshot = await get(usersRef);
       const data = snapshot.val() || {};
-
       for (const [h, userData] of Object.entries<any>(data)) {
         if (userData.uid === user.uid) {
           setHandle(h);
@@ -39,10 +38,8 @@ export default function ContactList() {
         }
       }
     };
-
     resolveHandle();
   }, [user]);
-
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -50,7 +47,6 @@ export default function ContactList() {
       const snapshot = await get(usersRef);
       const data = snapshot.val() || {};
       const users: User[] = [];
-
       Object.entries(data).forEach(([_, userData]: any) => {
         if (userData.uid && userData.email) {
           users.push({
@@ -61,13 +57,10 @@ export default function ContactList() {
           });
         }
       });
-
       setAllUsers(users);
     };
-
     fetchUsers();
   }, []);
-
 
   useEffect(() => {
     const fetchContacts = async () => {
@@ -81,7 +74,6 @@ export default function ContactList() {
       });
       setContacts(map);
     };
-
     fetchContacts();
   }, [handle]);
 
@@ -108,7 +100,7 @@ export default function ContactList() {
     });
   };
 
-   const filtered = allUsers.filter((u) => {
+  const filtered = allUsers.filter((u) => {
     if (contacts[u.uid]) return false;
     const fullName = `${u.firstName} ${u.lastName}`.toLowerCase();
     return (
@@ -126,11 +118,15 @@ export default function ContactList() {
         <input
           type="text"
           placeholder="Search by name or email"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              setSearch(searchInput.trim());
+            }
+          }}
           className="w-full border px-3 py-2 rounded mb-4"
         />
-
         <div className="space-y-3 max-h-[280px] overflow-y-auto">
           {search.trim().length > 0 && showResults.length === 0 && (
             <p className="text-sm text-gray-500">No users found.</p>
