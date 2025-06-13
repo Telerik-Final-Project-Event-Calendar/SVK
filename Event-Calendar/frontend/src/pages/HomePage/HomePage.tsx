@@ -1,5 +1,4 @@
-import React, { useContext } from 'react';
-import Header from '../../components/Header/Header';
+import React, { useContext, useState } from 'react';
 import Calendar from '../../components/Calendar/Calendar';
 import WeeklyCalendar from '../CalendarViews/WeeklyCalendarView';
 import MonthlyCalendar from '../CalendarViews/MonthlyView';
@@ -10,6 +9,7 @@ import ContactList from '../../components/ContactList/ContactList';
 
 export default function HomePage() {
   const { view } = useContext(CalendarContext);
+  const [showContacts, setShowContacts] = useState(false);
 
   const renderCalendar = () => {
     switch (view) {
@@ -26,7 +26,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen relative overflow-hidden">
       <div className="flex flex-1">
         <div className="w-72 bg-white shadow-md border-r">
           <Calendar />
@@ -35,10 +35,23 @@ export default function HomePage() {
         <div className="flex-1 p-4">
           {renderCalendar()}
         </div>
+      </div>
 
-        <aside className="w-80 border-l p-4 bg-gray-50">
+      <button
+        onClick={() => setShowContacts((prev) => !prev)}
+        className="fixed top-1/2 right-0 transform -translate-y-1/2 bg-blue-600 text-white px-2 py-1 rounded-l shadow z-40 hover:bg-blue-700"
+      >
+        {showContacts ? '>' : '<'}
+      </button>
+
+      <div
+        className={`fixed top-0 right-0 h-full w-80 bg-white shadow-lg transition-transform duration-300 z-30 ${
+          showContacts ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        <div className="p-4 border-l h-full overflow-y-auto">
           <ContactList />
-        </aside>
+        </div>
       </div>
     </div>
   );
