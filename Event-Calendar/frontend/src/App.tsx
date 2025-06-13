@@ -14,6 +14,7 @@ import AdminPanel from "./pages/Admin/AdminPanel";
 import AdminOnly from "./hoc/AdminOnly";
 import EventDetails from "./pages/EventDetails/EventDetails";
 import UserEvents from "./components/UserEvents/UserEvents";
+import EditEvent from "./pages/EditEvent/EditEvent";
 
 // const HomePage: React.FC = () => <div><h1>Welcome to Event Calendar!</h1><p>Home Page Content</p></div>;
 const CreateEvent: React.FC = () => (
@@ -22,12 +23,7 @@ const CreateEvent: React.FC = () => (
     <p>Event Creation Form Here</p>
   </div>
 );
-const MyEvents: React.FC = () => (
-  <div>
-    <h2>My Events</h2>
-    <p>List of user's events</p>
-  </div>
-);
+
 const AllEvents: React.FC = () => (
   <div>
     <h2>All Events</h2>
@@ -35,12 +31,6 @@ const AllEvents: React.FC = () => (
   </div>
 );
 
-const EditEvent: React.FC = () => (
-  <div>
-    <h2>Edit Event</h2>
-    <p>Edit event form</p>
-  </div>
-);
 const PageNotFound: React.FC = () => (
   <div>
     <h2>404 - Page Not Found</h2>
@@ -93,7 +83,7 @@ const App: React.FC = () => {
                 }
               />
               <Route
-                path="/events/edit/:id"
+                path="/event/edit/:id"
                 element={
                   <Authenticated>
                     <EditEvent />

@@ -38,7 +38,7 @@ export const createEvent = async (eventData: EventData): Promise<void> => {
     handle,
     selectedDate,
     category,
-    imageUrl,
+    imageUrl: imageUrl === undefined ? null : imageUrl,
   };
 
   await set(newEventRef, fullEventData);

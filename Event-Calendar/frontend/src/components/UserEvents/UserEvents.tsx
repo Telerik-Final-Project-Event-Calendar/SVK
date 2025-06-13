@@ -96,7 +96,7 @@ export default function UserEvents() {
                   View
                 </Link>
                 <Link
-                  to={`/event/${event.id}/edit`}
+                  to={`/event/edit/${event.id}`}
                   className="flex items-center gap-2 px-7 py-3 border-2 border-pink-600 text-pink-600 font-semibold rounded-full hover:bg-pink-600 hover:text-white transition-colors duration-300 shadow-md"
                 >
                   <FiEdit2 className="w-5 h-5" />
