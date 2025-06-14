@@ -2,6 +2,7 @@ import { db } from '../config/firebase-config';
 import { ref, get, update, remove } from 'firebase/database';
 import { IUserData } from '../types/app.types';
 import { EventData } from "../types/event.types";
+import { getEventReportStats } from "./eventReports.service";
 
 // --- USERS ---
 
@@ -24,8 +25,15 @@ export const toggleUserAdminStatus = async (handle: string, currentState: boolea
   await update(ref(db, `users/${handle}`), { isAdmin: !currentState });
 };
 
-export const getReportStats = async (): Promise<{ total: number; distinctPosts: number }> => {
-  return { total: 0, distinctPosts: 0 }; // Placeholder
+export const sortUsersByStatusAndAdmin = (users: IUserData[]): IUserData[] => {
+  return [...users].sort((a, b) => {
+    if (a.isBlocked && !b.isBlocked) return -1;
+    if (!a.isBlocked && b.isBlocked) return 1;
+    if (a.isAdmin && !b.isAdmin) return -1;
+    if (!a.isAdmin && b.isAdmin) return 1;
+
+    return 0;
+  });
 };
 
 // --- EVENTS ---
@@ -43,4 +51,8 @@ export const fetchAllEvents = async (): Promise<(EventData & { id: string })[]> 
 
 export const deleteEvent = async (eventId: string) => {
   await remove(ref(db, `events/${eventId}`));
+};
+
+export const getReportStats = async () => {
+  return await getEventReportStats();
 };

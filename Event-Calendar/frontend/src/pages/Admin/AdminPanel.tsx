@@ -7,7 +7,7 @@ import {
   toggleUserAdminStatus,
   getReportStats,
   fetchAllEvents,
-  deleteEvent,
+  sortUsersByStatusAndAdmin  
 } from "../../services/admin.service";
 import {
   FaFlag,
@@ -27,9 +27,12 @@ import {
   FiTrash2,
   FiChevronDown,
   FiChevronUp,
+  FiFlag as FiFlagIcon,
 } from "react-icons/fi";
 import PaginationControls from "../../components/PaginationControls/PaginationControls";
 import { usePagination } from "../../hooks/usePagination";
+import ReportedEvents from "./ReportedEvents";
+import { deleteEvent } from "../../services/events.service";
 
 interface EventWithId extends EventData {
   id: string;
@@ -41,15 +44,21 @@ export default function AdminPanel() {
   const [events, setEvents] = useState<EventWithId[]>([]);
   const [reportStats, setReportStats] = useState({
     total: 0,
-    distinctPosts: 0,
+    distinctEvents: 0,
   });
   const navigate = useNavigate();
 
-  const [isUsersSectionOpen, setIsUsersSectionOpen] = useState(true);
-  const [isEventsSectionOpen, setIsEventsSectionOpen] = useState(true);
+  const [isUsersSectionOpen, setIsUsersSectionOpen] = useState(false);
+  const [isEventsSectionOpen, setIsEventsSectionOpen] = useState(false);
+  const [isReportedEventsSectionOpen, setIsReportedEventsSectionOpen] = useState(false);
 
   const [userSearchTerm, setUserSearchTerm] = useState("");
   const [eventSearchTerm, setEventSearchTerm] = useState("");
+
+  const updateReportStats = async () => {
+    const stats = await getReportStats();
+    setReportStats(stats);
+  };
 
   useEffect(() => {
     if (!userData?.isAdmin) {
@@ -64,13 +73,7 @@ export default function AdminPanel() {
         getReportStats(),
       ]);
 
-      const sortedUsers = userList.sort((a, b) => {
-        if (a.isBlocked && !b.isBlocked) return 1;
-        if (!a.isBlocked && b.isBlocked) return -1;
-        if (a.isAdmin && !b.isAdmin) return -1;
-        if (!a.isAdmin && b.isAdmin) return 1;
-        return 0;
-      });
+      const sortedUsers = sortUsersByStatusAndAdmin(userList);
 
       setUsers(sortedUsers);
       setEvents(eventList);
@@ -82,36 +85,22 @@ export default function AdminPanel() {
 
   const handleToggleBlock = async (handle: string, currentState: boolean) => {
     await toggleUserBlockStatus(handle, currentState);
-    setUsers((prev) =>
-      prev
-        .map((user) =>
-          user.handle === handle ? { ...user, isBlocked: !currentState } : user
-        )
-        .sort((a, b) => {
-          if (a.isBlocked && !b.isBlocked) return 1;
-          if (!a.isBlocked && b.isBlocked) return -1;
-          if (a.isAdmin && !b.isAdmin) return -1;
-          if (!a.isAdmin && b.isAdmin) return 1;
-          return 0;
-        })
-    );
+    setUsers((prev) => {
+      const updatedUsers = prev.map((user) =>
+        user.handle === handle ? { ...user, isBlocked: !currentState } : user
+      );
+      return sortUsersByStatusAndAdmin(updatedUsers);
+    });
   };
 
   const handleToggleAdmin = async (handle: string, currentState: boolean) => {
     await toggleUserAdminStatus(handle, currentState);
-    setUsers((prev) =>
-      prev
-        .map((user) =>
-          user.handle === handle ? { ...user, isAdmin: !currentState } : user
-        )
-        .sort((a, b) => {
-          if (a.isBlocked && !b.isBlocked) return 1;
-          if (!a.isBlocked && b.isBlocked) return -1;
-          if (a.isAdmin && !b.isAdmin) return -1;
-          if (!a.isAdmin && b.isAdmin) return 1;
-          return 0;
-        })
-    );
+    setUsers((prev) => {
+      const updatedUsers = prev.map((user) =>
+        user.handle === handle ? { ...user, isAdmin: !currentState } : user
+      );
+      return sortUsersByStatusAndAdmin(updatedUsers);
+    });
   };
 
   const handleDeleteEvent = async (eventId: string) => {
@@ -157,16 +146,26 @@ export default function AdminPanel() {
         Admin Panel Overview
       </h2>
 
-      <div className="mb-8 p-4 bg-red-50 border border-red-200 rounded-lg shadow-sm">
-        <Link
-          to="/admin/reports"
-          className="inline-flex items-center gap-2 text-base font-semibold text-red-800 hover:text-red-900 transition-colors">
-          <FaFlag className="text-red-600" />
-          See Reported Events
-          <span className="ml-2 text-red-700">
-            ({reportStats.total} reports / {reportStats.distinctPosts} events)
-          </span>
-        </Link>
+     <div className="bg-white rounded-lg shadow-lg mb-8 border border-red-200">
+        <button
+          onClick={() => setIsReportedEventsSectionOpen(!isReportedEventsSectionOpen)}
+          className="w-full flex justify-between items-center px-6 py-4 bg-red-50 hover:bg-red-100 rounded-t-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition-colors duration-200"
+        >
+          <h3 className="text-xl font-semibold text-red-800 flex items-center gap-2">
+            <FiFlagIcon className="text-red-600" /> Reported Events ({reportStats.total} Reports / {reportStats.distinctEvents} Events)
+          </h3>
+          {isReportedEventsSectionOpen ? (
+            <FiChevronUp className="w-6 h-6 text-red-600" />
+          ) : (
+            <FiChevronDown className="w-6 h-6 text-red-600" />
+          )}
+        </button>
+
+        {isReportedEventsSectionOpen && (
+          <div className="p-6 pt-4 border-t border-red-200 animate-slide-down">
+            <ReportedEvents onReportAction={updateReportStats} /> 
+          </div>
+        )}
       </div>
 
       <div className="bg-white rounded-lg shadow-lg mb-8 border border-gray-200">

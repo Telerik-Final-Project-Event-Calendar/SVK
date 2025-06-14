@@ -74,7 +74,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}
         title="Click or drop an image to upload"
-        className="w-24 h-24 rounded-full overflow-hidden cursor-pointer border-2 border-gray-300 hover:border-blue-500 transition group">
+        className="w-48 h-24 rounded-xl overflow-hidden cursor-pointer border-2 border-gray-300 hover:border-blue-500 transition group flex items-center justify-center">
         {previewURL ? (
           <img
             src={previewURL}

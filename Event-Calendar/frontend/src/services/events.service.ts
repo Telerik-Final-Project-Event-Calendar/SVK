@@ -1,5 +1,5 @@
 import { db } from "../config/firebase-config";
-import { ref, push, set, get, update } from "firebase/database";
+import { ref, push, set, get, update, remove } from "firebase/database";
 import { EventData } from "../types/event.types";
 
 export const createEvent = async (eventData: EventData): Promise<void> => {
@@ -114,4 +114,39 @@ export const joinEvent = async (eventId: string, userId: string) => {
   await update(eventRef, {
     participants: [...participants, userId],
   });
+};
+
+export const deleteEvent = async (eventId: string): Promise<void> => {
+  try {
+    const eventRef = ref(db, `events/${eventId}`);
+    await remove(eventRef);
+
+    const eventReportsRef = ref(db, `eventReports/${eventId}`);
+    await remove(eventReportsRef);
+
+    const usersRef = ref(db, "users");
+    const usersSnapshot = await get(usersRef);
+
+    if (!usersSnapshot.exists()) {
+      return;
+    }
+
+    const usersData = usersSnapshot.val();
+    const userUpdates: Promise<void>[] = [];
+
+    for (const userHandle in usersData) {
+      const userSpecificEventPath = `users/${userHandle}/events/${eventId}`;
+      const userSpecificEventRef = ref(db, userSpecificEventPath);
+
+      const userEventSnapshot = await get(userSpecificEventRef);
+
+      if (userEventSnapshot.exists()) {
+        userUpdates.push(remove(userSpecificEventRef));
+      }
+    }
+    await Promise.all(userUpdates);
+  } catch (error) {
+    console.error(`Failed to delete event ${eventId} completely:`, error);
+    throw error;
+  }
 };
