@@ -7,6 +7,8 @@ import {
   deleteReportedEvent,
 } from "../../services/eventReports.service";
 import { FiFlag, FiEye, FiTrash2, FiCheckCircle } from "react-icons/fi";
+import PaginationControls from "../../components/PaginationControls/PaginationControls";
+import { usePagination } from "../../hooks/usePagination";
 
 interface ReportData {
   reportedBy: string;
@@ -108,21 +110,30 @@ export default function ReportedEvents({
 
   const eventIds = Object.keys(reportsByEvent);
 
- return (
+  const {
+    currentPage,
+    totalPages,
+    visibleItems: visibleReportedEvents,
+    goToNextPage,
+    goToPrevPage,
+  } = usePagination(eventIds, 3);
+
+  return (
     <div className="p-4">
       {eventIds.length === 0 ? (
-        <p className="text-gray-600 mt-4 text-center">No event reports available.</p>
+        <p className="text-gray-600 mt-4 text-center">
+          No event reports available.
+        </p>
       ) : (
         <div className="flex flex-col gap-6">
-          {eventIds.map((eventId) => {
+          {visibleReportedEvents.map((eventId) => {
             const reports = reportsByEvent[eventId];
             const event = reports[0].event;
 
             return (
               <div
                 key={eventId}
-                className="border border-gray-300 rounded-lg p-6 bg-gray-50 shadow-sm flex flex-col md:flex-row justify-between gap-6"
-              >
+                className="border border-gray-300 rounded-lg p-6 bg-gray-50 shadow-sm flex flex-col md:flex-row justify-between gap-6">
                 <div className="md:w-72 flex-none">
                   <h3 className="text-xl font-bold text-gray-800 mb-2">
                     {event.title}
@@ -130,19 +141,17 @@ export default function ReportedEvents({
                   <p className="text-gray-700 text-sm font-light mb-2">
                     <strong>Author:</strong> {event.handle}
                   </p>
-                  
+
                   <div className="flex items-center gap-3 mt-4">
                     <Link
                       to={`/event/${eventId}`}
-                      className="flex items-center gap-2 px-3 py-1 border rounded-full border-indigo-600 text-indigo-600 font-semibold text-xs hover:bg-indigo-600 hover:text-white transition-colors duration-300 shadow-sm"
-                    >
+                      className="flex items-center gap-2 px-3 py-1 border rounded-full border-indigo-600 text-indigo-600 font-semibold text-xs hover:bg-indigo-600 hover:text-white transition-colors duration-300 shadow-sm">
                       <FiEye className="w-3 h-3" /> View
                     </Link>
 
                     <button
                       onClick={() => handleDelete(eventId)}
-                      className="flex items-center gap-2 px-3 py-1 border rounded-full border-red-600 text-red-600 font-semibold text-xs hover:bg-red-600 hover:text-white transition-colors duration-300 shadow-sm"
-                    >
+                      className="flex items-center gap-2 px-3 py-1 border rounded-full border-red-600 text-red-600 font-semibold text-xs hover:bg-red-600 hover:text-white transition-colors duration-300 shadow-sm">
                       <FiTrash2 className="w-3 h-3" /> Delete Event
                     </button>
                   </div>
@@ -152,21 +161,20 @@ export default function ReportedEvents({
                   {reports.map(({ report, reportId }) => (
                     <div
                       key={reportId}
-                      className="bg-white border border-gray-200 p-4 rounded-md shadow-sm w-full sm:w-[calc(33.3333%-0.6666rem)]"
-                    >
-                      <p className="text-gray-700 text-sm font-light mb-1"> 
+                      className="bg-white border border-gray-200 p-4 rounded-md shadow-sm w-full sm:w-[calc(33.3333%-0.6666rem)]">
+                      <p className="text-gray-700 text-sm font-light mb-1">
                         <strong>Reported by:</strong> {report.reportedBy}
                       </p>
-                      <p className="text-gray-700 text-sm font-light mb-2"> 
+                      <p className="text-gray-700 text-sm font-light mb-2">
                         <strong>Reason:</strong> {report.reason}
                       </p>
                       <p className="text-gray-500 text-xs">
-                        Reported on: {new Date(report.createdOn).toLocaleString()}
+                        Reported on:{" "}
+                        {new Date(report.createdOn).toLocaleString()}
                       </p>
                       <button
                         onClick={() => handleReview(eventId, reportId)}
-                        className="inline-flex items-center gap-2 mt-3 px-3 py-1 border rounded-full border-green-600 text-green-600 font-semibold text-xs hover:bg-green-600 hover:text-white transition-colors duration-300 shadow-sm"
-                      >
+                        className="inline-flex items-center gap-2 mt-3 px-3 py-1 border rounded-full border-green-600 text-green-600 font-semibold text-xs hover:bg-green-600 hover:text-white transition-colors duration-300 shadow-sm">
                         <FiCheckCircle className="w-3 h-3" /> Mark as Reviewed
                       </button>
                     </div>
@@ -177,6 +185,12 @@ export default function ReportedEvents({
           })}
         </div>
       )}
+      <PaginationControls
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPrev={goToPrevPage}
+        onNext={goToNextPage}
+      />
     </div>
   );
 }
