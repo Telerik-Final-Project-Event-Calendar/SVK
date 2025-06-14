@@ -1,8 +1,7 @@
 import { ref, get, remove, update, push, set } from "firebase/database";
-import { db } from "../config/firebase-config"; // Уверете се, че db е правилно импортиран от Firebase Realtime Database
-import { deleteEvent as deleteEventFromService } from "./events.service"; // Преименуваме import, за да избегнем конфликт
+import { db } from "../config/firebase-config";
+import { deleteEvent as deleteEventFromService } from "./events.service";
 
-// Интерфейси за по-добра типизация
 interface ReportData {
   reportedBy: string;
   reason: string;
@@ -13,7 +12,7 @@ interface EventReport {
   eventId: string;
   reportId: string;
   report: ReportData;
-  event: any; // Можете да използвате EventData, ако имате пълния тип тук
+  event: any;
 }
 
 /**
@@ -27,14 +26,13 @@ export const reportEvent = async (
   reportedBy: string,
   reason: string
 ): Promise<void> => {
-  const reportRef = push(ref(db, `eventReports/${eventId}`)); // Използваме 'eventReports' вместо 'reports'
+  const reportRef = push(ref(db, `eventReports/${eventId}`));
   const reportData: ReportData = {
     reportedBy,
     reason,
     createdOn: Date.now(),
   };
 
-  // Записва информацията за репорта под конкретното събитие
   await set(reportRef, reportData);
 };
 
@@ -43,17 +41,17 @@ export const reportEvent = async (
  * @returns An array of event reports with associated event data.
  */
 export const fetchReportedEvents = async (): Promise<EventReport[]> => {
-  const reportsSnap = await get(ref(db, "eventReports")); // От 'eventReports'
-  const eventsSnap = await get(ref(db, "events")); // От 'events' колекцията
+  const reportsSnap = await get(ref(db, "eventReports"));
+  const eventsSnap = await get(ref(db, "events"));
 
   if (!reportsSnap.exists() || !eventsSnap.exists()) return [];
 
   const reportsData = reportsSnap.val() as Record<string, any>;
-  const eventsData = eventsSnap.val() as Record<string, any>; // Assumes events are stored by ID
+  const eventsData = eventsSnap.val() as Record<string, any>;
 
   return Object.entries(reportsData).flatMap(([eventId, reports]) => {
-    const event = eventsData[eventId]; // Взима събитието по eventId
-    if (!event) return []; // Ако събитието вече не съществува, игнорирайте репорта
+    const event = eventsData[eventId]; 
+    if (!event) return [];
 
     return Object.entries(reports).map(([reportId, report]) => ({
       eventId,
@@ -69,9 +67,7 @@ export const fetchReportedEvents = async (): Promise<EventReport[]> => {
  * @param eventId The ID of the event to delete.
  */
 export const deleteReportedEvent = async (eventId: string): Promise<void> => {
-  // Изтрива събитието от основната колекция
-  await deleteEventFromService(eventId); // Използваме функцията deleteEvent от events.service
-  // Изтрива всички репорти за това събитие
+  await deleteEventFromService(eventId);
   await remove(ref(db, `eventReports/${eventId}`));
 };
 
@@ -92,7 +88,7 @@ export const markEventReportReviewed = async (
  * @returns An object with total reports and count of distinct reported events.
  */
 export const getEventReportStats = async () => {
-  const snap = await get(ref(db, "eventReports")); // От 'eventReports'
+  const snap = await get(ref(db, "eventReports"));
   if (!snap.exists()) return { total: 0, distinctEvents: 0 };
 
   const reportsData = snap.val() as Record<string, any>;

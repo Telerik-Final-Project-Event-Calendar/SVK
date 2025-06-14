@@ -19,7 +19,7 @@ export default {
           to: {
             opacity: "1",
             transform: "translateY(0)",
-            maxHeight: "500px",
+            maxHeight: "2000px",
             overflow: "visible",
           },
         },
