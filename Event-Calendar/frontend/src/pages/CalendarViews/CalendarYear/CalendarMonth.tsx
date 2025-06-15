@@ -12,7 +12,7 @@ const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const CalendarMonth: React.FC<Props> = ({ year, month }) => {
   const startDate = dayjs(new Date(year, month, 1));
   const daysInMonth = startDate.daysInMonth();
-  const startDay = startDate.day(); // 0 = Sunday
+  const startDay = startDate.day();
 
   const blankDays = Array.from({ length: startDay });
   const monthDays = Array.from({ length: daysInMonth }, (_, i) => i + 1);
