@@ -6,12 +6,13 @@ import { getAllEventsForDate } from "../../services/events.service";
 import { format } from "date-fns/fp";
 import { categoryStyles } from "../../utils/eventCategoryStyles";
 import { Link } from "react-router-dom";
+import { EventData } from "../../types/event.types";
 
 export default function DailyCalendar() {
   const { selectedDate, setSelectedDate } = useContext(CalendarContext);
   const validSelectedDate =
     selectedDate instanceof Date ? selectedDate : new Date();
-  const [events, setEvents] = useState<any[]>([]);
+  const [events, setEvents] = useState<EventData[]>([]);
   const dateKey = format("yyyy-MM-dd", validSelectedDate);
 
   const { eventRefreshTrigger } = useContext(CalendarContext);
@@ -27,16 +28,16 @@ export default function DailyCalendar() {
 
   useEffect(() => {
     const loadEvents = async () => {
-      const dayEvents = await getAllEventsForDate(dateKey);
+      const dayEvents: EventData[] = await getAllEventsForDate(dateKey);
 
       const filteredEvents = user
         ? dayEvents
-        : dayEvents.filter((event) => event.isPublic);
+        : dayEvents.filter((event: EventData) => event.isPublic);
       setEvents(filteredEvents);
     };
 
     loadEvents();
-  }, [dateKey, eventRefreshTrigger]);
+  }, [dateKey, eventRefreshTrigger, user]);
 
   function getEventTop(start: Date) {
     return start.getHours() * 37.5 + (start.getMinutes() / 60) * 37.5;
@@ -53,7 +54,7 @@ export default function DailyCalendar() {
     return newDate;
   }
 
-  const styles = (event: any) => {
+  const styles = (event: EventData) => {
     const category = event.category || "default";
     return categoryStyles[category] || categoryStyles["default"];
   };
@@ -95,7 +96,7 @@ export default function DailyCalendar() {
             />
           ))}
 
-          {events.map((event, idx) => {
+          {events.map((event: EventData, idx) => {
             const start = new Date(event.start);
             const end = new Date(event.end);
             const top = getEventTop(start);

@@ -4,6 +4,7 @@ import { AppContext } from "../../state/app.context";
 import HourLabels from "../../components/Calendar/HoursLabels";
 import WeeklyDayColumns from "../../components/Calendar/WeeklyDayColumns";
 import { getAllEvents } from "../../services/events.service";
+import { EventData } from "../../types/event.types";
 
 function startOfWeek(date: Date) {
   const day = date.getDay();
@@ -17,8 +18,8 @@ function addDays(date: Date, days: number) {
 
 export default function WeeklyCalendar() {
   const { selectedDate, view, setSelectedDate } = useContext(CalendarContext);
-  const { user, userData } = useContext(AppContext);
-  const [weeklyEvents, setWeeklyEvents] = useState([]);
+  const { user } = useContext(AppContext);
+  const [weeklyEvents, setWeeklyEvents] = useState<EventData[]>([]);
 
   const validSelectedDate =
     selectedDate instanceof Date ? selectedDate : new Date();
@@ -27,19 +28,19 @@ export default function WeeklyCalendar() {
 
   useEffect(() => {
     async function fetchEvents() {
-      const events = await getAllEvents();
+      const events: EventData[] = await getAllEvents();
       const start = startOfWeek(validSelectedDate);
       const weekDates = [...Array(7)].map((_, i) =>
         addDays(start, i).toLocaleDateString("sv-SE")
       );
-      const filtered = events.filter((event: any) =>
-        weekDates.includes(event.selectedDate)
+      const filtered = events.filter((event) =>
+        weekDates.includes(event.selectedDate) && (user || event.isPublic)
       );
       setWeeklyEvents(filtered);
     }
 
     fetchEvents();
-  }, [validSelectedDate, eventRefreshTrigger]);
+  }, [validSelectedDate, eventRefreshTrigger, user]);
 
   return (
     <div className="p-2">

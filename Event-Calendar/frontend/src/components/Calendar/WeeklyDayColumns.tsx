@@ -2,8 +2,9 @@ import { Link } from "react-router-dom";
 import { categoryStyles } from "../../utils/eventCategoryStyles";
 import { useContext } from "react";
 import { AppContext } from "../../state/app.context";
+import { EventData } from "../../types/event.types";
 
-const styles = (event: any) => {
+const styles = (event: EventData) => {
   const category = event.category || "default";
   return categoryStyles[category] || categoryStyles["default"];
 };
@@ -17,7 +18,7 @@ function addDays(date: Date, days: number) {
 
 interface WeeklyDayColumnsProps {
   weekStart: Date;
-  events: any[];
+  events: EventData[];
 }
 
 export default function WeeklyDayColumns({
@@ -32,8 +33,8 @@ export default function WeeklyDayColumns({
         const dayDate = addDays(weekStart, d);
         const dayStr = dayDate.toLocaleDateString("sv-SE");
         const dayEvents = events
-          .filter((e) => e.selectedDate === dayStr)
-          .filter((e) => user || e.isPublic);
+          .filter((e: EventData) => e.selectedDate === dayStr)
+          .filter((e: EventData) => user || e.isPublic);
 
         return (
           <div
@@ -45,12 +46,12 @@ export default function WeeklyDayColumns({
               {DAY_NAMES[dayDate.getDay()]}, {dayDate.getDate()}
             </div>
 
-            {dayEvents.map((event, i) => {
+            {dayEvents.map((event: EventData, i) => {
               const startDate = new Date(event.start);
               const endDate = new Date(event.end);
 
               const startMin =
-                startDate.getHours() * 60 + startDate.getMinutes();
+              startDate.getHours() * 60 + startDate.getMinutes();
               const endMin = endDate.getHours() * 60 + endDate.getMinutes();
               const top = startMin * PIXELS_PER_MINUTE;
               const height = (endMin - startMin) * PIXELS_PER_MINUTE;

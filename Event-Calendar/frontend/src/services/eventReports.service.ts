@@ -1,6 +1,7 @@
 import { ref, get, remove, update, push, set } from "firebase/database";
 import { db } from "../config/firebase-config";
 import { deleteEvent as deleteEventFromService } from "./events.service";
+import { EventData, EventSeriesData } from "../types/event.types";
 
 interface ReportData {
   reportedBy: string;
@@ -12,7 +13,7 @@ interface EventReport {
   eventId: string;
   reportId: string;
   report: ReportData;
-  event: any;
+  event: EventData & { seriesName?: string };
 }
 
 /**
@@ -43,21 +44,28 @@ export const reportEvent = async (
 export const fetchReportedEvents = async (): Promise<EventReport[]> => {
   const reportsSnap = await get(ref(db, "eventReports"));
   const eventsSnap = await get(ref(db, "events"));
+  const seriesSnap = await get(ref(db, "eventSeries"));
 
   if (!reportsSnap.exists() || !eventsSnap.exists()) return [];
 
   const reportsData = reportsSnap.val() as Record<string, any>;
-  const eventsData = eventsSnap.val() as Record<string, any>;
+  const eventsData = eventsSnap.val() as Record<string, EventData>;
+  const seriesData = seriesSnap.exists() ? seriesSnap.val() as Record<string, EventSeriesData> : {};
 
   return Object.entries(reportsData).flatMap(([eventId, reports]) => {
-    const event = eventsData[eventId]; 
+    const event = eventsData[eventId];
     if (!event) return [];
+
+    let eventWithSeriesName: EventData & { seriesName?: string } = { ...event };
+    if (event.isSeries && event.seriesId && seriesData[event.seriesId]) {
+      eventWithSeriesName.seriesName = seriesData[event.seriesId].name;
+    }
 
     return Object.entries(reports).map(([reportId, report]) => ({
       eventId,
       reportId,
       report: report as ReportData,
-      event,
+      event: eventWithSeriesName,
     }));
   });
 };

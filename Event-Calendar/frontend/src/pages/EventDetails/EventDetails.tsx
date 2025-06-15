@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   HiLocationMarker,
   HiCalendar,
@@ -26,6 +26,7 @@ interface ParticipantData {
 
 export default function EventDetails() {
   const { eventId } = useParams();
+  const navigate = useNavigate();
 
   const [event, setEvent] = useState<EventData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -36,7 +37,7 @@ export default function EventDetails() {
   const [joinError, setJoinError] = useState<string | null>(null);
   const { user, userData } = useContext(AppContext);
 
-  const currentUserUID = user.uid;
+  const currentUserUID = user?.uid;
 
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportReason, setReportReason] = useState("");
@@ -82,10 +83,17 @@ export default function EventDetails() {
     loadEventAndParticipants();
   }, [eventId]);
 
-  const isParticipant = event?.participants?.includes(currentUserUID);
+  const isParticipant = event?.participants?.includes(currentUserUID || "");
 
   const handleJoin = async () => {
-    if (!event) return;
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    if (!event || !currentUserUID) {
+        setJoinError("Event data or user ID is missing.");
+        return;
+    }    
     setJoinError(null);
     setJoining(true);
 
@@ -171,7 +179,7 @@ export default function EventDetails() {
       {hasImage && (
         <div className="rounded-3xl overflow-hidden shadow-xl border border-gray-100">
           <img
-            src={event.imageUrl}
+            src={event.imageUrl || undefined}
             alt={event.title}
             className="w-full h-[26rem] object-cover hover:scale-105 transition-transform duration-300"
           />
@@ -253,7 +261,7 @@ export default function EventDetails() {
         )}
 
         {/* Join Button */}
-        {event.isPublic && !isParticipant && (
+        {user && event.isPublic && !isParticipant && (
           <button
             disabled={joining}
             onClick={handleJoin}

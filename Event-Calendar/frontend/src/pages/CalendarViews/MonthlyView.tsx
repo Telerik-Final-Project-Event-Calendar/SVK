@@ -4,14 +4,7 @@ import { getAllEvents } from "../../services/events.service";
 import { categoryStyles } from "../../utils/eventCategoryStyles";
 import { Link } from "react-router-dom";
 import { AppContext } from "../../state/app.context";
-
-interface Event {
-  id: string;
-  title: string;
-  selectedDate: string;
-  start: string;
-  end: string;
-}
+import { EventData } from "../../types/event.types";
 
 // Helpers
 function getStartOfCalendarGrid(date: Date): Date {
@@ -41,24 +34,24 @@ export default function MonthlyCalendar(): JSX.Element {
   const validSelectedDate =
     selectedDate instanceof Date ? selectedDate : new Date();
 
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<EventData[]>([]);
   const { user } = useContext(AppContext);
   // Fetch all events once on mount
   useEffect(() => {
     async function fetchEvents() {
       try {
-        const allEvents = await getAllEvents();
+        const allEvents: EventData[] = await getAllEvents();
 
         const filteredEvents = user
           ? allEvents
-          : allEvents.filter((event) => event.isPublic);
-        setEvents(filteredEvents as Event[]);
+          : allEvents.filter((event: EventData) => event.isPublic);
+        setEvents(filteredEvents);
       } catch (error) {
         console.error("Failed to fetch events:", error);
       }
     }
     fetchEvents();
-  }, [eventRefreshTrigger]);
+  }, [eventRefreshTrigger, user]);
 
   const gridDates = useMemo(
     () => getCalendarGridDates(validSelectedDate),
@@ -90,12 +83,12 @@ export default function MonthlyCalendar(): JSX.Element {
     );
   }
 
-  function getEventsForDate(date: Date): Event[] {
+  function getEventsForDate(date: Date): EventData[] {
     const isoDate = date.toLocaleDateString("sv-SE");
     return events.filter((event) => event.selectedDate === isoDate);
   }
 
-  const styles = (event: any) => {
+  const styles = (event: EventData) => {
     const category = event.category || "default";
     return categoryStyles[category] || categoryStyles["default"];
   };
@@ -159,7 +152,7 @@ export default function MonthlyCalendar(): JSX.Element {
               <div className="font-semibold">{date.getDate()}</div>
 
               <div className="relative mt-2 flex flex-col gap-1 overflow-y-auto max-h-[90px] pr-1">
-                {dayEvents.map((event) => {
+                {dayEvents.map((event: EventData) => {
                   const startTime = new Date(event.start).toLocaleTimeString(
                     [],
                     {

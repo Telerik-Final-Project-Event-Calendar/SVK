@@ -7,8 +7,11 @@ import {
   toggleUserAdminStatus,
   getReportStats,
   fetchAllEvents,
-  sortUsersByStatusAndAdmin  
+  deleteEvent,
+  deleteEventSeries,
+  sortUsersByStatusAndAdmin,
 } from "../../services/admin.service";
+
 import {
   FaFlag,
   FaCheckCircle,
@@ -32,7 +35,6 @@ import {
 import PaginationControls from "../../components/PaginationControls/PaginationControls";
 import { usePagination } from "../../hooks/usePagination";
 import ReportedEvents from "./ReportedEvents";
-import { deleteEvent } from "../../services/events.service";
 
 interface EventWithId extends EventData {
   id: string;
@@ -50,7 +52,8 @@ export default function AdminPanel() {
 
   const [isUsersSectionOpen, setIsUsersSectionOpen] = useState(false);
   const [isEventsSectionOpen, setIsEventsSectionOpen] = useState(false);
-  const [isReportedEventsSectionOpen, setIsReportedEventsSectionOpen] = useState(false);
+  const [isReportedEventsSectionOpen, setIsReportedEventsSectionOpen] =
+    useState(false);
 
   const [userSearchTerm, setUserSearchTerm] = useState("");
   const [eventSearchTerm, setEventSearchTerm] = useState("");
@@ -103,10 +106,44 @@ export default function AdminPanel() {
     });
   };
 
-  const handleDeleteEvent = async (eventId: string) => {
-    if (window.confirm("Are you sure you want to delete this event?")) {
-      await deleteEvent(eventId);
-      setEvents((prev) => prev.filter((e) => e.id !== eventId));
+  const handleDeleteSingleEvent = async (
+    eventId: string,
+    eventTitle: string
+  ) => {
+    if (
+      window.confirm(
+        `Are you sure you want to delete only this event: "${eventTitle}"?`
+      )
+    ) {
+      try {
+        await deleteEvent(eventId);
+        setEvents((prev) => prev.filter((e) => e.id !== eventId));
+        alert("Event deleted successfully!");
+      } catch (error) {
+        console.error("Error deleting event:", error);
+        alert("Failed to delete event. Please try again.");
+      }
+    }
+  };
+
+  const handleDeleteEventSeries = async (
+    seriesId: string,
+    seriesName: string
+  ) => {
+    if (
+      window.confirm(
+        `Are you sure you want to delete the entire event series "${seriesName}" (all past and future occurrences)?`
+      )
+    ) {
+      try {
+        await deleteEventSeries(seriesId);
+        const updatedEvents = await fetchAllEvents();
+        setEvents(updatedEvents);
+        alert("Event series deleted successfully!");
+      } catch (error) {
+        console.error("Error deleting event series:", error);
+        alert("Failed to delete event series. Please try again.");
+      }
     }
   };
 
@@ -146,13 +183,15 @@ export default function AdminPanel() {
         Admin Panel Overview
       </h2>
 
-     <div className="bg-white rounded-lg shadow-lg mb-8 border border-red-200">
+      <div className="bg-white rounded-lg shadow-lg mb-8 border border-red-200">
         <button
-          onClick={() => setIsReportedEventsSectionOpen(!isReportedEventsSectionOpen)}
-          className="w-full flex justify-between items-center px-6 py-4 bg-red-50 hover:bg-red-100 rounded-t-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition-colors duration-200"
-        >
+          onClick={() =>
+            setIsReportedEventsSectionOpen(!isReportedEventsSectionOpen)
+          }
+          className="w-full flex justify-between items-center px-6 py-4 bg-red-50 hover:bg-red-100 rounded-t-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition-colors duration-200">
           <h3 className="text-xl font-semibold text-red-800 flex items-center gap-2">
-            <FiFlagIcon className="text-red-600" /> Reported Events ({reportStats.total} Reports / {reportStats.distinctEvents} Events)
+            <FiFlagIcon className="text-red-600" /> Reported Events (
+            {reportStats.total} reports / {reportStats.distinctEvents} events)
           </h3>
           {isReportedEventsSectionOpen ? (
             <FiChevronUp className="w-6 h-6 text-red-600" />
@@ -163,7 +202,7 @@ export default function AdminPanel() {
 
         {isReportedEventsSectionOpen && (
           <div className="p-6 pt-4 border-t border-red-200 animate-slide-down">
-            <ReportedEvents onReportAction={updateReportStats} /> 
+            <ReportedEvents onReportAction={updateReportStats} />
           </div>
         )}
       </div>
@@ -368,9 +407,23 @@ export default function AdminPanel() {
                         <td className="py-3 px-6 text-left">
                           {new Date(event.start).toLocaleString()}
                         </td>
-                        <td className="py-3 px-6 text-left">{event.handle}</td>
+                        <td className="py-3 px-6 text-left">
+                          {event.handle}
+                          {event.isSeries && (
+                            <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">
+                              Series
+                            </span>
+                          )}
+                        </td>
                         <td className="py-3 px-6 text-left">
                           <div className="flex gap-3">
+                            <Link
+                              to={`/events/${event.id}`}
+                              className="flex items-center gap-2 px-3 py-1 border rounded-full border-indigo-600 text-indigo-600 font-semibold text-xs hover:bg-indigo-600 hover:text-white transition-colors duration-300 shadow-sm"
+                              title="View event details">
+                              <FiEye className="w-4 h-4" /> View
+                            </Link>
+
                             <Link
                               to={`/events/edit/${event.id}`}
                               className="flex items-center gap-2 px-3 py-1 border rounded-full border-green-500 text-green-500 text-xs font-semibold hover:bg-green-500 hover:text-white transition duration-300 shadow-sm">
@@ -378,12 +431,42 @@ export default function AdminPanel() {
                               Edit
                             </Link>
 
-                            <button
-                              onClick={() => handleDeleteEvent(event.id)}
-                              className="flex items-center gap-2 px-3 py-1 border rounded-full border-red-500 text-red-500 text-xs font-semibold hover:bg-red-500 hover:text-white transition duration-300 shadow-sm">
-                              <FiTrash2 className="w-4 h-4" />
-                              Delete
-                            </button>
+                            {event.isSeries && event.seriesId ? (
+                              <>
+                                <button
+                                  onClick={() =>
+                                    handleDeleteSingleEvent(
+                                      event.id,
+                                      event.title
+                                    )
+                                  }
+                                  className="flex items-center gap-2 px-3 py-1 border rounded-full border-red-500 text-red-500 text-xs font-semibold hover:bg-red-500 hover:text-white transition duration-300 shadow-sm"
+                                  title="Delete only this event occurrence">
+                                  <FiTrash2 className="w-4 h-4" /> Delete
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    handleDeleteEventSeries(
+                                      event.seriesId!,
+                                      event.title
+                                    )
+                                  }
+                                  className="flex items-center gap-2 px-3 py-1 border rounded-full border-red-500 text-red-500 text-xs font-semibold hover:bg-red-500 hover:text-white transition duration-300 shadow-sm"
+                                  title="Delete the entire series">
+                                  <FiTrash2 className="w-4 h-4" /> Delete all
+                                  from series
+                                </button>
+                              </>
+                            ) : (
+                              <button
+                                onClick={() =>
+                                  handleDeleteSingleEvent(event.id, event.title)
+                                }
+                                className="flex items-center gap-2 px-3 py-1 border rounded-full border-red-500 text-red-500 text-xs font-semibold hover:bg-red-500 hover:text-white transition duration-300 shadow-sm"
+                                title="Delete event">
+                                <FiTrash2 className="w-4 h-4" /> Delete
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>

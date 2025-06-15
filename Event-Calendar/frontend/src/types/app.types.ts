@@ -1,4 +1,5 @@
-import { User as FirebaseUser } from 'firebase/auth'; 
+import { User as FirebaseUser } from "firebase/auth";
+import { EventData } from "./event.types";
 
 export interface IUserData {
   email: string;
@@ -12,15 +13,15 @@ export interface IUserData {
   photoURL?: string;
   isAdmin?: boolean;
   isBlocked?: boolean;
+  events?: Record<string, EventData>;
 }
 
-// 
 export interface IAppState {
   user: any;
   userData: IUserData | null;
-  selectedDate: Date;  
-  searchTerm: string; 
-  view: string,
+  selectedDate: Date;
+  searchTerm: string;
+  view: string;
   isLoading: boolean;
   error: string | null;
 }
@@ -36,9 +37,7 @@ export interface IAuthenticatedProps {
 }
 
 // Header
-export interface IHeaderProps {
-
-}
+export interface IHeaderProps {}
 
 //ProfileDropdown
 export interface IProfileDropdownProps {

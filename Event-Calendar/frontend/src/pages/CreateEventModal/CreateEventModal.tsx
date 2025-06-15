@@ -1,17 +1,21 @@
 import { useForm } from "react-hook-form";
-import { createEvent } from "../../services/events.service";
+import {
+  createEvent,
+  createEventSeries,
+  prepareRecurrenceData,
+} from "../../services/events.service";
 import { AppContext } from "../../state/app.context";
 import { useContext, useEffect, useState } from "react";
-import { EventData } from "../../types/event.types";
+import { EventData, EventSeriesData } from "../../types/event.types";
 import { useNavigate } from "react-router-dom";
 import LocationPickerMap from "../../components/Map/LocationPickerMap";
-// import { MapContainer, TileLayer, Marker, useMapEvent } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { TZDate } from "@date-fns/tz";
 import { format } from "date-fns";
 import { CalendarContext } from "../../state/calendar.context";
 import ImageUploader from "../../components/ImageUploader/ImageUploader";
 import { uploadPicture } from "../../services/storage.service";
+import EventSeriesForm from "../../components/EventSeriesForm/EventSeriesForm";
 
 interface Props {
   selectedDate: Date | null;
@@ -22,6 +26,7 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm();
 
@@ -34,6 +39,10 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+
+  const isSeries = watch("isSeries");
+  const recurrenceType = watch("recurrenceType");
+  const endType = watch("endType");
 
   useEffect(() => {
     if (!user) {
@@ -86,12 +95,12 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
 
     const dateOnly = selectedDate.toLocaleDateString("en-CA");
 
-    let imageUrl: string | undefined;
+    let finalImageUrl: string | null = null;
 
     if (selectedImageFile && userData.handle) {
       setIsUploadingImage(true);
       try {
-        imageUrl = await uploadPicture(userData.handle, selectedImageFile);
+        finalImageUrl = await uploadPicture(userData.handle, selectedImageFile);
       } catch (error) {
         console.error("Error uploading event image:", error);
         alert("Failed to upload image. Please try again.");
@@ -102,62 +111,64 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
       }
     }
 
-    // Prepare event data
-    const eventData = {
+    const baseEventData: Omit<
+      EventData,
+      | "id"
+      | "start"
+      | "end"
+      | "selectedDate"
+      | "isSeries"
+      | "seriesId"
+      | "recurrence"
+    > = {
       title: data.title,
-      start,
-      end,
       description: data.description.slice(0, 500),
       location: address,
       isPublic: data.isPublic,
       participants: [user.uid],
       creatorId: user.uid,
-      selectedDate: dateOnly,
       handle: userData.handle,
       category: data.category,
-      id: data.id,
-      imageUrl: imageUrl,
+      imageUrl: finalImageUrl,
     };
 
-    // Proceed with creating the event
     try {
-      await createEvent(eventData);
+      if (data.isSeries) {
+        const recurrence = prepareRecurrenceData(data, TIMEZONE);
+
+        const seriesData: Omit<EventSeriesData, "id"> = {
+          name: data.seriesName,
+          creatorId: user.uid,
+          creatorHandle: userData.handle,
+          createdAt: new Date().toISOString(),
+          recurrence: recurrence,
+          baseEventData: baseEventData,
+        };
+        await createEventSeries(seriesData, startDate, endDate, TIMEZONE);
+        alert("Event series created successfully!");
+      } else {
+        const singleEventData: EventData = {
+          ...baseEventData,
+          start,
+          end,
+          selectedDate: dateOnly,
+          isSeries: false,
+          id: "",
+        };
+        await createEvent(singleEventData);
+        alert("Event created successfully!");
+      }
       triggerEventRefresh();
       onClose();
     } catch (error) {
-      console.error("Failed to create event:", error);
-      alert("Could not create event.");
+      console.error("Failed to create event/series:", error);
+      alert("Could not create event/series. Check console for details.");
     }
   };
 
-  // function LocationMarker() {
-  //   useMapEvent("click", async (e) => {
-  //     const { lat, lng } = e.latlng;
-  //     setPosition([lat, lng]);
-
-  //     try {
-  //       const res = await fetch(
-  //         `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`
-  //       );
-  //       const data = await res.json();
-
-  //       if (data && data.display_name) {
-  //         setAddress(data.display_name);
-  //       } else {
-  //         setAddress("Unknown location");
-  //       }
-  //     } catch (error) {
-  //       console.error("Reverse geocoding failed:", error);
-  //       setAddress("Failed to get address");
-  //     }
-  //   });
-
-  //   return position === null ? null : <Marker position={position} />;
-  // }
-
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white p-10 rounded-xl shadow-xl w-full max-w-4xl">
+      <div className="bg-white p-10 rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">
           Create Event
         </h2>
@@ -180,7 +191,9 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
         <div className="flex flex-col md:flex-row gap-6">
           {/* Left: Form */}
           <div className="flex-1">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="space-y-4">
               <div>
                 <input
                   type="text"
@@ -247,9 +260,10 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
               <select
                 {...register("category", { required: true })}
                 className="input-base"
-                defaultValue=""
-              >
-                <option value="" disabled>
+                defaultValue="">
+                <option
+                  value=""
+                  disabled>
                   Select Category
                 </option>
                 <option value="deadline">Deadline</option>
@@ -259,22 +273,14 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
                 <option value="personal">Personal</option>
               </select>
 
-              <div className="flex justify-end gap-2 pt-4">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="px-4 py-2 text-sm font-medium bg-gray-100 hover:bg-gray-200 rounded-md"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
-                  disabled={isUploadingImage}
-                >
-                  Create
-                </button>
-              </div>
+              <EventSeriesForm
+                register={register}
+                errors={errors}
+                watch={watch}
+                isSeries={isSeries}
+                recurrenceType={recurrenceType}
+                endType={endType}
+              />
             </form>
           </div>
 
@@ -297,6 +303,22 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
               />
             </div>
           </div>
+        </div>
+
+        <div className="sticky bottom-0 left-0 right-0 bg-transparent p-4 border-t border-gray-200 flex justify-end gap-2 z-10">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 text-sm font-medium bg-gray-100 hover:bg-gray-200 rounded-md">
+            Cancel
+          </button>
+          <button
+            type="submit"
+            onClick={handleSubmit(onSubmit)}
+            className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+            disabled={isUploadingImage}>
+            Create
+          </button>
         </div>
       </div>
     </div>
