@@ -122,7 +122,7 @@ export default function Header() {
 
     const handleSearch = (term: string) => {
     setAppState((prev) => ({ ...prev, searchTerm: term }));
-    //navigate(`/events?q=${term}`);
+    navigate(`/all-events?q=${encodeURIComponent(term)}`);
   };
 
   return (

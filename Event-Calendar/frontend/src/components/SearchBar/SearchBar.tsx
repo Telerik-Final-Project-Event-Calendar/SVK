@@ -18,7 +18,7 @@ interface SearchBarProps {
  * @param {string} value - The current search term controlled by the parent component.
  * @param {(searchTerm: string) => void} onSearch - Callback function invoked when the 'Enter' key is pressed
  * within the input field or when the search bar collapses (to clear the search).
- * @param {string} [placeholder="Търсене..."] - Optional placeholder text for the input field.
+ * @param {string} [placeholder="Search..."] - Optional placeholder text for the input field.
  *
  * Behavior:
  * - **Expansion:** The input field expands gracefully when the search icon is clicked,

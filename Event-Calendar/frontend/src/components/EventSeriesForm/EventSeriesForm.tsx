@@ -230,7 +230,7 @@ const EventSeriesForm: React.FC<EventSeriesFormProps> = ({
             <select
               {...register("endType", { required: isSeries })}
               className="input-base"
-              defaultValue="never">
+              defaultValue="onDate">
               <option value="never">Never</option>
               <option value="onDate">On date</option>
               <option value="afterOccurrences">After occurrences</option>

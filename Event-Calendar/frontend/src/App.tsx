@@ -15,6 +15,8 @@ import AdminOnly from "./hoc/AdminOnly";
 import EventDetails from "./pages/EventDetails/EventDetails";
 import UserEvents from "./components/UserEvents/UserEvents";
 import EditEvent from "./pages/EditEvent/EditEvent";
+import EventsPage from './pages/EventsPage/EventsPage';
+
 
 // const HomePage: React.FC = () => <div><h1>Welcome to Event Calendar!</h1><p>Home Page Content</p></div>;
 const CreateEvent: React.FC = () => (
@@ -69,9 +71,7 @@ const App: React.FC = () => {
               <Route
                 path="/all-events"
                 element={
-                  <Authenticated>
-                    <AllEvents />
-                  </Authenticated>
+                  <EventsPage />
                 }
               />
               <Route
