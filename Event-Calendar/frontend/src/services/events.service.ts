@@ -558,12 +558,12 @@ export const joinEvent = async (eventId: string, userId: string) => {
  * Searches and filters events based on a search term, user visibility, and category.
  *
  * This comprehensive function retrieves all public events, and if a user is logged in,
- * it also fetches their private events. It then filters this combined list
- * by a provided search term (matching against event title and description)
+ * it also fetches their private events (created by them) AND events they are participating in.
+ * It then filters this combined list by a provided search term (matching against event title and description)
  * and by an optional category filter.
  *
  * @param {string} searchTerm - The string to search for in event titles and descriptions (case-insensitive).
- * @param {string | undefined} userUID - The unique ID of the currently logged-in user. If provided, the user's private events will be included.
+ * @param {string | undefined} userUID - The unique ID of the currently logged-in user. If provided, the user's private events and participated events will be included.
  * @param {string | undefined} userHandle - The handle/username of the currently logged-in user. Required if `userUID` is provided.
  * @param {string | undefined} categoryFilter - (Optional) The category to filter events by (case-insensitive). If an empty string or undefined, no category filter is applied.
  * @returns {Promise<EventData[]>} A promise that resolves to an array of filtered `EventData` objects.
@@ -576,40 +576,32 @@ export const searchAndFilterEvents = async (
 ): Promise<EventData[]> => {
   const lowerCaseSearchTerm = searchTerm.toLowerCase();
   const lowerCaseCategoryFilter = categoryFilter ? categoryFilter.toLowerCase() : '';
-  const allRawEvents: EventData[] = await getAllEvents();
 
-  let visibleEvents: EventData[] = allRawEvents.filter(event => {
+  const allRawEvents: EventData[] = await getAllEvents();
+  const uniqueEventsMap = new Map<string, EventData>();
+
+  for (const event of allRawEvents) {
+    const isPublic = event.isPublic;
+    const isUserCreator = userUID && event.creatorId === userUID;
+    const isUserParticipant = userUID && Array.isArray(event.participants) && event.participants.includes(userUID);
+
+    if (isPublic || isUserCreator || isUserParticipant) {
+      uniqueEventsMap.set(event.id, event);
+    }
+  }
+
+  let visibleEvents = Array.from(uniqueEventsMap.values());
+
+  visibleEvents = visibleEvents.filter(event => {
     const matchesSearch = 
       event.title.toLowerCase().includes(lowerCaseSearchTerm) ||
       (event.description?.toLowerCase().includes(lowerCaseSearchTerm) ?? false);
     
     const matchesCategory = !lowerCaseCategoryFilter || 
                             (event.category?.toLowerCase() === lowerCaseCategoryFilter);
-    return event.isPublic && matchesSearch && matchesCategory;
+
+    return matchesSearch && matchesCategory;
   });
-
-  if (userUID && userHandle) {
-    const userCreatedEvents: EventData[] = await fetchUserEvents(userHandle);
-
-    const privateUserEvents = userCreatedEvents.filter(event => {
-      const matchesSearch = 
-        event.title.toLowerCase().includes(lowerCaseSearchTerm) ||
-        (event.description?.toLowerCase().includes(lowerCaseSearchTerm) ?? false);
-      
-      const matchesCategory = !lowerCaseCategoryFilter || 
-                              (event.category?.toLowerCase() === lowerCaseCategoryFilter);
-      return !event.isPublic && 
-             event.creatorId === userUID && 
-             matchesSearch && 
-             matchesCategory;
-    });
-
-    const combinedEventsMap = new Map<string, EventData>();
-    visibleEvents.forEach(event => combinedEventsMap.set(event.id, event));
-    privateUserEvents.forEach(event => combinedEventsMap.set(event.id, event));
-    
-    visibleEvents = Array.from(combinedEventsMap.values());
-  }
 
   return visibleEvents;
 };
