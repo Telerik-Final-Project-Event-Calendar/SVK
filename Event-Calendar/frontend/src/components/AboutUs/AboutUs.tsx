@@ -84,6 +84,10 @@ const technologies = [
     name: "Day.js",
     logo: "/logos/dayJs.png",
   },
+  {
+    name: "Vite",
+    logo: "vite.svg",
+  },
 ];
 
 export default function AboutUsPage() {
