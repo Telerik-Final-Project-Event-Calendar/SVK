@@ -51,16 +51,24 @@ export default function SearchBar({
   const [internalValue, setInternalValue] = useState(value);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const pendingClearRef = useRef(false); // 🔧 флаг за deferred onSearch("")
 
   useEffect(() => {
     setInternalValue(value);
   }, [value]);
 
+  useEffect(() => {
+    if (!expanded && pendingClearRef.current) {
+      onSearch("");
+      pendingClearRef.current = false;
+    }
+  }, [expanded]);
+
   const toggleExpand = () => {
     setExpanded((prev) => {
       if (prev) {
         setInternalValue("");
-        onSearch("");
+        pendingClearRef.current = true;
         inputRef.current?.blur();
       } else {
         setTimeout(() => inputRef.current?.focus(), 100);
@@ -77,7 +85,6 @@ export default function SearchBar({
     if (e.key === "Enter") {
       onSearch(internalValue);
       inputRef.current?.blur();
-      // setExpanded(false);
     }
   };
 

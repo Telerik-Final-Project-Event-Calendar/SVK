@@ -1,6 +1,7 @@
 import { ref, get, child, update, set, query, orderByChild, equalTo } from 'firebase/database';
 import { db } from '../config/firebase-config';
 import { IUserData } from '../types/app.types';
+import { fetchAllUsers as fetchAllUsersFromAdmin } from './admin.service';
 
 /**
  * Gets user's data from Realtime Database by handle (UID).
@@ -123,3 +124,5 @@ export const getUserByUID = async (uid: string): Promise<IUserData | null> => {
     return null;
   }
 };
+
+export const fetchAllUsers = fetchAllUsersFromAdmin;

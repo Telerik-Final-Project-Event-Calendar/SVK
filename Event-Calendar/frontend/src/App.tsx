@@ -17,6 +17,7 @@ import UserEvents from "./components/UserEvents/UserEvents";
 import EditEvent from "./pages/EditEvent/EditEvent";
 import EventsPage from "./pages/EventsPage/EventsPage";
 import ContactsPage from "./components/ContactsPage/ContactsPage";
+import ContactsPageNew from "./pages/ContactsPageNew/ContactsPageNew";
 
 const CreateEvent: React.FC = () => (
   <div>
@@ -102,7 +103,18 @@ const App: React.FC = () => {
                   </AdminOnly>
                 }
               />
-              <Route path="*" element={<PageNotFound />} />
+                            <Route
+                path="/contacts-new"
+                element={
+                  <Authenticated>
+                    <ContactsPageNew />
+                  </Authenticated>
+                }
+              />
+              <Route
+                path="*"
+                element={<PageNotFound />}
+              />
             </Routes>
           </main>
         </CalendarProvider>
