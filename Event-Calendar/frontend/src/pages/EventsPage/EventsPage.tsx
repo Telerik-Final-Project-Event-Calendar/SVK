@@ -29,6 +29,7 @@ export default function EventsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const searchTerm = searchParams.get("q") || "";
   const categoryFilter = searchParams.get("category") || "";
+  const dateFilter = searchParams.get("date") || "";
 
   const { user, userData } = useContext(AppContext);
   const navigate = useNavigate();
@@ -54,13 +55,16 @@ export default function EventsPage() {
         userData?.handle,
         categoryFilter
       );
-      setAllFilteredEvents(fetchedEvents);
+      const filteredByDate = dateFilter
+        ? fetchedEvents.filter((event) => event.selectedDate === dateFilter)
+        : fetchedEvents;
+      setAllFilteredEvents(filteredByDate);
       setPage(1);
       setLoading(false);
     };
 
     loadEvents();
-  }, [searchTerm, user, userData, categoryFilter, setPage]);
+  }, [searchTerm, user, userData, categoryFilter, dateFilter, setPage]);
 
   const getCategoryStyles = (category?: string) => {
     const styleKey = category || "default";
@@ -72,7 +76,9 @@ export default function EventsPage() {
     if (searchTerm) {
       newSearchParams.set("q", searchTerm);
     }
-
+    if (dateFilter) {
+      newSearchParams.set("date", dateFilter);
+    }
     if (searchParams.get("category") === category) {
       newSearchParams.delete("category");
     } else {
@@ -103,22 +109,26 @@ export default function EventsPage() {
       <div className="text-center mb-6 space-y-2">
         {searchTerm && (
           <p className="text-gray-600">
-            Showing results for:{" "}
-            <strong className="text-blue-600">"{searchTerm}"</strong>
+            Showing results for: <strong className="text-blue-600">"{searchTerm}"</strong>
           </p>
         )}
         {categoryFilter && (
           <p className="text-gray-600">
-            Filtered by category:{" "}
-            <strong className="text-purple-600 capitalize">
+            Filtered by category: <strong className="text-purple-600 capitalize">
               "{categoryLabels[categoryFilter] || categoryFilter}"
             </strong>
           </p>
         )}
-        {(searchTerm || categoryFilter) && (
+        {dateFilter && (
+          <p className="text-gray-600">
+            Filtered by date: <strong className="text-green-600">{dateFilter}</strong>
+          </p>
+        )}
+        {(searchTerm || categoryFilter || dateFilter) && (
           <button
             onClick={handleClearFilters}
-            className="mt-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors text-sm font-medium">
+            className="mt-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors text-sm font-medium"
+          >
             Clear All Filters
           </button>
         )}
@@ -137,7 +147,8 @@ export default function EventsPage() {
                   ? "ring-2 ring-offset-2 ring-blue-500"
                   : "hover:scale-105"
               }
-            `}>
+            `}
+          >
             {categoryLabels[key]}
           </button>
         ))}
@@ -145,12 +156,8 @@ export default function EventsPage() {
 
       {paginatedEvents.length === 0 ? (
         <div className="text-center py-12 bg-white rounded-lg shadow-md">
-          <p className="text-2xl text-gray-500">
-            No events found matching your criteria.
-          </p>
-          <p className="text-lg text-gray-400 mt-2">
-            Try a different search or check back later!
-          </p>
+          <p className="text-2xl text-gray-500">No events found matching your criteria.</p>
+          <p className="text-lg text-gray-400 mt-2">Try a different search or check back later!</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -160,8 +167,8 @@ export default function EventsPage() {
               key={event.id}
               className={`bg-white rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 overflow-hidden border-t-4 
                 ${getCategoryStyles(event.category).border}
-              `}>
-              {/* Event Image */}
+              `}
+            >
               {event.imageUrl && event.imageUrl.trim() !== "" && (
                 <div className="h-48 w-full overflow-hidden">
                   <img
@@ -171,7 +178,6 @@ export default function EventsPage() {
                   />
                 </div>
               )}
-              {/* Event Content */}
               <div className="p-5 flex flex-col justify-between h-full">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900 mb-2 leading-tight">
@@ -200,7 +206,8 @@ export default function EventsPage() {
                   <span
                     className={`text-xs font-semibold px-3 py-1 rounded-full ${
                       getCategoryStyles(event.category).bg
-                    } ${getCategoryStyles(event.category).text}`}>
+                    } ${getCategoryStyles(event.category).text}`}
+                  >
                     {event.category || "General"}
                   </span>
                   {event.isSeries && (

@@ -15,10 +15,8 @@ import AdminOnly from "./hoc/AdminOnly";
 import EventDetails from "./pages/EventDetails/EventDetails";
 import UserEvents from "./components/UserEvents/UserEvents";
 import EditEvent from "./pages/EditEvent/EditEvent";
-import EventsPage from './pages/EventsPage/EventsPage';
+import EventsPage from "./pages/EventsPage/EventsPage";
 
-
-// const HomePage: React.FC = () => <div><h1>Welcome to Event Calendar!</h1><p>Home Page Content</p></div>;
 const CreateEvent: React.FC = () => (
   <div>
     <h2>Create New Event</h2>
@@ -26,10 +24,10 @@ const CreateEvent: React.FC = () => (
   </div>
 );
 
-const AllEvents: React.FC = () => (
+const About: React.FC = () => (
   <div>
-    <h2>All Events</h2>
-    <p>List of all public events</p>
+    <h2>About</h2>
+    <p>List of all used technologies</p>
   </div>
 );
 
@@ -48,10 +46,22 @@ const App: React.FC = () => {
           <Header />
           <main>
             <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route
+                path="/"
+                element={<HomePage />}
+              />
+              <Route
+                path="/login"
+                element={<Login />}
+              />
+              <Route
+                path="/register"
+                element={<Register />}
+              />
+              <Route
+                path="/forgot-password"
+                element={<ForgotPassword />}
+              />
               <Route
                 path="/create-event"
                 element={
@@ -70,9 +80,7 @@ const App: React.FC = () => {
               />
               <Route
                 path="/all-events"
-                element={
-                  <EventsPage />
-                }
+                element={<EventsPage />}
               />
               <Route
                 path="/event/:eventId"
@@ -104,7 +112,10 @@ const App: React.FC = () => {
                   </AdminOnly>
                 }
               />
-              <Route path="*" element={<PageNotFound />} />
+              <Route
+                path="*"
+                element={<PageNotFound />}
+              />
             </Routes>
           </main>
         </CalendarProvider>
