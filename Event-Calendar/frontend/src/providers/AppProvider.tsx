@@ -17,7 +17,7 @@ export default function AppProvider({ children }: AppProviderProps) {
     selectedDate: new Date(),
     searchTerm: "",
     view: "monthly",
-    isLoading: true,
+    isLoading: false,
     error: null,
   });
 
@@ -32,12 +32,6 @@ export default function AppProvider({ children }: AppProviderProps) {
     setAppState((prev) => ({ ...prev, user: firebaseUser }));
 
     if (!firebaseUser) {
-      setAppState((prev) => ({
-        ...prev,
-        user: null,
-        userData: null,
-        error: null,
-      }));
       setIsInitialAuthLoading(false);
       return;
     }
@@ -66,7 +60,6 @@ export default function AppProvider({ children }: AppProviderProps) {
         error: "Failed to load user data.",
       }));
     } finally {
-      setAppState((prev) => ({ ...prev, isLoading: false }));
       setIsInitialAuthLoading(false);
     }
   };
@@ -79,7 +72,8 @@ export default function AppProvider({ children }: AppProviderProps) {
           justifyContent: "center",
           alignItems: "center",
           height: "100vh",
-        }}>
+        }}
+      >
         <SyncLoader color="#36d7b7" />
       </div>
     );
@@ -87,7 +81,7 @@ export default function AppProvider({ children }: AppProviderProps) {
 
   return (
     <AppContext.Provider value={{ ...appState, setAppState }}>
-        {children} 
+      {children}
     </AppContext.Provider>
   );
 }
