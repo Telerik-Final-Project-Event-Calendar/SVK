@@ -34,15 +34,12 @@ export default function Header() {
 
   useEffect(() => {
     async function fetchDate() {
-      if (!user) return;
-      const uniqueUser = await getUserByUID(user.uid);
-      if (!uniqueUser) return;
-
+      if (!userData?.handle) return;
       try {
-        const fetchedDate = await getUserSelectedDate(uniqueUser.handle);
+        const fetchedDate = await getUserSelectedDate(userData.handle);
         if (!fetchedDate) {
           const today = new Date();
-          await createDate(uniqueUser.handle, today);
+          await createDate(userData.handle, today);
           setSelectedDate(today);
         } else {
           const validDate =
@@ -55,21 +52,23 @@ export default function Header() {
     }
 
     fetchDate();
-  }, [user]);
+  }, [userData]);
 
   useEffect(() => {
     async function fetchView() {
-      if (!user) return;
-      const uniqueUser = await getUserByUID(user.uid);
-      if (!uniqueUser) return;
-
-      const userView = await getUserView(uniqueUser.handle);
-      if (userView) {
-        setView(userView);
+      if (!userData?.handle) return;
+      try {
+        const view = await getUserView(userData.handle);
+        if (view) {
+          setView(view);
+        }
+      } catch (error) {
+        console.error("Error fetching calendar view:", error);
       }
     }
+
     fetchView();
-  }, [user]);
+  }, [userData]);
 
   const handleLogout = async () => {
     try {
@@ -120,7 +119,7 @@ export default function Header() {
     }
   };
 
-    const handleSearch = (term: string) => {
+  const handleSearch = (term: string) => {
     setAppState((prev) => ({ ...prev, searchTerm: term }));
     navigate(`/all-events?q=${encodeURIComponent(term)}`);
   };

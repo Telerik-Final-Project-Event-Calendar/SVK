@@ -106,11 +106,20 @@ export const getLatestUser = async (): Promise<IUserData | null> => {
 };
 
 export const getUserByUID = async (uid: string): Promise<IUserData | null> => {
-  const snapshot = await get(
-    query(ref(db, "users"), orderByChild("uid"), equalTo(uid))
-  );
-  if (!snapshot.exists()) return null;
-  const users = snapshot.val();
-  const firstKey = Object.keys(users)[0];
-  return users[firstKey] as IUserData;
+  try {
+    const snapshot = await get(ref(db, "users"));
+    if (!snapshot.exists()) return null;
+
+    const users = snapshot.val();
+    for (const handle in users) {
+      if (users[handle].uid === uid) {
+        return { ...users[handle], handle };
+      }
+    }
+
+    return null;
+  } catch (error) {
+    console.error("getUserByUID error:", error);
+    return null;
+  }
 };

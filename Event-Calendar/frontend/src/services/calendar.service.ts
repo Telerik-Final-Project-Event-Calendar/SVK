@@ -29,7 +29,7 @@ export const getUserSelectedDate = async (
 
 export const getUserView = async (handle: string): Promise<string | null> => {
   try {
-    const viewRef = ref(db, `${handle}/view`);
+    const viewRef = ref(db, `users/${handle}/view`);
     const snapshot = await get(viewRef);
     return snapshot.exists() ? snapshot.val() : null;
   } catch (error) {

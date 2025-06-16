@@ -164,16 +164,20 @@ export const useRegistrationValidation = (currentPhone?: string) => {
         return setState((s) => ({ ...s, passwordError: "" }));
 
       case "confirmPassword":
-        if (!value)
+        if (!value.trim()) {
           return setState((s) => ({
             ...s,
             confirmPasswordError: "Confirm your password.",
           }));
-        if (value !== passwordValue)
+        }
+
+        if (typeof passwordValue === "string" && value !== passwordValue) {
           return setState((s) => ({
             ...s,
             confirmPasswordError: "Passwords do not match.",
           }));
+        }
+
         return setState((s) => ({ ...s, confirmPasswordError: "" }));
 
       default:

@@ -14,6 +14,7 @@ export interface IUserData {
   isAdmin?: boolean;
   isBlocked?: boolean;
   events?: Record<string, EventData>;
+  view?: string;
 }
 
 export interface IAppState {

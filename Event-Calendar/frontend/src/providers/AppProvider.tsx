@@ -29,23 +29,24 @@ export default function AppProvider({ children }: AppProviderProps) {
   }, []);
 
   const handleAuthChange = async (firebaseUser: any) => {
-    setAppState((prev) => ({ ...prev, user: firebaseUser }));
-
     if (!firebaseUser) {
-      setAppState((prev) => ({
-        ...prev,
-        user: null,
-        userData: null,
-        error: null,
-        isLoading: false,
-      }));
-      setIsInitialAuthLoading(false);
+      setTimeout(() => {
+        setAppState((prev) => ({
+          ...prev,
+          user: null,
+          userData: null,
+          error: null,
+          isLoading: false,
+        }));
+        setIsInitialAuthLoading(false);
+      }, 0);
       return;
     }
 
+    setAppState((prev) => ({ ...prev, user: firebaseUser }));
+
     try {
       const data: IUserData | null = await getUserByUID(firebaseUser.uid);
-
       const enrichedData: IUserData | null = data
         ? {
             ...data,
@@ -60,8 +61,7 @@ export default function AppProvider({ children }: AppProviderProps) {
         error: null,
         isLoading: false,
       }));
-    } catch (err) {
-      console.error("❌ Error fetching user data:", err);
+    } catch {
       setAppState((prev) => ({
         ...prev,
         userData: null,

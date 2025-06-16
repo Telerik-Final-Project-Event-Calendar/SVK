@@ -162,7 +162,11 @@ const Register: React.FC = () => {
               type="password"
               {...register("confirmPassword")}
               onBlur={() =>
-                validateField("confirmPassword", getValues("confirmPassword"))
+                validateField(
+                  "confirmPassword",
+                  getValues("confirmPassword"),
+                  getValues("password")
+                )
               }
               className="input-base"
             />
