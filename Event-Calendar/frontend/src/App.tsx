@@ -17,18 +17,12 @@ import UserEvents from "./components/UserEvents/UserEvents";
 import EditEvent from "./pages/EditEvent/EditEvent";
 import EventsPage from "./pages/EventsPage/EventsPage";
 import ContactsPage from "./components/ContactsPage/ContactsPage";
+import AboutUs from "./components/AboutUs/AboutUs";
 
 const CreateEvent: React.FC = () => (
   <div>
     <h2>Create New Event</h2>
     <p>Event Creation Form Here</p>
-  </div>
-);
-
-const About: React.FC = () => (
-  <div>
-    <h2>About</h2>
-    <p>List of all used technologies</p>
   </div>
 );
 
@@ -102,6 +96,8 @@ const App: React.FC = () => {
                   </AdminOnly>
                 }
               />
+
+              <Route path="about-us" element={<AboutUs />} />
               <Route path="*" element={<PageNotFound />} />
             </Routes>
           </main>

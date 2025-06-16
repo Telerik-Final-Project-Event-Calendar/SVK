@@ -126,16 +126,12 @@ export default function Header() {
 
   return (
     <header className="bg-white shadow-md px-6 py-4 flex justify-between items-center">
-      <NavLink
-        to="/"
-        className="flex items-center space-x-2">
+      <NavLink to="/" className="flex items-center space-x-2">
         <h1 className="text-3xl">🗓️</h1>
         <span className="font-bold text-lg text-gray-800">Event Calendar</span>
       </NavLink>
 
-      <button
-        onClick={goToday}
-        className="border rounded py-2 px-4 mr-5">
+      <button onClick={goToday} className="border rounded py-2 px-4 mr-5">
         Today
       </button>
 
@@ -160,7 +156,8 @@ export default function Header() {
       <select
         value={view ?? "monthly"}
         onChange={handleViewChange}
-        className="border rounded px-3 py-2 ml-4">
+        className="border rounded px-3 py-2 ml-4"
+      >
         <option value="weekly">Weekly</option>
         <option value="monthly">Monthly</option>
         <option value="daily">Daily</option>
@@ -168,22 +165,19 @@ export default function Header() {
       </select>
 
       <nav className="flex items-center space-x-4">
-        <NavLink
-          to="/"
-          className="text-gray-700 hover:text-blue-600">
+        <NavLink to="/" className="text-gray-700 hover:text-blue-600">
           Home
         </NavLink>
 
         {!user && (
           <>
-            <NavLink
-              to="/login"
-              className="text-gray-700 hover:text-blue-600">
+            <NavLink to="/login" className="text-gray-700 hover:text-blue-600">
               Login
             </NavLink>
             <NavLink
               to="/register"
-              className="text-gray-700 hover:text-blue-600">
+              className="text-gray-700 hover:text-blue-600"
+            >
               Register
             </NavLink>
           </>
@@ -195,13 +189,15 @@ export default function Header() {
               Welcome, <strong>{userData?.handle ?? "User"}</strong>
             </span>
             <ProfileDropdown />
-            <button
-              onClick={handleLogout}
-              className="btn-danger">
+            <button onClick={handleLogout} className="btn-danger">
               Logout
             </button>
           </>
         )}
+
+        <NavLink to="/about-us" className='"text-gray-700 hover:text-blue-600"'>
+          About Us
+        </NavLink>
       </nav>
     </header>
   );
