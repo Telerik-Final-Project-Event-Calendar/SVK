@@ -10,7 +10,7 @@ import { AppContext } from "../../state/app.context";
 import CreateEventModal from "../../pages/CreateEventModal/CreateEventModal";
 import { Link } from "react-router-dom";
 import { FiLock } from "react-icons/fi";
-import InvitationsList from "../../pages/InvitationList/InvitationList";
+import InvitationList from "../../pages/InvitationList/InvitationList";
 
 export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -88,7 +88,7 @@ export default function Calendar() {
       </div>
 
       <div>
-        <InvitationsList />
+        <InvitationList />
       </div>
     </>
   );

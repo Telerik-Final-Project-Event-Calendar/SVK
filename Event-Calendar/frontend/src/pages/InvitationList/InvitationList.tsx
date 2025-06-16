@@ -6,7 +6,7 @@ import {
   declineInvitation,
 } from "../../services/response.service";
 
-export default function InvitationsList() {
+export default function InvitationList() {
   const { user } = useContext(AppContext);
   const [invitations, setInvitations] = useState<any[]>([]);
 
