@@ -18,6 +18,7 @@ import EditEvent from "./pages/EditEvent/EditEvent";
 import EventsPage from "./pages/EventsPage/EventsPage";
 import ContactsPage from "./components/ContactsPage/ContactsPage";
 import AboutUs from "./components/AboutUs/AboutUs";
+import ContactsPageNew from "./pages/ContactsPageNew/ContactsPageNew";
 
 const CreateEvent: React.FC = () => (
   <div>
@@ -98,6 +99,15 @@ const App: React.FC = () => {
               />
 
               <Route path="about-us" element={<AboutUs />} />
+
+              <Route
+                path="/contacts-new"
+                element={
+                  <Authenticated>
+                    <ContactsPageNew />
+                  </Authenticated>
+                }
+              />
               <Route path="*" element={<PageNotFound />} />
             </Routes>
           </main>
