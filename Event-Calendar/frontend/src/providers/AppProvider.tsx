@@ -32,6 +32,13 @@ export default function AppProvider({ children }: AppProviderProps) {
     setAppState((prev) => ({ ...prev, user: firebaseUser }));
 
     if (!firebaseUser) {
+      setAppState((prev) => ({
+        ...prev,
+        user: null,
+        userData: null,
+        error: null,
+        isLoading: false,
+      }));
       setIsInitialAuthLoading(false);
       return;
     }
@@ -51,13 +58,15 @@ export default function AppProvider({ children }: AppProviderProps) {
         ...prev,
         userData: enrichedData,
         error: null,
+        isLoading: false,
       }));
     } catch (err) {
-      console.error("Error fetching user data:", err);
+      console.error("❌ Error fetching user data:", err);
       setAppState((prev) => ({
         ...prev,
         userData: null,
         error: "Failed to load user data.",
+        isLoading: false,
       }));
     } finally {
       setIsInitialAuthLoading(false);
@@ -66,13 +75,7 @@ export default function AppProvider({ children }: AppProviderProps) {
 
   if (isInitialAuthLoading) {
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}>
+      <div className="flex justify-center items-center h-screen">
         <SyncLoader color="#36d7b7" />
       </div>
     );
@@ -84,6 +87,7 @@ export default function AppProvider({ children }: AppProviderProps) {
     </AppContext.Provider>
   );
 }
+
 // import { useEffect, useState } from "react";
 // import { AppContext } from "../state/app.context";
 // import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
