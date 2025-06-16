@@ -188,7 +188,8 @@ export default function AdminPanel() {
           onClick={() =>
             setIsReportedEventsSectionOpen(!isReportedEventsSectionOpen)
           }
-          className="w-full flex justify-between items-center px-6 py-4 bg-red-50 hover:bg-red-100 rounded-t-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition-colors duration-200">
+          className="w-full flex justify-between items-center px-6 py-4 bg-red-50 hover:bg-red-100 rounded-t-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition-colors duration-200"
+        >
           <h3 className="text-xl font-semibold text-red-800 flex items-center gap-2">
             <FiFlagIcon className="text-red-600" /> Reported Events (
             {reportStats.total} reports / {reportStats.distinctEvents} events)
@@ -210,7 +211,8 @@ export default function AdminPanel() {
       <div className="bg-white rounded-lg shadow-lg mb-8 border border-gray-200">
         <button
           onClick={() => setIsUsersSectionOpen(!isUsersSectionOpen)}
-          className="w-full flex justify-between items-center px-6 py-4 bg-gray-50 hover:bg-gray-100 rounded-t-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition-colors duration-200">
+          className="w-full flex justify-between items-center px-6 py-4 bg-gray-50 hover:bg-gray-100 rounded-t-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition-colors duration-200"
+        >
           <h3 className="text-xl font-semibold text-gray-800">
             Users ({filteredUsers.length})
           </h3>
@@ -262,7 +264,8 @@ export default function AdminPanel() {
                     {visibleUsers.map((user) => (
                       <tr
                         key={user.handle}
-                        className="border-b border-gray-200 hover:bg-gray-50">
+                        className="border-b border-gray-200 hover:bg-gray-50"
+                      >
                         <td className="py-3 px-6 text-left whitespace-nowrap">
                           {user.handle}
                         </td>
@@ -285,7 +288,8 @@ export default function AdminPanel() {
                                 user.isBlocked
                                   ? "border-green-500 text-green-500 hover:bg-green-500 hover:text-white"
                                   : "border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
-                              }`}>
+                              }`}
+                            >
                               {user.isBlocked ? (
                                 <>
                                   <FaUnlock className="w-3 h-3" /> Unblock
@@ -314,7 +318,8 @@ export default function AdminPanel() {
                                 user.isAdmin
                                   ? "border-yellow-500 text-yellow-600 hover:bg-yellow-500 hover:text-white"
                                   : "border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
-                              }`}>
+                              }`}
+                            >
                               {user.isAdmin ? (
                                 <>
                                   <FaUserMinus className="w-3 h-3" /> Make
@@ -331,7 +336,8 @@ export default function AdminPanel() {
                         <td className="py-3 px-6 text-left">
                           <Link
                             to={`/events?creator=${user.handle}`}
-                            className="flex items-center gap-2 px-3 py-1 border rounded-full border-indigo-600 text-indigo-600 font-semibold text-xs hover:bg-indigo-600 hover:text-white transition-colors duration-300 shadow-sm">
+                            className="flex items-center gap-2 px-3 py-1 border rounded-full border-indigo-600 text-indigo-600 font-semibold text-xs hover:bg-indigo-600 hover:text-white transition-colors duration-300 shadow-sm"
+                          >
                             <FiEye className="w-3 h-3" /> View
                           </Link>
                         </td>
@@ -354,7 +360,8 @@ export default function AdminPanel() {
       <div className="bg-white rounded-lg shadow-lg mb-8 border border-gray-200">
         <button
           onClick={() => setIsEventsSectionOpen(!isEventsSectionOpen)}
-          className="w-full flex justify-between items-center px-6 py-4 bg-gray-50 hover:bg-gray-100 rounded-t-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition-colors duration-200">
+          className="w-full flex justify-between items-center px-6 py-4 bg-gray-50 hover:bg-gray-100 rounded-t-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition-colors duration-200"
+        >
           <h3 className="text-xl font-semibold text-gray-800">
             Events ({filteredEvents.length})
           </h3>
@@ -400,7 +407,8 @@ export default function AdminPanel() {
                     {visibleEventsPaged.map((event) => (
                       <tr
                         key={event.id}
-                        className="border-b border-gray-200 hover:bg-gray-50">
+                        className="border-b border-gray-200 hover:bg-gray-50"
+                      >
                         <td className="py-3 px-6 text-left whitespace-nowrap">
                           {event.title}
                         </td>
@@ -418,15 +426,17 @@ export default function AdminPanel() {
                         <td className="py-3 px-6 text-left">
                           <div className="flex gap-3">
                             <Link
-                              to={`/events/${event.id}`}
+                              to={`/event/${event.id}`}
                               className="flex items-center gap-2 px-3 py-1 border rounded-full border-indigo-600 text-indigo-600 font-semibold text-xs hover:bg-indigo-600 hover:text-white transition-colors duration-300 shadow-sm"
-                              title="View event details">
+                              title="View event details"
+                            >
                               <FiEye className="w-4 h-4" /> View
                             </Link>
 
                             <Link
-                              to={`/events/edit/${event.id}`}
-                              className="flex items-center gap-2 px-3 py-1 border rounded-full border-green-500 text-green-500 text-xs font-semibold hover:bg-green-500 hover:text-white transition duration-300 shadow-sm">
+                              to={`/event/edit/${event.id}`}
+                              className="flex items-center gap-2 px-3 py-1 border rounded-full border-green-500 text-green-500 text-xs font-semibold hover:bg-green-500 hover:text-white transition duration-300 shadow-sm"
+                            >
                               <FiEdit2 className="w-4 h-4" />
                               Edit
                             </Link>
@@ -441,7 +451,8 @@ export default function AdminPanel() {
                                     )
                                   }
                                   className="flex items-center gap-2 px-3 py-1 border rounded-full border-red-500 text-red-500 text-xs font-semibold hover:bg-red-500 hover:text-white transition duration-300 shadow-sm"
-                                  title="Delete only this event occurrence">
+                                  title="Delete only this event occurrence"
+                                >
                                   <FiTrash2 className="w-4 h-4" /> Delete
                                 </button>
                                 <button
@@ -452,7 +463,8 @@ export default function AdminPanel() {
                                     )
                                   }
                                   className="flex items-center gap-2 px-3 py-1 border rounded-full border-red-500 text-red-500 text-xs font-semibold hover:bg-red-500 hover:text-white transition duration-300 shadow-sm"
-                                  title="Delete the entire series">
+                                  title="Delete the entire series"
+                                >
                                   <FiTrash2 className="w-4 h-4" /> Delete all
                                   from series
                                 </button>
@@ -463,7 +475,8 @@ export default function AdminPanel() {
                                   handleDeleteSingleEvent(event.id, event.title)
                                 }
                                 className="flex items-center gap-2 px-3 py-1 border rounded-full border-red-500 text-red-500 text-xs font-semibold hover:bg-red-500 hover:text-white transition duration-300 shadow-sm"
-                                title="Delete event">
+                                title="Delete event"
+                              >
                                 <FiTrash2 className="w-4 h-4" /> Delete
                               </button>
                             )}
