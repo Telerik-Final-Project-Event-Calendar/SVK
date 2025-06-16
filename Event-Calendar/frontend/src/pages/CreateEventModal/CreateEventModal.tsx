@@ -18,6 +18,7 @@ import { uploadPicture } from "../../services/storage.service";
 import EventSeriesForm from "../../components/EventSeriesForm/EventSeriesForm";
 import { createInvitation } from "../../services/invitations.service";
 import { getUserByHandle } from "../../services/users.service";
+import { getGroupedContactsByOwnerId } from "../../services/contacts.service";
 
 interface Props {
   selectedDate: Date | null;
@@ -29,6 +30,7 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm();
 
@@ -41,6 +43,13 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [selectedInvitees, setSelectedInvitees] = useState<any[]>([]);
+  const [contactGroups, setContactGroups] = useState<
+    { id: string; name: string; contacts: any[] }[]
+  >([]);
+  const [selectedGroupIndex, setSelectedGroupIndex] = useState<number | null>(
+    null
+  );
 
   const isSeries = watch("isSeries");
   const recurrenceType = watch("recurrenceType");
@@ -51,6 +60,20 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
       navigate("/login");
     }
   }, [user, navigate]);
+
+  useEffect(() => {
+    async function fetchContacts() {
+      if (user?.uid) {
+        const groups = await getGroupedContactsByOwnerId(user.uid);
+        setContactGroups(groups);
+      }
+    }
+    fetchContacts();
+  }, [user]);
+
+  useEffect(() => {
+    setValue("invitees", selectedInvitees.map((c) => c.handle).join(","));
+  }, [selectedInvitees, setValue]);
 
   const handleFileSelect = (file: File) => {
     setSelectedImageFile(file);
@@ -298,16 +321,73 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
                 <option value="personal">Personal</option>
               </select>
 
-              <div>
+              <div className="mb-4">
                 <label className="label-base mb-1 block">
-                  Invite people (comma-separated handles)
+                  Invite People by Group
                 </label>
-                <input
-                  type="text"
-                  {...register("invitees")}
-                  placeholder="e.g. john, maria, alex"
-                  className="input-base"
-                />
+
+                <div className="flex gap-2 flex-wrap mb-2">
+                  {contactGroups.map((group, index) => (
+                    <button
+                      key={group.id}
+                      type="button"
+                      onClick={() => setSelectedGroupIndex(index)}
+                      className={`px-3 py-1 rounded-md border text-sm ${
+                        selectedGroupIndex === index
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-100 text-gray-800"
+                      }`}
+                    >
+                      {group.name}
+                    </button>
+                  ))}
+                </div>
+
+                {selectedGroupIndex !== null && (
+                  <ul className="border rounded p-2 max-h-48 overflow-y-auto">
+                    {contactGroups[selectedGroupIndex].contacts.map(
+                      (contact) => {
+                        const isSelected = selectedInvitees.some(
+                          (c) => c.uid === contact.uid
+                        );
+                        return (
+                          <li
+                            key={contact.uid}
+                            onClick={() =>
+                              setSelectedInvitees((prev) =>
+                                isSelected
+                                  ? prev.filter((c) => c.uid !== contact.uid)
+                                  : [...prev, contact]
+                              )
+                            }
+                            className={`flex justify-between p-2 cursor-pointer ${
+                              isSelected ? "bg-blue-100" : "hover:bg-gray-100"
+                            }`}
+                          >
+                            <span>{contact.handle}</span>
+                            {isSelected && (
+                              <span className="text-green-600 font-bold">
+                                ✔
+                              </span>
+                            )}
+                          </li>
+                        );
+                      }
+                    )}
+                  </ul>
+                )}
+
+                {selectedInvitees.length > 0 && (
+                  <p className="mt-2 text-sm text-gray-700">
+                    Inviting:{" "}
+                    <span className="font-medium">
+                      {selectedInvitees.map((c) => c.handle).join(", ")}
+                    </span>
+                  </p>
+                )}
+
+                {/* Hidden input to sync with react-hook-form */}
+                <input type="hidden" {...register("invitees")} />
               </div>
 
               <EventSeriesForm

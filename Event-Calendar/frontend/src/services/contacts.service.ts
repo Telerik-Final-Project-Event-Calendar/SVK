@@ -130,3 +130,29 @@ export const updateContactListName = async (
     throw error;
   }
 };
+
+export async function getGroupedContactsByOwnerId(ownerId: string) {
+  const snapshot = await get(ref(db, "contactsLists"));
+  if (!snapshot.exists()) return [];
+
+  const allLists = snapshot.val();
+  const grouped: {
+    id: string;
+    name: string;
+    contacts: any[];
+  }[] = [];
+
+  for (const listId in allLists) {
+    const list = allLists[listId];
+
+    if (list.ownerId === ownerId && list.contacts) {
+      grouped.push({
+        id: listId,
+        name: list.name,
+        contacts: Object.values(list.contacts),
+      });
+    }
+  }
+
+  return grouped;
+}
