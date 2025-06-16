@@ -16,6 +16,8 @@ import { CalendarContext } from "../../state/calendar.context";
 import ImageUploader from "../../components/ImageUploader/ImageUploader";
 import { uploadPicture } from "../../services/storage.service";
 import EventSeriesForm from "../../components/EventSeriesForm/EventSeriesForm";
+import { createInvitation } from "../../services/invitations.service";
+import { getUserByHandle } from "../../services/users.service";
 
 interface Props {
   selectedDate: Date | null;
@@ -156,6 +158,30 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
           id: "",
         };
         await createEvent(singleEventData);
+        const inviteesRaw = data.invitees || "";
+        const inviteHandles = inviteesRaw
+          .split(",")
+          .map((s: string) => s.trim())
+          .filter(Boolean);
+
+        for (const handle of inviteHandles) {
+          try {
+            const invitedUser = await getUserByHandle(handle);
+            if (!invitedUser) continue;
+
+            await createInvitation({
+              eventId: data.id,
+              eventTitle: data.title,
+              fromUserId: user.uid,
+              fromHandle: userData.handle,
+              toUserId: invitedUser.uid,
+              toHandle: invitedUser.handle,
+            });
+          } catch (err) {
+            console.error(`Failed to invite ${handle}:`, err);
+          }
+        }
+
         alert("Event created successfully!");
       }
       triggerEventRefresh();
@@ -191,9 +217,7 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
         <div className="flex flex-col md:flex-row gap-6">
           {/* Left: Form */}
           <div className="flex-1">
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
                 <input
                   type="text"
@@ -260,10 +284,9 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
               <select
                 {...register("category", { required: true })}
                 className="input-base"
-                defaultValue="">
-                <option
-                  value=""
-                  disabled>
+                defaultValue=""
+              >
+                <option value="" disabled>
                   Select Category
                 </option>
                 <option value="deadline">Deadline</option>
@@ -272,6 +295,18 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
                 <option value="sports">Sports</option>
                 <option value="personal">Personal</option>
               </select>
+
+              <div>
+                <label className="label-base mb-1 block">
+                  Invite people (comma-separated handles)
+                </label>
+                <input
+                  type="text"
+                  {...register("invitees")}
+                  placeholder="e.g. john, maria, alex"
+                  className="input-base"
+                />
+              </div>
 
               <EventSeriesForm
                 register={register}
@@ -309,14 +344,16 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium bg-gray-100 hover:bg-gray-200 rounded-md">
+            className="px-4 py-2 text-sm font-medium bg-gray-100 hover:bg-gray-200 rounded-md"
+          >
             Cancel
           </button>
           <button
             type="submit"
             onClick={handleSubmit(onSubmit)}
             className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
-            disabled={isUploadingImage}>
+            disabled={isUploadingImage}
+          >
             Create
           </button>
         </div>

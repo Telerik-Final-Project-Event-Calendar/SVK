@@ -156,7 +156,7 @@ export const createEventSeries = async (
   let currentEnd = new Date(firstEventEnd);
   let occurrencesCount = 0;
 
-  const MAX_OCCURRENCES = 365 * 2; 
+  const MAX_OCCURRENCES = 365 * 2;
 
   while (true) {
     if (recurrence.endType === "onDate" && recurrence.endDate != null) {
@@ -175,7 +175,9 @@ export const createEventSeries = async (
     }
 
     if (occurrencesCount >= MAX_OCCURRENCES) {
-      console.warn(`Stopped generating events for series ${seriesId} due to MAX_OCCURRENCES limit.`); // Removed for cleaner output
+      console.warn(
+        `Stopped generating events for series ${seriesId} due to MAX_OCCURRENCES limit.`
+      ); // Removed for cleaner output
       break;
     }
 
@@ -575,7 +577,9 @@ export const searchAndFilterEvents = async (
   categoryFilter: string | undefined
 ): Promise<EventData[]> => {
   const lowerCaseSearchTerm = searchTerm.toLowerCase();
-  const lowerCaseCategoryFilter = categoryFilter ? categoryFilter.toLowerCase() : '';
+  const lowerCaseCategoryFilter = categoryFilter
+    ? categoryFilter.toLowerCase()
+    : "";
 
   const allRawEvents: EventData[] = await getAllEvents();
   const uniqueEventsMap = new Map<string, EventData>();
@@ -583,7 +587,10 @@ export const searchAndFilterEvents = async (
   for (const event of allRawEvents) {
     const isPublic = event.isPublic;
     const isUserCreator = userUID && event.creatorId === userUID;
-    const isUserParticipant = userUID && Array.isArray(event.participants) && event.participants.includes(userUID);
+    const isUserParticipant =
+      userUID &&
+      Array.isArray(event.participants) &&
+      event.participants.includes(userUID);
 
     if (isPublic || isUserCreator || isUserParticipant) {
       uniqueEventsMap.set(event.id, event);
@@ -592,13 +599,14 @@ export const searchAndFilterEvents = async (
 
   let visibleEvents = Array.from(uniqueEventsMap.values());
 
-  visibleEvents = visibleEvents.filter(event => {
-    const matchesSearch = 
+  visibleEvents = visibleEvents.filter((event) => {
+    const matchesSearch =
       event.title.toLowerCase().includes(lowerCaseSearchTerm) ||
       (event.description?.toLowerCase().includes(lowerCaseSearchTerm) ?? false);
-    
-    const matchesCategory = !lowerCaseCategoryFilter || 
-                            (event.category?.toLowerCase() === lowerCaseCategoryFilter);
+
+    const matchesCategory =
+      !lowerCaseCategoryFilter ||
+      event.category?.toLowerCase() === lowerCaseCategoryFilter;
 
     return matchesSearch && matchesCategory;
   });
