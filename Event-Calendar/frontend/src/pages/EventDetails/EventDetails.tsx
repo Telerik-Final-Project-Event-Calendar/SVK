@@ -17,7 +17,7 @@ import { EventData } from "../../types/event.types";
 import { InfoCard } from "../../components/InfoCard/InfoCard";
 import { AppContext } from "../../state/app.context";
 import { reportEvent } from "../../services/eventReports.service";
-import { categoryStyles } from "../../utils/eventCategoryStyles"; 
+import { categoryStyles } from "../../utils/eventCategoryStyles";
 
 interface ParticipantData {
   uid: string;
@@ -156,7 +156,7 @@ export default function EventDetails() {
     }
   };
 
-    const handleReportSubmit = async () => {
+  const handleReportSubmit = async () => {
     if (!user) {
       alert("You must be logged in to report events!");
       setShowReportModal(false);
@@ -199,7 +199,8 @@ export default function EventDetails() {
         <p className="text-lg text-center">{error}</p>
         <button
           onClick={() => navigate("/all-events")}
-          className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition">
+          className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
+        >
           Go to Events
         </button>
       </div>
@@ -208,7 +209,8 @@ export default function EventDetails() {
     return <div className="p-6 text-red-500">The Event is not found</div>;
 
   const hasImage = event.imageUrl && event.imageUrl.trim() !== "";
-  const eventCategoryStyle = categoryStyles[event.category] || categoryStyles["default"];
+  const eventCategoryStyle =
+    categoryStyles[event.category] || categoryStyles["default"];
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12 space-y-10">
@@ -230,41 +232,32 @@ export default function EventDetails() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8">
-        <InfoCard
-          icon={<HiCalendar />}
-          label="Date">
+        <InfoCard icon={<HiCalendar />} label="Date">
           {new Date(event.start).toLocaleDateString()}
         </InfoCard>
 
-        <InfoCard
-          icon={<HiClock />}
-          label="Time">
+        <InfoCard icon={<HiClock />} label="Time">
           {new Date(event.start).toLocaleTimeString()} –{" "}
           {new Date(event.end).toLocaleTimeString()}
         </InfoCard>
 
-        <InfoCard
-          icon={<HiLocationMarker />}
-          label="Location">
+        <InfoCard icon={<HiLocationMarker />} label="Location">
           {event.location}
         </InfoCard>
 
-        <InfoCard
-          icon={<HiTag />}
-          label="Category">
+        <InfoCard icon={<HiTag />} label="Category">
           <span className="capitalize">{event.category}</span>
         </InfoCard>
 
-        <InfoCard
-          icon={<HiUser />}
-          label="Host">
+        <InfoCard icon={<HiUser />} label="Host">
           {event.handle}
         </InfoCard>
 
         <InfoCard
           icon={event.isPublic ? <HiGlobe /> : <HiLockClosed />}
           label="Visibility"
-          color={event.isPublic ? "green" : "red"}>
+          color={event.isPublic ? "green" : "red"}
+        >
           {event.isPublic ? "Public" : "Private"}
         </InfoCard>
       </div>
@@ -283,7 +276,8 @@ export default function EventDetails() {
             {participantsData.map(({ uid, firstName, lastName }) => (
               <li
                 key={uid}
-                className="flex items-center gap-3 p-3 border rounded-lg shadow-sm hover:shadow-md transition">
+                className="flex items-center gap-3 p-3 border rounded-lg shadow-sm hover:shadow-md transition"
+              >
                 <div className="w-10 h-10 bg-blue-100 text-blue-600 flex items-center justify-center rounded-full font-semibold uppercase">
                   {firstName[0]}
                   {lastName[0]}
@@ -296,46 +290,60 @@ export default function EventDetails() {
           </ul>
         )}
 
-        {/* Join Button */}
-        {user && event.isPublic && !isParticipant && (
-          <button
-            disabled={joining}
-            onClick={handleJoin}
-            className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50">
-            {joining ? "Joining..." : "Join Event"}
-          </button>
-        )}
+        <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:gap-4">
+          {user && event.isPublic && !isParticipant && (
+            <button
+              disabled={joining}
+              onClick={handleJoin}
+              className="w-full sm:w-auto px-5 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 active:bg-blue-800 shadow-md transition disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-4 focus:ring-blue-400"
+              aria-live="polite"
+            >
+              {joining ? "Joining..." : "Join Event"}
+            </button>
+          )}
 
-        {/* Report Event Button */}
-        {user && !isCreator && (
-          <button
-            onClick={() => setShowReportModal(true)}
-            className="px-6 py-3 bg-yellow-500 text-white rounded-lg font-semibold hover:bg-yellow-600 transition disabled:opacity-50 flex items-center gap-2">
-            <FiFlag className="w-5 h-5" /> Report
-          </button>
-        )}
+          {user && !isCreator && (
+            <button
+              onClick={() => setShowReportModal(true)}
+              className="w-full sm:w-auto mt-3 sm:mt-0 px-5 py-3 bg-yellow-500 text-white rounded-lg font-semibold hover:bg-yellow-600 active:bg-yellow-700 shadow-md transition flex items-center justify-center gap-2 focus:outline-none focus:ring-4 focus:ring-yellow-400"
+              aria-haspopup="dialog"
+            >
+              <FiFlag className="w-5 h-5" /> Report
+            </button>
+          )}
 
-        {/* Already joined message */}
-        {isParticipant && (
-          <p className="mt-6 text-green-600 font-semibold">
-            You are already a participant of this event.
-          </p>
-        )}
+          {isParticipant && (
+            <p className="mt-6 text-green-600 font-semibold text-center sm:text-left">
+              You are already a participant of this event.
+            </p>
+          )}
 
-        {/* Join error */}
-        {joinError && (
-          <p className="mt-4 text-red-600 font-semibold">{joinError}</p>
-        )}
+          {joinError && (
+            <p
+              className="mt-4 text-red-600 font-semibold text-center sm:text-left"
+              role="alert"
+            >
+              {joinError}
+            </p>
+          )}
+        </div>
       </div>
-
       {showReportModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
-            <h3 className="text-2xl font-semibold text-gray-800 mb-4">
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="report-modal-title"
+        >
+          <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full p-7 mx-auto relative">
+            <h3
+              id="report-modal-title"
+              className="text-2xl font-semibold text-gray-800 mb-4"
+            >
               Report Event
             </h3>
             <textarea
-              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+              className="w-full min-h-[100px] resize-none p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-4 focus:ring-yellow-400 transition"
               rows={4}
               placeholder="Please describe why you are reporting this event (e.g., inappropriate content, spam, misleading information)."
               value={reportReason}
@@ -344,16 +352,18 @@ export default function EventDetails() {
                 setReportSuccess(null);
                 setReportMessage(null);
               }}
+              aria-describedby="report-help-text"
             />
             {reportMessage && (
               <p
                 className={`mt-2 text-sm ${
                   reportSuccess ? "text-green-600" : "text-red-600"
-                }`}>
+                }`}
+              >
                 {reportMessage}
               </p>
             )}
-            <div className="flex justify-end gap-3 mt-6">
+            <div className="flex justify-end gap-4 mt-7">
               <button
                 onClick={() => {
                   setShowReportModal(false);
@@ -361,13 +371,15 @@ export default function EventDetails() {
                   setReportSuccess(null);
                   setReportMessage(null);
                 }}
-                className="px-5 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 transition">
+                className="px-5 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 transition"
+              >
                 Cancel
               </button>
               <button
                 onClick={handleReportSubmit}
                 disabled={reporting || !reportReason.trim()}
-                className="px-5 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition disabled:opacity-50">
+                className="px-5 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition disabled:opacity-50"
+              >
                 {reporting ? "Submitting..." : "Submit Report"}
               </button>
             </div>
