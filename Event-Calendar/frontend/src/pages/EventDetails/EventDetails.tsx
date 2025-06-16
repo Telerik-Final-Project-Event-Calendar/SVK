@@ -17,6 +17,7 @@ import { EventData } from "../../types/event.types";
 import { InfoCard } from "../../components/InfoCard/InfoCard";
 import { AppContext } from "../../state/app.context";
 import { reportEvent } from "../../services/eventReports.service";
+import { categoryStyles } from "../../utils/eventCategoryStyles"; 
 
 interface ParticipantData {
   uid: string;
@@ -30,6 +31,7 @@ export default function EventDetails() {
 
   const [event, setEvent] = useState<EventData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [participantsData, setParticipantsData] = useState<ParticipantData[]>(
     []
   );
@@ -46,15 +48,40 @@ export default function EventDetails() {
   const [reportMessage, setReportMessage] = useState<string | null>(null);
   const currentUserHandle = userData?.handle;
   const isCreator = event?.creatorId === currentUserUID;
+  const isParticipant = event?.participants?.includes(currentUserUID || "");
 
   useEffect(() => {
-    if (!eventId) return;
+    if (!eventId) {
+      setError("Event ID is missing.");
+      setLoading(false);
+      return;
+    }
 
     const loadEventAndParticipants = async () => {
       setLoading(true);
+      setError(null);
       try {
         const eventData = await getEventById(eventId);
-        if (!eventData) throw new Error("Event not found");
+        if (!eventData) {
+          setError("Event not found.");
+          setLoading(false);
+          return;
+        }
+
+        const isAccessible =
+          eventData.isPublic ||
+          (user &&
+            (eventData.creatorId === user.uid ||
+              eventData.participants?.includes(user.uid)));
+
+        if (!isAccessible) {
+          setError(
+            "You are not authorized to view this private event. Redirecting to login..."
+          );
+          setTimeout(() => navigate("/login"), 1200);
+          setLoading(false);
+          return;
+        }
 
         setEvent(eventData);
 
@@ -81,9 +108,7 @@ export default function EventDetails() {
     };
 
     loadEventAndParticipants();
-  }, [eventId]);
-
-  const isParticipant = event?.participants?.includes(currentUserUID || "");
+  }, [eventId, user, navigate]);
 
   const handleJoin = async () => {
     if (!user) {
@@ -91,9 +116,9 @@ export default function EventDetails() {
       return;
     }
     if (!event || !currentUserUID) {
-        setJoinError("Event data or user ID is missing.");
-        return;
-    }    
+      setJoinError("Event data or user ID is missing.");
+      return;
+    }
     setJoinError(null);
     setJoining(true);
 
@@ -106,14 +131,12 @@ export default function EventDetails() {
 
       await joinEvent(event.id, currentUserUID);
 
-      // Update local state after joining
-      const updatedParticipants = [
+      const updatedParticipantsList = [
         ...(event.participants || []),
         currentUserUID,
       ];
-      setEvent({ ...event, participants: updatedParticipants });
+      setEvent({ ...event, participants: updatedParticipantsList });
 
-      // Fetch current user info and add to participants list
       const userDataFromDB = await getUserByUID(currentUserUID);
       if (userDataFromDB) {
         setParticipantsData((prev) => [
@@ -169,10 +192,23 @@ export default function EventDetails() {
   };
 
   if (loading) return <div className="p-6">Loading...</div>;
+  if (error)
+    return (
+      <div className="flex flex-col justify-center items-center h-screen text-red-600">
+        <p className="text-2xl font-bold mb-4">Error:</p>
+        <p className="text-lg text-center">{error}</p>
+        <button
+          onClick={() => navigate("/all-events")}
+          className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition">
+          Go to Events
+        </button>
+      </div>
+    );
   if (!event)
     return <div className="p-6 text-red-500">The Event is not found</div>;
 
   const hasImage = event.imageUrl && event.imageUrl.trim() !== "";
+  const eventCategoryStyle = categoryStyles[event.category] || categoryStyles["default"];
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12 space-y-10">

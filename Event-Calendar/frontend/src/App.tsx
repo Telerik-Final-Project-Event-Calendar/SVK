@@ -85,9 +85,7 @@ const App: React.FC = () => {
               <Route
                 path="/event/:eventId"
                 element={
-                  <Authenticated>
                     <EventDetails />
-                  </Authenticated>
                 }
               />
               <Route
