@@ -68,7 +68,7 @@ export const prepareRecurrenceData = (
  * @returns {Promise<void>} A promise that resolves when the event has been successfully saved.
  * @throws {Error} If generating an event ID fails.
  */
-export const createEvent = async (eventData: EventData): Promise<void> => {
+export const createEvent = async (eventData: EventData): Promise<string> => {
   const {
     creatorId,
     title,
@@ -116,6 +116,8 @@ export const createEvent = async (eventData: EventData): Promise<void> => {
 
   const userEventRef = ref(db, `users/${handle}/events/${newEventKey}`);
   await set(userEventRef, fullEventData);
+
+  return newEventKey;
 };
 
 /**

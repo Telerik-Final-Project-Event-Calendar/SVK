@@ -157,7 +157,9 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
           isSeries: false,
           id: "",
         };
-        await createEvent(singleEventData);
+        const eventId = await createEvent(singleEventData);
+
+        // await createEvent(singleEventData);
         const inviteesRaw = data.invitees || "";
         const inviteHandles = inviteesRaw
           .split(",")
@@ -170,7 +172,7 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
             if (!invitedUser) continue;
 
             await createInvitation({
-              eventId: data.id,
+              eventId,
               eventTitle: data.title,
               fromUserId: user.uid,
               fromHandle: userData.handle,
