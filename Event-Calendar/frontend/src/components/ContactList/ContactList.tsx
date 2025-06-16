@@ -1,12 +1,7 @@
 import { useEffect, useState, useContext } from "react";
-import {
-  getDatabase,
-  ref,
-  get,
-  set,
-  remove,
-} from "firebase/database";
+import { getDatabase, ref, get, set, remove } from "firebase/database";
 import { AppContext } from "../../state/app.context";
+import SearchBar from "../SearchBar/SearchBar";
 
 type User = {
   uid: string;
@@ -20,7 +15,6 @@ export default function ContactList() {
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [contacts, setContacts] = useState<{ [uid: string]: boolean }>({});
   const [search, setSearch] = useState("");
-  const [searchInput, setSearchInput] = useState("");
   const [handle, setHandle] = useState<string | null>(null);
 
   const db = getDatabase();
@@ -112,81 +106,39 @@ export default function ContactList() {
   const showResults = search.trim().length > 0 ? filtered : [];
 
   return (
-    <div className="w-full max-w-md p-4 bg-white shadow rounded-xl flex flex-col justify-between h-[1100px]">
-      <div>
-        <h2 className="text-lg font-semibold mb-4">Search People</h2>
-        <input
-          type="text"
-          placeholder="Search by name or email"
-          value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              setSearch(searchInput.trim());
-            }
-          }}
-          className="w-full border px-3 py-2 rounded mb-4"
-        />
-        <div className="space-y-3 max-h-[280px] overflow-y-auto">
-          {search.trim().length > 0 && showResults.length === 0 && (
-            <p className="text-sm text-gray-500">No users found.</p>
-          )}
-          {showResults.map((u) => (
-            <div
-              key={u.uid}
-              className="flex items-center justify-between border-b pb-2"
-            >
-              <div>
-                <div className="font-medium">
-                  {u.firstName} {u.lastName}
-                </div>
-                <div className="text-sm text-gray-500">{u.email}</div>
-              </div>
-              <button
-                onClick={() =>
-                  contacts[u.uid] ? handleRemove(u.uid) : handleAdd(u)
-                }
-                className={`text-sm ${
-                  contacts[u.uid] ? "text-red-500" : "text-blue-500"
-                }`}
-              >
-                {contacts[u.uid] ? "Remove" : "Add"}
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-8">
-        <h2 className="text-lg font-semibold mb-4">Your Contacts</h2>
-        {Object.keys(contacts).length > 0 ? (
-          <div className="space-y-3 max-h-[280px] overflow-y-auto">
-            {allUsers
-              .filter((u) => contacts[u.uid])
-              .map((u) => (
-                <div
-                  key={u.uid}
-                  className="flex items-center justify-between border-b pb-2"
-                >
-                  <div>
-                    <div className="font-medium">
-                      {u.firstName} {u.lastName}
-                    </div>
-                    <div className="text-sm text-gray-500">{u.email}</div>
-                  </div>
-                  <button
-                    onClick={() => handleRemove(u.uid)}
-                    className="text-red-500 text-sm"
-                  >
-                    ❌
-                  </button>
-                </div>
-              ))}
+  <div className="w-full max-w-md p-4 bg-white shadow rounded-xl overflow-x-hidden box-border">
+    <SearchBar
+      value={search}
+      onSearch={(term) => setSearch(term.trim())} 
+      placeholder="Search by name or email"
+    />
+    <div className="space-y-3 mt-4 max-h-[500px] overflow-y-auto">
+      {search.trim().length > 0 && showResults.length === 0 && (
+        <p className="text-sm text-gray-500">No users found.</p>
+      )}
+      {showResults.map((u) => (
+        <div
+          key={u.uid}
+          className="flex items-center justify-between border-b pb-2"
+          style={{ minWidth: 0 }}
+        >
+          <div className="min-w-0">
+            <div className="font-medium truncate">{u.firstName} {u.lastName}</div>
+            <div className="text-sm text-gray-500 truncate">{u.email}</div>
           </div>
-        ) : (
-          <p className="text-sm text-gray-500">You have no contacts yet.</p>
-        )}
-      </div>
+          <button
+            onClick={() =>
+              contacts[u.uid] ? handleRemove(u.uid) : handleAdd(u)
+            }
+            className={`text-sm ${
+              contacts[u.uid] ? "text-red-500" : "text-blue-500"
+            } ml-3 whitespace-nowrap`}
+          >
+            {contacts[u.uid] ? "Remove" : "Add"}
+          </button>
+        </div>
+      ))}
     </div>
-  );
+  </div>
+);
 }

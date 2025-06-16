@@ -11,14 +11,14 @@ import EventLegend from '../../components/EventLegend/EventLegend';
 
 export default function HomePage() {
   const { view } = useContext(CalendarContext);
-  const [showContacts, setShowContacts] = useState(false);
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  
+  const [showContacts, setShowContacts] = useState(false);
+
   const renderCalendar = () => {
     switch (view) {
       case 'yearly':
-        return <CalendarYear/>
+        return <CalendarYear />;
       case 'daily':
         return <DailyCalendar />;
       case 'monthly':
@@ -46,30 +46,24 @@ export default function HomePage() {
       <div className="flex flex-1">
         <div className="w-72 bg-white shadow-md border-r">
           <Calendar />
+          <EventLegend onCategoryClick={handleCategoryClick} />
           
-          <EventLegend onCategoryClick={handleCategoryClick} /> 
-          
+          <div
+            className="p-4 border-t cursor-pointer text-2xl text-blue-600 hover:text-blue-800 flex items-center gap-2"
+            onClick={() => setShowContacts((prev) => !prev)}
+          >
+            <i className="fa-solid fa-user"></i>
+          </div>
+
+          {showContacts && (
+            <div className="p-4 border-t h-full overflow-y-auto">
+              <ContactList />
+            </div>
+          )}
         </div>
 
         <div className="flex-1 p-4">
           {renderCalendar()}
-        </div>
-      </div>
-
-      <button
-        onClick={() => setShowContacts((prev) => !prev)}
-        className="fixed top-1/2 right-0 transform -translate-y-1/2 bg-blue-600 text-white px-2 py-1 rounded-l shadow z-40 hover:bg-blue-700"
-      >
-        {showContacts ? '>' : '<'}
-      </button>
-
-      <div
-        className={`fixed top-0 right-0 h-full w-80 bg-white shadow-lg transition-transform duration-300 z-30 ${
-          showContacts ? 'translate-x-0' : 'translate-x-full'
-        }`}
-      >
-        <div className="p-4 border-l h-full overflow-y-auto">
-          <ContactList />
         </div>
       </div>
     </div>

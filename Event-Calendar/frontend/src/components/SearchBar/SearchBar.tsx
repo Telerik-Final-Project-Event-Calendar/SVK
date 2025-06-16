@@ -102,13 +102,12 @@ export default function SearchBar({
   }, []);
 
   return (
-    <div
-      ref={containerRef}
-      className="relative flex items-center group">
+    <div ref={containerRef} className="relative flex items-center group">
       <button
         onClick={toggleExpand}
         className="text-gray-500 hover:text-black focus:outline-none p-2 rounded-md hover:bg-gray-100"
-        title="Search">
+        title="Search"
+      >
         <Search className="w-5 h-5" />
       </button>
 
@@ -120,7 +119,7 @@ export default function SearchBar({
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         className={`transition-all duration-300 ml-2 bg-white border border-gray-300 text-gray-700 placeholder-gray-400 rounded-md px-3 py-1 overflow-hidden focus:outline-none focus:ring focus:ring-blue-300 ${
-          expanded ? "w-full sm:w-64" : "w-0"
+          expanded ? "w-full" : "w-0"
         }`}
         style={{ visibility: expanded ? "visible" : "hidden" }}
       />

@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
  *
  * A dropdown menu that appears when the user clicks their profile avatar or initials.
  * It displays navigation options such as profile settings, created events, and admin panel.
- * 
+ *
  * Context:
  * - Uses `AppContext` to access `userData`.
  *
@@ -47,13 +47,12 @@ export default function ProfileDropdown() {
   if (!userData) return null;
 
   return (
-    <div
-      className="relative"
-      ref={dropdownRef}>
+    <div className="relative" ref={dropdownRef}>
       <button
         onClick={toggleDropdown}
         className="w-10 h-10 rounded-full bg-gray-200 text-gray-800 flex items-center justify-center text-sm font-bold hover:bg-gray-300"
-        title="Profile">
+        title="Profile"
+      >
         {userData.photoURL ? (
           <img
             src={userData.photoURL}
@@ -76,20 +75,30 @@ export default function ProfileDropdown() {
           <Link
             to="/profile"
             className="block px-4 py-2 text-sm hover:bg-gray-100"
-            onClick={() => setIsOpen(false)}>
+            onClick={() => setIsOpen(false)}
+          >
             Profile Settings
           </Link>
           <Link
             to={`/events?creator=${userData.handle}`}
             className="block px-4 py-2 text-sm hover:bg-gray-100"
-            onClick={() => setIsOpen(false)}>
+            onClick={() => setIsOpen(false)}
+          >
             My Events
+          </Link>
+          <Link
+            to="/contacts"
+            className="block px-4 py-2 text-sm hover:bg-gray-100"
+            onClick={() => setIsOpen(false)}
+          >
+            Contact List
           </Link>
           {userData.isAdmin && (
             <Link
               to="/admin"
               className="block px-4 py-2 text-sm hover:bg-gray-100"
-              onClick={() => setIsOpen(false)}>
+              onClick={() => setIsOpen(false)}
+            >
               Admin Panel
             </Link>
           )}
