@@ -38,7 +38,6 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
   const navigate = useNavigate();
   const [position, setPosition] = useState<[number, number] | null>(null);
   const [address, setAddress] = useState<string>("");
-  const [useManualAddress, setUseManualAddress] = useState(false);
   const { triggerEventRefresh } = useContext(CalendarContext);
 
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
@@ -403,7 +402,7 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
           </div>
 
           {/* Right: Map */}
-          {/* <div className="flex-1">
+          <div className="flex-1">
             <p className="text-sm text-gray-700 mb-2">
               Click on the map to select a location:
             </p>
@@ -420,64 +419,6 @@ export default function CreateEventModal({ selectedDate, onClose }: Props) {
                 setAddress={setAddress}
               />
             </div>
-          </div> */}
-          <div className="flex-1">
-            <p className="text-sm text-gray-700 mb-2">
-              Choose how to enter the address:
-            </p>
-
-            <div className="mb-4">
-              <label className="mr-4">
-                <input
-                  type="radio"
-                  checked={!useManualAddress}
-                  onChange={() => setUseManualAddress(false)}
-                />
-                <span className="ml-2">Select from map</span>
-              </label>
-              <label className="ml-6">
-                <input
-                  type="radio"
-                  checked={useManualAddress}
-                  onChange={() => setUseManualAddress(true)}
-                />
-                <span className="ml-2">Enter manually</span>
-              </label>
-            </div>
-
-            {useManualAddress ? (
-              <div>
-                <label className="text-sm text-gray-700">
-                  Enter address manually:
-                </label>
-                <input
-                  type="text"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  className="border px-3 py-2 rounded w-full mt-1"
-                  placeholder="e.g. 123 Main St, New York"
-                />
-              </div>
-            ) : (
-              <>
-                <p className="text-sm text-gray-700 mb-2">
-                  Click on the map to select a location:
-                </p>
-                {address && (
-                  <p className="text-sm text-green-700 mt-2">
-                    📍 Address: {address}
-                  </p>
-                )}
-                <div className="h-96 rounded-md overflow-hidden border">
-                  <LocationPickerMap
-                    position={position}
-                    address={address}
-                    setPosition={setPosition}
-                    setAddress={setAddress}
-                  />
-                </div>
-              </>
-            )}
           </div>
         </div>
 
