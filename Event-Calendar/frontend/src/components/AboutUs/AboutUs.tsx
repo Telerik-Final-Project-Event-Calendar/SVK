@@ -6,8 +6,8 @@ const team = [
   {
     name: "Vasil Puhalev",
     image: "/team/Vasko.jpg",
-    github: "https://github.com/vasilpuhalev",
-    linkedin: "https://www.linkedin.com/in/vasilpuhalev",
+    github: "https://github.com/vPuhalev",
+    linkedin: "https://www.linkedin.com/in/vasil-puhalev/",
   },
   {
     name: "Krasi Kostadinov",
