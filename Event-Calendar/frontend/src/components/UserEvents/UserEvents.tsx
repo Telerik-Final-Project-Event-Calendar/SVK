@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { fetchUserEvents } from "../../services/events.service";
-import { FiCalendar, FiMapPin, FiTag, FiEye, FiEdit2 } from "react-icons/fi";
+import { deleteEvent, fetchUserEvents } from "../../services/events.service";
+import {
+  FiCalendar,
+  FiMapPin,
+  FiTag,
+  FiEye,
+  FiEdit2,
+  FiTrash2,
+} from "react-icons/fi";
 
 const EVENTS_PER_PAGE = 6;
 
@@ -30,6 +37,25 @@ export default function UserEvents() {
   const handlePrev = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
   const handleNext = () =>
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+
+  const handleDeleteSingleEvent = async (
+    eventId: string,
+    eventTitle: string
+  ) => {
+    if (
+      window.confirm(
+        `Are you sure you want to delete only this event: "${eventTitle}"?`
+      )
+    ) {
+      try {
+        await deleteEvent(eventId);
+        setEvents((prev) => prev.filter((e) => e.id !== eventId));
+      } catch (error) {
+        console.error("Error deleting event:", error);
+        alert("Failed to delete event. Please try again.");
+      }
+    }
+  };
 
   return (
     <div className="max-w-6xl mx-auto px-8 py-10 bg-gradient-to-tr from-gray-50 via-white to-gray-50 min-h-screen">
@@ -102,6 +128,14 @@ export default function UserEvents() {
                   <FiEdit2 className="w-5 h-5" />
                   Edit
                 </Link>
+
+                <button
+                  onClick={() => handleDeleteSingleEvent(event.id, event.title)}
+                  className="flex items-center gap-2 px-7 py-3 border-2 border-red-600 text-red-600 font-semibold rounded-full hover:bg-red-600 hover:text-white transition-colors duration-300 shadow-md"
+                >
+                  <FiTrash2 className="w-5 h-5" />
+                  Delete
+                </button>
               </div>
             </div>
           </div>
