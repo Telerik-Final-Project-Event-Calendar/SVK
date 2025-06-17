@@ -10,6 +10,7 @@ import {
   HiGlobe,
   HiLockClosed,
 } from "react-icons/hi";
+import { FaExclamationTriangle } from "react-icons/fa";
 import { FiFlag } from "react-icons/fi";
 import { getEventById, joinEvent } from "../../services/events.service";
 import { getUserByUID } from "../../services/users.service";
@@ -75,17 +76,13 @@ export default function EventDetails() {
               eventData.participants?.includes(user.uid)));
 
         if (!isAccessible) {
-          setError(
-            "You are not authorized to view this private event. Redirecting to login..."
-          );
-          setTimeout(() => navigate("/login"), 1200);
+          setError("You are not authorized to view this private event.");
           setLoading(false);
           return;
         }
 
         setEvent(eventData);
 
-        // Load participants user info
         if (eventData.participants?.length) {
           const usersData = await Promise.all(
             eventData.participants.map(async (uid: string) => {
@@ -194,15 +191,22 @@ export default function EventDetails() {
   if (loading) return <div className="p-6">Loading...</div>;
   if (error)
     return (
-      <div className="flex flex-col justify-center items-center h-screen text-red-600">
-        <p className="text-2xl font-bold mb-4">Error:</p>
-        <p className="text-lg text-center">{error}</p>
-        <button
-          onClick={() => navigate("/all-events")}
-          className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
-        >
-          Go to Events
-        </button>
+      <div className="flex items-center justify-center min-h-screen bg-gray-50 px-4">
+        <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md w-full text-center">
+          <div className="flex justify-center mb-4">
+            <FaExclamationTriangle className="h-12 w-12 text-red-500" />
+          </div>
+          <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+            Something went wrong
+          </h2>
+          <p className="text-gray-600 text-sm mb-6">{error}</p>
+          <button
+            onClick={() => navigate("/all-events")}
+            className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-200"
+          >
+            Go to Events
+          </button>
+        </div>
       </div>
     );
   if (!event)
