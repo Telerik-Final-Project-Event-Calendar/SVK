@@ -3,7 +3,11 @@ import { categoryStyles } from "../../utils/eventCategoryStyles";
 import { useContext } from "react";
 import { AppContext } from "../../state/app.context";
 import { EventData } from "../../types/event.types";
-import { PublicHoliday, isPublicHoliday, getHolidayName } from "../../services/holidays.service";
+import {
+  PublicHoliday,
+  isPublicHoliday,
+  getHolidayName,
+} from "../../services/holidays.service";
 
 const styles = (event: EventData) => {
   const category = event.category || "default";
@@ -40,19 +44,23 @@ export default function WeeklyDayColumns({
           .filter((e: EventData) => e.selectedDate === dayStr)
           .filter((e: EventData) => user || e.isPublic);
         const isHoliday = isPublicHoliday(dayDate, holidays);
-        const holidayName = isHoliday ? getHolidayName(dayDate, holidays) : null;
+        const holidayName = isHoliday
+          ? getHolidayName(dayDate, holidays)
+          : null;
         return (
           <div
             key={d}
-            className={`relative flex-1 border-l border-gray-300 ${isHoliday ? 'bg-red-50' : ''}`}
+            className={`relative flex-1 border-l border-gray-300 ${
+              isHoliday ? "bg-red-50" : ""
+            }`}
             style={{ height: "1152px" }}
-                onClick={(e) => {
-      const isClickOnEvent = (e.target as HTMLElement).closest("a");
-      if (!isClickOnEvent) {
-        const formatted = dayDate.toISOString().split("T")[0];
-        navigate(`/all-events?date=${formatted}`);
-      }
-    }}
+            onClick={(e) => {
+              const isClickOnEvent = (e.target as HTMLElement).closest("a");
+              if (!isClickOnEvent) {
+                const formatted = dayDate.toISOString().split("T")[0];
+                navigate(`/all-events?date=${formatted}`);
+              }
+            }}
           >
             <div className="sticky top-0 bg-white border-b border-gray-300 p-1 text-center font-semibold text-sm">
               {DAY_NAMES[dayDate.getDay()]}, {dayDate.getDate()}
@@ -62,7 +70,7 @@ export default function WeeklyDayColumns({
               {holidayName && (
                 <div
                   className="text-xs font-semibold text-red-700 px-1 py-[2px] bg-red-100 rounded"
-                  style={{ whiteSpace: 'normal', overflowWrap: 'break-word' }}
+                  style={{ whiteSpace: "normal", overflowWrap: "break-word" }}
                   title={holidayName}
                 >
                   {holidayName}
@@ -75,7 +83,7 @@ export default function WeeklyDayColumns({
               const endDate = new Date(event.end);
 
               const startMin =
-              startDate.getHours() * 60 + startDate.getMinutes();
+                startDate.getHours() * 60 + startDate.getMinutes();
               const endMin = endDate.getHours() * 60 + endDate.getMinutes();
               const top = startMin * PIXELS_PER_MINUTE;
               const height = (endMin - startMin) * PIXELS_PER_MINUTE;
@@ -98,7 +106,7 @@ export default function WeeklyDayColumns({
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-semibold text-sm truncate">
-                      {event.handle}
+                      {event.title}
                     </span>
                   </div>
 
