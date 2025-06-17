@@ -17,28 +17,42 @@ const team = [
   },
   {
     name: "Savina Brankova",
-    image: "path_to_savina_image.jpg",
+    image: "/team/Savi.jpg",
     github: "https://github.com/savinaBrankova",
     linkedin: "https://www.linkedin.com/in/savinabrankova",
   },
 ];
-
 const technologies = [
-  {
-    name: "React",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg",
-  },
+  // Core / Platform
   {
     name: "TypeScript",
     logo: "https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg",
+  },
+  {
+    name: "Node.js",
+    logo: "https://cdn.simpleicons.org/nodedotjs",
+  },
+
+  // UI & Interactivity
+  {
+    name: "React",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg",
   },
   {
     name: "Tailwind CSS",
     logo: "https://upload.wikimedia.org/wikipedia/commons/d/d5/Tailwind_CSS_Logo.svg",
   },
   {
+    name: "Framer Motion",
+    logo: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/framermotion/framermotion-original.svg",
+  },
+  {
     name: "React Router DOM",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-Router-Logo.png",
+    logo: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/reactrouter/reactrouter-original.svg",
+  },
+  {
+    name: "Axios",
+    logo: "https://axios-http.com/assets/logo.svg",
   },
   {
     name: "React Hook Form",
@@ -49,32 +63,20 @@ const technologies = [
     logo: "https://raw.githubusercontent.com/react-icons/react-icons/master/react-icons.svg",
   },
   {
-    name: "React Spinners",
-    logo: "/logos/react-spinners-logo.svg",
-  },
-  {
-    name: "React Leaflet",
-    logo: "https://react-leaflet.js.org/img/logo.svg",
-  },
-  {
-    name: "Axios",
-    logo: "https://axios-http.com/assets/logo.svg",
-  },
-  {
-    name: "Firebase",
-    logo: "https://firebase.google.com/images/brand-guidelines/logo-vertical.png",
-  },
-  {
-    name: "Framer Motion",
-    logo: "https://seeklogo.com/vector-logo/446185/framer-motion",
-  },
-  {
     name: "Lucide React",
     logo: "https://lucide.dev/logo.svg",
   },
   {
+    name: "React Spinners",
+    logo: "/logos/react-spinners-logo.svg",
+  },
+  {
     name: "Leaflet",
     logo: "/logos/leaflet-logo.png",
+  },
+  {
+    name: "React Leaflet",
+    logo: "https://react-leaflet.js.org/img/logo.svg",
   },
   {
     name: "Moment.js",
@@ -84,9 +86,45 @@ const technologies = [
     name: "Day.js",
     logo: "/logos/dayJs.png",
   },
+
+  // Server & API
+  {
+    name: "Express.js",
+    logo: "https://cdn.simpleicons.org/express",
+  },
+
+  // Data Storage
+  {
+    name: "Firebase",
+    logo: "https://firebase.google.com/images/brand-guidelines/logo-vertical.png",
+  },
+
+  // Infrastructure & Deployment
+  {
+    name: "GitHub",
+    logo: "https://cdn.simpleicons.org/github",
+  },
+  {
+    name: "Render",
+    logo: "https://cdn.simpleicons.org/render",
+  },
+
+  // Dev Tools & Utilities
   {
     name: "Vite",
     logo: "vite.svg",
+  },
+  {
+    name: "ESLint",
+    logo: "https://cdn.simpleicons.org/eslint",
+  },
+  {
+    name: "npm",
+    logo: "https://cdn.simpleicons.org/npm",
+  },
+  {
+    name: "VS Code",
+    logo: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vscode/vscode-original.svg",
   },
 ];
 
