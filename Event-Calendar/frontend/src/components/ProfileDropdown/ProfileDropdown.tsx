@@ -87,13 +87,6 @@ export default function ProfileDropdown() {
             My Events
           </Link>
           <Link
-            to="/contacts"
-            className="block px-4 py-2 text-sm hover:bg-gray-100"
-            onClick={() => setIsOpen(false)}
-          >
-            Contact List
-          </Link>
-          <Link
             to="/contacts-new"
             className="block px-4 py-2 text-sm hover:bg-gray-100"
             onClick={() => setIsOpen(false)}

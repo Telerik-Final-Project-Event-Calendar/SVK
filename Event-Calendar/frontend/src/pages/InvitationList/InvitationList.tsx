@@ -6,10 +6,15 @@ import {
   declineInvitation,
 } from "../../services/response.service";
 import { FaCheck, FaTimes } from "react-icons/fa";
+import { FiChevronDown, FiChevronUp } from "react-icons/fi";
+import { Link } from "react-router-dom";
+import PaginationControls from "../../components/PaginationControls/PaginationControls";
+import { usePagination } from "../../hooks/usePagination";
 
 export default function InvitationList() {
   const { user } = useContext(AppContext);
   const [invitations, setInvitations] = useState<any[]>([]);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   useEffect(() => {
     if (!user) return;
@@ -25,54 +30,107 @@ export default function InvitationList() {
     await declineInvitation(inv.id);
   };
 
+  const toggleCollapse = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
+  const ITEMS_PER_PAGE = 3;
+  const {
+    currentPage,
+    totalPages,
+    visibleItems: visibleInvitations,
+    goToNextPage,
+    goToPrevPage,
+  } = usePagination(invitations, ITEMS_PER_PAGE);
+
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-2xl shadow-xl border border-gray-200">
-      <h2 className="text-3xl font-extrabold mb-6 border-b pb-3 text-gray-900 tracking-tight">
-        Invitations
-      </h2>
+    <div className="max-w-md mx-auto my-4 bg-white shadow rounded-xl border border-gray-200 overflow-hidden">
+      <button
+        onClick={toggleCollapse}
+        className={`w-full flex justify-between items-center p-4 cursor-pointer focus:outline-none transition-colors duration-200 
+          ${isCollapsed 
+            ? 'bg-gray-100 hover:bg-gray-200' 
+            : 'bg-indigo-50 hover:bg-indigo-100'
+          }`}
+        aria-expanded={!isCollapsed}
+        aria-controls="invitation-list-content"
+      >
+        <h2 className="text-xl font-semibold text-gray-800">
+          Invitations ({invitations.length}) 
+        </h2>
+        {isCollapsed ? (
+          <FiChevronDown className="w-5 h-5 text-gray-500" />
+        ) : (
+          <FiChevronUp className="w-5 h-5 text-gray-500" />
+        )}
+      </button>
 
-      {invitations.length === 0 ? (
-        <p className="text-center text-gray-400 italic select-none">
-          No pending invitations.
-        </p>
-      ) : (
-        <ul className="space-y-5">
-          {invitations.map((inv) => (
-            <li
-              key={inv.id}
-              className="bg-gray-50 rounded-xl p-5 shadow-sm hover:shadow-lg transition-shadow duration-300"
-            >
-              <p className="text-gray-600 mb-1 text-sm uppercase tracking-wider font-semibold">
-                <span className="text-indigo-600">{inv.fromHandle}</span>{" "}
-                invited you to
-              </p>
-              <h3 className="text-lg font-bold text-gray-900 mb-4 truncate">
-                {inv.eventTitle}
-              </h3>
-
-              <div className="flex justify-center gap-4">
-                <button
-                  onClick={() => handleAccept(inv)}
-                  className="flex items-center gap-1 bg-green-500 text-white px-3 py-1.5 rounded-full hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 shadow-sm transition"
-                  aria-label={`Accept invitation to ${inv.eventTitle}`}
+      <div
+        id="invitation-list-content"
+        className={`transition-all duration-300 ease-in-out ${
+          isCollapsed ? "max-h-0 opacity-0" : "max-h-[800px] opacity-100 p-4 pt-0" 
+        } overflow-hidden`}
+      >
+        {invitations.length === 0 ? ( 
+          <p className="text-center text-gray-500 italic py-4 select-none">
+            No pending invitations.
+          </p>
+        ) : (
+          <>
+            <ul className="space-y-4">
+              {visibleInvitations.map((inv) => (
+                <li
+                  key={inv.id}
+                  className="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100"
                 >
-                  <FaCheck className="w-4 h-4" />
-                  <span className="text-sm font-medium">Accept</span>
-                </button>
+                  <p className="text-gray-600 mb-1 text-sm font-semibold">
+                    <span className="text-indigo-600">{inv.fromHandle}</span>{" "}
+                    invited you to
+                  </p>
 
-                <button
-                  onClick={() => handleDecline(inv)}
-                  className="flex items-center gap-1 bg-red-500 text-white px-3 py-1.5 rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 shadow-sm transition"
-                  aria-label={`Decline invitation to ${inv.eventTitle}`}
-                >
-                  <FaTimes className="w-4 h-4" />
-                  <span className="text-sm font-medium">Decline</span>
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+                  <Link
+                    to={`/event/${inv.eventId}`}
+                    className="block text-lg font-bold text-gray-900 mb-3 truncate hover:underline hover:text-blue-600"
+                  >
+                    {inv.eventTitle}
+                  </Link>
+
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => handleAccept(inv)}
+                      className="flex items-center gap-1 px-3 py-1 border rounded-full border-green-600 text-green-600 font-semibold text-xs hover:bg-green-600 hover:text-white transition-colors duration-300 shadow-sm"
+                      aria-label={`Accept invitation to ${inv.eventTitle}`}
+                    >
+                      <FaCheck className="w-3 h-3" />
+                      <span>Accept</span>
+                    </button>
+
+                    <button
+                      onClick={() => handleDecline(inv)}
+                      className="flex items-center gap-1 px-3 py-1 border rounded-full border-red-500 text-red-500 font-semibold text-xs hover:bg-red-500 hover:text-white transition-colors duration-300 shadow-sm"
+                      aria-label={`Decline invitation to ${inv.eventTitle}`}
+                    >
+                      <FaTimes className="w-3 h-3" />
+                      <span>Decline</span>
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            
+            {totalPages > 1 && ( 
+                <div className="mt-4">
+                    <PaginationControls
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPrev={goToPrevPage}
+                        onNext={goToNextPage}
+                    />
+                </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

@@ -14,7 +14,13 @@ import { fetchAllUsers } from "../../services/users.service";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import PaginationControls from "../../components/PaginationControls/PaginationControls";
 import { usePagination } from "../../hooks/usePagination";
-import { FiChevronDown, FiChevronUp, FiPlus, FiTrash2, FiEdit3 } from "react-icons/fi";
+import {
+  FiChevronDown,
+  FiChevronUp,
+  FiPlus,
+  FiTrash2,
+  FiEdit3,
+} from "react-icons/fi";
 
 const ContactsPageNew: React.FC = () => {
   const { userData } = useContext(AppContext);
@@ -41,10 +47,14 @@ const ContactsPageNew: React.FC = () => {
 
   const [showAddToListModal, setShowAddToListModal] = useState(false);
   const [userToAdd, setUserToAdd] = useState<IUserData | null>(null);
-  const [selectedContactListId, setSelectedContactListId] = useState<string | null>(null);
+  const [selectedContactListId, setSelectedContactListId] = useState<
+    string | null
+  >(null);
   const [newModalListName, setNewModalListName] = useState("");
   const [modalMessage, setModalMessage] = useState<string | null>(null);
-  const [modalMessageType, setModalMessageType] = useState<'success' | 'error' | null>(null);
+  const [modalMessageType, setModalMessageType] = useState<
+    "success" | "error" | null
+  >(null);
 
   useEffect(() => {
     const loadAllUsers = async () => {
@@ -61,11 +71,13 @@ const ContactsPageNew: React.FC = () => {
 
   useEffect(() => {
     const lowercasedTerm = searchTerm.toLowerCase();
-    const results = allUsers.filter(user =>
-      user.handle.toLowerCase().includes(lowercasedTerm) ||
-      user.email.toLowerCase().includes(lowercasedTerm) ||
-      (user.firstName && user.firstName.toLowerCase().includes(lowercasedTerm)) ||
-      (user.lastName && user.lastName.toLowerCase().includes(lowercasedTerm))
+    const results = allUsers.filter(
+      (user) =>
+        user.handle.toLowerCase().includes(lowercasedTerm) ||
+        user.email.toLowerCase().includes(lowercasedTerm) ||
+        (user.firstName &&
+          user.firstName.toLowerCase().includes(lowercasedTerm)) ||
+        (user.lastName && user.lastName.toLowerCase().includes(lowercasedTerm))
     );
     setFilteredUsers(results);
     setSearchPage(1);
@@ -81,11 +93,10 @@ const ContactsPageNew: React.FC = () => {
         }
 
         const initialOpenState: Record<string, boolean> = {};
-        lists.forEach(list => {
+        lists.forEach((list) => {
           initialOpenState[list.id] = false;
         });
         setOpenLists(initialOpenState);
-
       } catch (error) {
         console.error("Error fetching contact lists:", error);
       }
@@ -113,12 +124,11 @@ const ContactsPageNew: React.FC = () => {
       try {
         await deleteContactList(listId);
         fetchContactLists();
-        setOpenLists(prev => {
+        setOpenLists((prev) => {
           const newState = { ...prev };
           delete newState[listId];
           return newState;
         });
-
       } catch (error) {
         console.error("Error deleting contact list:", error);
       }
@@ -172,7 +182,7 @@ const ContactsPageNew: React.FC = () => {
   const handleAddUserFromModal = async () => {
     if (!userData?.uid || !userToAdd) {
       setModalMessage("User data or UID missing. Please log in.");
-      setModalMessageType('error');
+      setModalMessageType("error");
       return;
     }
 
@@ -180,66 +190,87 @@ const ContactsPageNew: React.FC = () => {
     let listNameForMessage = "";
 
     if (newModalListName.trim() && !selectedContactListId) {
-        if (!newModalListName.trim()) {
-            setModalMessage("Please enter a name for the new contact list.");
-            setModalMessageType('error');
-            return;
-        }
-        try {
-            targetListId = await createContactList(userData.uid, newModalListName.trim());
-            listNameForMessage = newModalListName.trim();
-            await fetchContactLists();
-        } catch (error) {
-            console.error("Failed to create new contact list:", error);
-            setModalMessage("Failed to create new contact list.");
-            setModalMessageType('error');
-            return;
-        }
-    } else if (!targetListId) {
-        setModalMessage("Please select an existing list or create a new one.");
-        setModalMessageType('error');
+      if (!newModalListName.trim()) {
+        setModalMessage("Please enter a name for the new contact list.");
+        setModalMessageType("error");
         return;
+      }
+      try {
+        targetListId = await createContactList(
+          userData.uid,
+          newModalListName.trim()
+        );
+        listNameForMessage = newModalListName.trim();
+        await fetchContactLists();
+      } catch (error) {
+        console.error("Failed to create new contact list:", error);
+        setModalMessage("Failed to create new contact list.");
+        setModalMessageType("error");
+        return;
+      }
+    } else if (!targetListId) {
+      setModalMessage("Please select an existing list or create a new one.");
+      setModalMessageType("error");
+      return;
     } else {
-        const chosenList = contactLists.find(list => list.id === targetListId);
-        listNameForMessage = chosenList ? chosenList.name : "selected list";
+      const chosenList = contactLists.find((list) => list.id === targetListId);
+      listNameForMessage = chosenList ? chosenList.name : "selected list";
     }
 
     if (targetListId) {
       try {
-        const currentList = contactLists.find(list => list.id === targetListId);
-        const contactExists = currentList?.contacts && Object.values(currentList.contacts).some(c => c.uid === userToAdd.uid);
+        const currentList = contactLists.find(
+          (list) => list.id === targetListId
+        );
+        const contactExists =
+          currentList?.contacts &&
+          Object.values(currentList.contacts).some(
+            (c) => c.uid === userToAdd.uid
+          );
 
         if (contactExists) {
-            setModalMessage(`${userToAdd.handle} is already in the list "${listNameForMessage}"!`);
-            setModalMessageType('error');
-            return;
+          setModalMessage(
+            `${userToAdd.handle} is already in the list "${listNameForMessage}"!`
+          );
+          setModalMessageType("error");
+          return;
         }
 
         const minimalContact: IContactMinimal = {
           uid: userToAdd.uid,
           email: userToAdd.email,
-          firstName: userToAdd.firstName || '',
-          lastName: userToAdd.lastName || '',
+          firstName: userToAdd.firstName || "",
+          lastName: userToAdd.lastName || "",
           handle: userToAdd.handle,
-          photoURL: userToAdd.photoURL || '',
+          photoURL: userToAdd.photoURL || "",
         };
-        await addContactToContactList(targetListId, userToAdd.uid, minimalContact);
-        setModalMessage(`${userToAdd.handle} added to contact list "${listNameForMessage}" successfully!`);
-        setModalMessageType('success');
+        await addContactToContactList(
+          targetListId,
+          userToAdd.uid,
+          minimalContact
+        );
+        setModalMessage(
+          `${userToAdd.handle} added to contact list "${listNameForMessage}" successfully!`
+        );
+        setModalMessageType("success");
         fetchContactLists();
         setTimeout(() => {
-            closeAddToListModal();
+          closeAddToListModal();
         }, 1500);
       } catch (error) {
         console.error("Error adding contact to list:", error);
         setModalMessage("Failed to add contact to list.");
-        setModalMessageType('error');
+        setModalMessageType("error");
       }
     }
   };
 
   const handleRemoveContact = async (listId: string, contactUid: string) => {
-    if (window.confirm("Are you sure you want to remove this contact from the list?")) {
+    if (
+      window.confirm(
+        "Are you sure you want to remove this contact from the list?"
+      )
+    ) {
       try {
         await removeContactFromContactList(listId, contactUid);
         fetchContactLists();
@@ -250,7 +281,7 @@ const ContactsPageNew: React.FC = () => {
   };
 
   const toggleListOpen = (listId: string) => {
-    setOpenLists(prev => ({
+    setOpenLists((prev) => ({
       ...prev,
       [listId]: !prev[listId],
     }));
@@ -263,7 +294,9 @@ const ContactsPageNew: React.FC = () => {
       </h2>
 
       <div className="bg-white rounded-lg shadow-lg mb-8 border border-gray-200 p-6">
-        <h3 className="text-xl font-semibold text-gray-800 mb-4">Create New Contact List</h3>
+        <h3 className="text-xl font-semibold text-gray-800 mb-4">
+          Create New Contact List
+        </h3>
         <div className="flex items-center space-x-3">
           <input
             type="text"
@@ -274,8 +307,7 @@ const ContactsPageNew: React.FC = () => {
           />
           <button
             onClick={handleCreateList}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md shadow-sm text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out"
-          >
+            className="bg-blue-600 text-white px-4 py-2 rounded-md shadow-sm text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
             <FiPlus className="inline-block mr-1" /> Create List
           </button>
         </div>
@@ -285,7 +317,9 @@ const ContactsPageNew: React.FC = () => {
         <button
           onClick={() => setIsSearchSectionOpen(!isSearchSectionOpen)}
           className="w-full flex justify-between items-center px-6 py-4 bg-gray-50 hover:bg-gray-100 rounded-t-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition-colors duration-200">
-          <h3 className="text-xl font-semibold text-gray-800">Search and Add Users</h3>
+          <h3 className="text-xl font-semibold text-gray-800">
+            Search and Add Users
+          </h3>
           {isSearchSectionOpen ? (
             <FiChevronUp className="w-6 h-6 text-gray-600" />
           ) : (
@@ -295,9 +329,10 @@ const ContactsPageNew: React.FC = () => {
 
         <div
           className={`transition-all duration-300 ease-in-out overflow-hidden ${
-            isSearchSectionOpen ? "max-h-[1000px] opacity-100 p-6 pt-4 border-t border-gray-200" : "max-h-0 opacity-0"
-          }`}
-        >
+            isSearchSectionOpen
+              ? "max-h-[1000px] opacity-100 p-6 pt-4 border-t border-gray-200"
+              : "max-h-0 opacity-0"
+          }`}>
           <div className="mb-4">
             <SearchBar
               value={searchTerm}
@@ -311,16 +346,24 @@ const ContactsPageNew: React.FC = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Username
                     </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Name
                     </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Email
                     </th>
-                    <th scope="col" className="relative px-6 py-3">
+                    <th
+                      scope="col"
+                      className="relative px-6 py-3">
                       <span className="sr-only">Actions</span>
                     </th>
                   </tr>
@@ -338,10 +381,15 @@ const ContactsPageNew: React.FC = () => {
                             />
                           ) : (
                             <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center text-sm font-bold mr-3">
-                              {user.firstName?.charAt(0)}{user.lastName?.charAt(0) || user.handle.charAt(0) || "?"}
+                              {user.firstName?.charAt(0)}
+                              {user.lastName?.charAt(0) ||
+                                user.handle.charAt(0) ||
+                                "?"}
                             </div>
                           )}
-                          <div className="text-sm font-medium text-gray-900">{user.handle}</div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {user.handle}
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -350,14 +398,16 @@ const ContactsPageNew: React.FC = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{user.email}</div>
+                        <div className="text-sm text-gray-900">
+                          {user.email}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <button
                           onClick={() => openAddToListModal(user)}
-                          className="bg-green-600 text-white px-4 py-2 rounded-md shadow-sm text-sm font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out"
-                        >
-                          <FiPlus className="inline-block mr-1" /> Add to Contacts
+                          className="bg-green-600 text-white px-4 py-2 rounded-md shadow-sm text-sm font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out">
+                          <FiPlus className="inline-block mr-1" /> Add to
+                          Contacts
                         </button>
                       </td>
                     </tr>
@@ -373,16 +423,22 @@ const ContactsPageNew: React.FC = () => {
             </div>
           ) : (
             <p className="text-gray-500 mt-4 text-center py-4">
-              {searchTerm ? "No users found matching your search." : "Start typing to search for users."}
+              {searchTerm
+                ? "No users found matching your search."
+                : "Start typing to search for users."}
             </p>
           )}
         </div>
       </div>
-
+      <h3 className="text-xl font-semibold text-gray-800 text-center mb-4 mt-6">
+        My Contact Lists
+      </h3>
       {contactLists.length > 0 ? (
         <div className="space-y-6">
           {contactLists.map((list) => (
-            <div key={list.id} className="bg-white rounded-lg shadow-lg border border-gray-200">
+            <div
+              key={list.id}
+              className="bg-white rounded-lg shadow-lg border border-gray-200">
               <button
                 onClick={() => toggleListOpen(list.id)}
                 className="w-full flex justify-between items-center px-6 py-4 bg-gray-50 hover:bg-gray-100 rounded-t-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition-colors duration-200">
@@ -396,36 +452,46 @@ const ContactsPageNew: React.FC = () => {
                       onClick={(e) => e.stopPropagation()}
                     />
                     <button
-                      onClick={(e) => { e.stopPropagation(); handleSaveEditList(); }}
-                      className="bg-green-500 text-white px-3 py-1 rounded-md text-sm hover:bg-green-600"
-                    >
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSaveEditList();
+                      }}
+                      className="bg-green-500 text-white px-3 py-1 rounded-md text-sm hover:bg-green-600">
                       Save
                     </button>
                     <button
-                      onClick={(e) => { e.stopPropagation(); handleCancelEditList(); }}
-                      className="bg-gray-400 text-white px-3 py-1 rounded-md text-sm hover:bg-gray-500"
-                    >
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCancelEditList();
+                      }}
+                      className="bg-gray-400 text-white px-3 py-1 rounded-md text-sm hover:bg-gray-500">
                       Cancel
                     </button>
                   </div>
                 ) : (
-                  <h3 className="text-xl font-semibold text-gray-800">{list.name}</h3>
+                  <h3 className="text-xl font-semibold text-gray-800">
+                    {list.name}
+                  </h3>
                 )}
                 <div className="flex items-center space-x-2">
                   {editingListId !== list.id && (
                     <button
-                      onClick={(e) => { e.stopPropagation(); handleStartEditList(list.id, list.name); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleStartEditList(list.id, list.name);
+                      }}
                       className="text-gray-500 hover:text-blue-600 p-2 rounded-full hover:bg-gray-100 transition"
-                      title="Edit List Name"
-                    >
+                      title="Edit List Name">
                       <FiEdit3 className="w-5 h-5" />
                     </button>
                   )}
                   <button
-                    onClick={(e) => { e.stopPropagation(); handleDeleteList(list.id); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteList(list.id);
+                    }}
                     className="text-gray-500 hover:text-red-600 p-2 rounded-full hover:bg-gray-100 transition"
-                    title="Delete List"
-                  >
+                    title="Delete List">
                     <FiTrash2 className="w-5 h-5" />
                   </button>
                   {openLists[list.id] ? (
@@ -438,13 +504,16 @@ const ContactsPageNew: React.FC = () => {
 
               <div
                 className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                  openLists[list.id] ? "max-h-[1000px] opacity-100 p-6 pt-4 border-t border-gray-200" : "max-h-0 opacity-0"
-                }`}
-              >
+                  openLists[list.id]
+                    ? "max-h-[1000px] opacity-100 p-6 pt-4 border-t border-gray-200"
+                    : "max-h-0 opacity-0"
+                }`}>
                 {list.contacts && Object.keys(list.contacts).length > 0 ? (
                   <ul className="divide-y divide-gray-200">
                     {Object.values(list.contacts).map((contact) => (
-                      <li key={contact.uid} className="flex items-center justify-between py-3">
+                      <li
+                        key={contact.uid}
+                        className="flex items-center justify-between py-3">
                         <div className="flex items-center">
                           {contact.photoURL && contact.photoURL !== "" ? (
                             <img
@@ -454,26 +523,36 @@ const ContactsPageNew: React.FC = () => {
                             />
                           ) : (
                             <div className="w-10 h-10 rounded-full bg-gray-300 text-gray-700 flex items-center justify-center text-sm font-bold mr-3">
-                              {contact.firstName?.charAt(0)}{contact.lastName?.charAt(0) || contact.handle.charAt(0) || "?"}
+                              {contact.firstName?.charAt(0)}
+                              {contact.lastName?.charAt(0) ||
+                                contact.handle.charAt(0) ||
+                                "?"}
                             </div>
                           )}
                           <div>
-                            <p className="font-medium text-gray-900">{contact.handle}</p>
-                            <p className="text-sm text-gray-500">{contact.email}</p>
+                            <p className="font-medium text-gray-900">
+                              {contact.handle}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              {contact.email}
+                            </p>
                           </div>
                         </div>
                         <button
-                          onClick={() => handleRemoveContact(list.id, contact.uid)}
+                          onClick={() =>
+                            handleRemoveContact(list.id, contact.uid)
+                          }
                           className="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-gray-100 transition"
-                          title="Remove Contact"
-                        >
+                          title="Remove Contact">
                           <FiTrash2 className="w-5 h-5" />
                         </button>
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-gray-500 text-center py-4">No contacts in this list. Use the search above to add some!</p>
+                  <p className="text-gray-500 text-center py-4">
+                    No contacts in this list. Use the search above to add some!
+                  </p>
                 )}
               </div>
             </div>
@@ -497,7 +576,9 @@ const ContactsPageNew: React.FC = () => {
                 <p className="text-gray-700 mb-2">Select an existing list:</p>
                 <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
                   {contactLists.map((list) => (
-                    <label key={list.id} className="flex items-center cursor-pointer">
+                    <label
+                      key={list.id}
+                      className="flex items-center cursor-pointer">
                       <input
                         type="radio"
                         name="contactListSelection"
@@ -531,7 +612,9 @@ const ContactsPageNew: React.FC = () => {
               </div>
             ) : (
               <div className="mb-4">
-                <p className="text-gray-700 mb-2">You don't have any contact lists. Please create one:</p>
+                <p className="text-gray-700 mb-2">
+                  You don't have any contact lists. Please create one:
+                </p>
                 <input
                   type="text"
                   value={newModalListName}
@@ -546,7 +629,12 @@ const ContactsPageNew: React.FC = () => {
             )}
 
             {modalMessage && (
-              <p className={`mt-2 text-sm ${modalMessageType === 'success' ? "text-green-600" : "text-red-600"}`}>
+              <p
+                className={`mt-2 text-sm ${
+                  modalMessageType === "success"
+                    ? "text-green-600"
+                    : "text-red-600"
+                }`}>
                 {modalMessage}
               </p>
             )}
@@ -554,15 +642,13 @@ const ContactsPageNew: React.FC = () => {
             <div className="flex justify-end gap-3 mt-6">
               <button
                 onClick={closeAddToListModal}
-                className="px-5 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 transition"
-              >
+                className="px-5 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 transition">
                 Cancel
               </button>
               <button
                 onClick={handleAddUserFromModal}
-                disabled={(!selectedContactListId && !newModalListName.trim())}
-                className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition disabled:opacity-50"
-              >
+                disabled={!selectedContactListId && !newModalListName.trim()}
+                className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition disabled:opacity-50">
                 Add Contact
               </button>
             </div>

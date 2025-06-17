@@ -3,21 +3,23 @@ import CalendarHeader from "./CalendarHeader";
 import CalendarGrid from "./CalendarGrid";
 import { CalendarContext } from "../../state/calendar.context";
 import { createDate } from "../../services/calendar.service";
-import { ref, get, update, set } from "firebase/database";
-import { db } from "../../config/firebase-config";
 import { getUserByUID } from "../../services/users.service";
 import { AppContext } from "../../state/app.context";
 import CreateEventModal from "../../pages/CreateEventModal/CreateEventModal";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FiLock } from "react-icons/fi";
 import InvitationList from "../../pages/InvitationList/InvitationList";
-import ContactSidebar from "../ContactsSidebar/ContactsSidebar";
 
 export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const { selectedDate, setSelectedDate } = useContext(CalendarContext)!;
   const { user } = useContext(AppContext);
   const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
+
+  const handleMyContactsClick = () => {
+    navigate('/contacts-new');
+  };
 
   const handlePrevMonth = () => {
     setCurrentDate(
@@ -63,12 +65,22 @@ export default function Calendar() {
         </div>
       )}
 
-      <button
-        className="mb-4 ml-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        onClick={() => setShowModal(true)}
-      >
-        + Create Event
-      </button>
+      <div className="flex justify-between items-center mb-4 ml-4 pr-4">
+        <button
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-800"
+          onClick={() => setShowModal(true)}
+        >
+          + Create Event
+        </button>
+
+        <button
+          onClick={handleMyContactsClick}
+          className="relative group w-10 h-10 flex items-center justify-center rounded-full text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition-colors duration-200"
+          title="My Contacts"
+        >
+          <i className="fa-solid fa-user text-2xl"></i>
+        </button>
+      </div>
       <div className="max-w-md mx-auto p-4 bg-white rounded-xl shadow-md">
         <CalendarHeader
           currentDate={currentDate}

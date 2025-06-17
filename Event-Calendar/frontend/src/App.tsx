@@ -16,7 +16,7 @@ import EventDetails from "./pages/EventDetails/EventDetails";
 import UserEvents from "./components/UserEvents/UserEvents";
 import EditEvent from "./pages/EditEvent/EditEvent";
 import EventsPage from "./pages/EventsPage/EventsPage";
-import ContactsPage from "./components/ContactsPage/ContactsPage";
+// import ContactsPage from "./components/ContactsPage/ContactsPage";
 import AboutUs from "./components/AboutUs/AboutUs";
 import ContactsPageNew from "./pages/ContactsPageNew/ContactsPageNew";
 
@@ -55,14 +55,14 @@ const App: React.FC = () => {
                   </Authenticated>
                 }
               />
-              <Route
+              {/* <Route
                 path="/contacts"
                 element={
                   <Authenticated>
                     <ContactsPage />
                   </Authenticated>
                 }
-              />
+              /> */}
               <Route
                 path="/events"
                 element={

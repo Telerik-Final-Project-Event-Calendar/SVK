@@ -5,7 +5,7 @@ import MonthlyCalendar from '../CalendarViews/MonthlyView';
 import DailyCalendar from '../CalendarViews/DailyView';
 import CalendarYear from '../CalendarViews/CalendarYear/CalendarYear';
 import { CalendarContext } from '../../state/calendar.context';
-import ContactList from '../../components/ContactList/ContactList';
+// import ContactList from '../../components/ContactList/ContactList';
 import { useNavigate, useSearchParams } from 'react-router-dom'; 
 import EventLegend from '../../components/EventLegend/EventLegend';
 
@@ -13,7 +13,7 @@ export default function HomePage() {
   const { view } = useContext(CalendarContext);
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [showContacts, setShowContacts] = useState(false);
+  // const [showContacts, setShowContacts] = useState(false);
 
   const renderCalendar = () => {
     switch (view) {
@@ -46,20 +46,7 @@ export default function HomePage() {
       <div className="flex flex-1">
         <div className="w-72 bg-white shadow-md border-r">
           <Calendar />
-          <EventLegend onCategoryClick={handleCategoryClick} />
-          
-          <div
-            className="p-4 border-t cursor-pointer text-2xl text-blue-600 hover:text-blue-800 flex items-center gap-2"
-            onClick={() => setShowContacts((prev) => !prev)}
-          >
-            <i className="fa-solid fa-user"></i>
-          </div>
-
-          {showContacts && (
-            <div className="p-4 border-t h-full overflow-y-auto">
-              <ContactList />
-            </div>
-          )}
+          <EventLegend onCategoryClick={handleCategoryClick} />          
         </div>
 
         <div className="flex-1 p-4">
