@@ -11,7 +11,7 @@ const team = [
   },
   {
     name: "Krasi Kostadinov",
-    image: "path_to_krasi_image.jpg",
+    image: "/team/01.jpg",
     github: "https://github.com/gamebred97",
     linkedin: "https://www.linkedin.com/in/krasi-kostadinov",
   },
