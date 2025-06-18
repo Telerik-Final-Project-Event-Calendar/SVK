@@ -91,7 +91,7 @@ export default function ProfileDropdown() {
             className="block px-4 py-2 text-sm hover:bg-gray-100"
             onClick={() => setIsOpen(false)}
           >
-            My Contacts (New)
+            My Contacts
           </Link>
           {userData.isAdmin && (
             <Link
